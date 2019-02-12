@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    - DispatcherServlet application context for Application's web tier.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context-3.0.xsd
+                           http://www.springframework.org/schema/mvc
+                           http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+                           http://www.springframework.org/schema/task
+                           http://www.springframework.org/schema/task/spring-task-3.1.xsd">
+    <!-- jiyun add: task -->
+
+    <mvc:resources mapping="/fidoservice/**" location="/fidoservice/"/>
+    <mvc:resources mapping="/ksid/**" location="/ksid/"/>
+    <mvc:resources mapping="/cnspaycancel/**" location="/cnspaycancel/"/>
+    <mvc:resources mapping="/devauth/**" location="/devauth/"/>
+    <mvc:resources mapping="/userreg/**" location="/userreg/"/>
+    <mvc:resources mapping="/userregmb/**" location="/userregmb/"/>
+    <mvc:resources mapping="/registration/**" location="/registration/"/>
+    <mvc:resources mapping="/user/**" location="/user/"/>
+    <mvc:resources mapping="/ocuuser/**" location="/ocuuser/"/>
+    <mvc:resources mapping="/static/**" location="/static/"/>
+
+    <mvc:annotation-driven/>
+
+    <!-- jiyun add: Component -->
+    <context:component-scan base-package="ksid" use-default-filters="false">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Component"/>
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+    </context:component-scan>
+
+    <!-- jiyun add: task -->
+    <task:executor id="taskExecutor" pool-size="10" queue-capacity="255" rejection-policy="ABORT" />
+    <task:scheduler id="taskScheduler" pool-size="10" />
+    <task:annotation-driven executor="taskExecutor" scheduler="taskScheduler" />
+
+    <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="order" value="1"/>
+        <property name="mappings">
+            <props>
+                <prop key="/com/validator">urlFilenameViewController</prop>
+                <prop key="/error/bizError">urlFilenameViewController</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="urlFilenameViewController" class="org.springframework.web.servlet.mvc.UrlFilenameViewController"/>
+
+    <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"></bean>
+
+    <!--
+    <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <property name="defaultErrorView" value="/error/bizError"/>
+        <property name="exceptionMappings">
+            <props>
+                <prop key="DataNotFoundException">exception/ErrorMessage</prop>
+                <prop key="org.springframework.dao.DataAccessException">/error/dataAccessFailure</prop>
+                <prop key="org.springframework.transaction.TransactionException">/error/transactionFailure</prop>
+                <prop key="egovframework.rte.fdl.cmmn.exception.EgovBizException">/error/bizError</prop>
+            </props>
+        </property>
+        <property name="exceptionAttribute" value="exceptionMsg" />
+        <property name="defaultErrorView" value="Error" />
+    </bean>
+     -->
+
+    <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+        <property name="contentNegotiationManager">
+            <bean id="contentNegotiationManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+                <property name="mediaTypes">
+                    <map>
+                        <entry key="htm" value="text/html"/>
+                        <entry key="html" value="text/html"/>
+                        <entry key="ajax" value="text/html"/>
+                        <entry key="scr" value="application/x-javascript"/>
+                        <entry key="json" value="application/json"/>
+                        <entry key="jsonp" value="application/javascript"/>
+                        <entry key="xml" value="application/xml"/>
+                        <entry key="do" value="text/html"/>
+                    </map>
+                </property>
+            </bean>
+        </property>
+        <property name="viewResolvers">
+            <list>
+                <bean class="org.springframework.web.servlet.view.BeanNameViewResolver">
+                    <property name="order" value="1"></property>
+                </bean>
+                <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+                    <property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+                    <property name="prefix" value="/WEB-INF/views/"/>
+                    <property name="suffix" value=".jsp"/>
+                    <property name="order" value="2"></property>
+                </bean>
+            </list>
+        </property>
+        <property name="defaultViews">
+            <list>
+                <bean class="org.springframework.web.servlet.view.json.MappingJackson2JsonView"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+        <property name="messageConverters">
+            <list>
+                <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
+                <bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter"/>
+                <bean class="org.springframework.http.converter.xml.SourceHttpMessageConverter"/>
+                <bean class="org.springframework.http.converter.FormHttpMessageConverter"/>
+                <bean class="org.springframework.http.converter.StringHttpMessageConverter"/>
+            </list>
+        </property>
+    </bean>
+
+    <!--
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basenames">
+            <list>
+                <value>classpath:/message/message-common</value>
+            </list>
+        </property>
+    </bean>
+    <bean id="messageSource" class="ksid.web.support.message.DatabaseMessageSource"/>
+     -->
+
+
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver"/>
+
+</beans>

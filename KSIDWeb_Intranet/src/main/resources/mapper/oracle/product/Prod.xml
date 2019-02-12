@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_Prod">
+
+    <!-- Select Prod List -->
+    <select id="selProdList" parameterType="Map" resultType="CamelMap">
+        /* NS_Prod.selProdList */
+        SELECT PROD_CD                  /* 과금대상코드 */
+             , PROD_MCLS_CD             /* 상품코드 */
+             , PROD_NM                  /* 과금대상명 */
+             , PROD_LVL                 /* 과금대상순번 */
+          FROM TSM_PROD                   /* 과금대상 */
+         WHERE PROD_NM LIKE '%' || #{prodNm} || '%'
+         ORDER BY PROD_LVL
+
+    </select>
+
+</mapper>

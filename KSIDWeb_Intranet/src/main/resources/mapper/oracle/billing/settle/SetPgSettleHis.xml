@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_SetPgSettleHis">
+
+    <!-- Select SetTaDownHis List -->
+    <select id="selSetPgSettleHisList" parameterType="Map" resultType="CamelMap">
+        <include refid="NS_Paging.header"/>
+        /* NS_SetPgSettleHis.selSetPgSettleHisList */
+
+        SELECT A.PAY_DTM                  /* 거래일자 */
+             , A.PAY_TID                  /* 거래 ID */
+             , A.SP_CD                    /* 서비스제공자 */
+             , A.SP_NM                    /* 서비스제공자명 */
+             , A.CUST_ID                  /* 고객사 */
+             , A.CUST_NM                  /* 고객사명 */
+             , A.SERV_ID                  /* 서비스아이디 */
+             , A.SERV_NM                  /* 서비스명 */
+             , A.TEL_NO                   /* 휴대폰 */
+             , U.USER_NM                  /* 사용자명 */
+             , A.KSID_PAY_CMD             /* KSID 거래명령(승인:A, 취소:C, 부분취소:P) */
+             , A.KSID_PAY_METHOD          /* 결제수단(카드:CARD,은행:BANK,VBNK,MOBILE) */
+             , A.KSID_PAY_AMT             /* KSID 결제금액 */
+             , A.PGC_PAY_CMD              /* PG사 거래명령(승인:A, 취소:C, 부분취소:P) */
+             , A.PGC_PAY_METHOD           /* 결제수단(카드:CARD,은행:BANK,VBNK,MOBILE) */
+             , A.PGC_PAY_AMT              /* PG사 결제금액 */
+             , A.SYS_ID                   /* 수집시스템(KSID,PGC,ALL) */
+             , A.CMD_CHK                  /* 거래명령 체크(Y:일치, N:M불일치) */
+             , A.METHOD_CHK               /* 결제수단 체크(Y:일치, N:M불일치) */
+             , A.AMT_CHK                  /* 결제금액 체크(Y:일치, N:M불일치) */
+             , A.REG_DTM                  /* 정산시간 */
+             , F_GET_CD_NM(#{language}, 'PAY_CMD', KSID_PAY_CMD) AS KSID_PAY_CMD_NM
+             , F_GET_CD_NM(#{language}, 'PAY_METHOD', KSID_PAY_METHOD) AS KSID_PAY_METHOD_NM
+             , F_GET_CD_NM(#{language}, 'PAY_CMD', PGC_PAY_CMD) AS PGC_PAY_CMD_NM
+             , F_GET_CD_NM(#{language}, 'PAY_METHOD', PGC_PAY_METHOD) AS PGC_PAY_METHOD_NM
+             , F_GET_CD_NM(#{language}, 'CHK_TP', CMD_CHK) AS CMD_CHK_NM
+             , F_GET_CD_NM(#{language}, 'CHK_TP', METHOD_CHK) AS METHOD_CHK_NM
+             , F_GET_CD_NM(#{language}, 'CHK_TP', AMT_CHK) AS AMT_CHK_NM
+          FROM TBS_PG_STL_SETTLE_ACCT_HIS A      /* PG사 정산대사 정산 비교 내역 */
+               LEFT OUTER JOIN TCM_MP M                  /* 휴대폰 */
+                   ON M.MP_NO = A.TEL_NO
+               LEFT OUTER JOIN TCM_USER U                /* 사용자 */
+                   ON U.USER_ID = M.USER_ID
+         WHERE A.PAY_DTM BETWEEN #{sDt} AND #{eDt}
+         ORDER BY A.PAY_DTM, A.SERV_ID, A.TEL_NO
+
+        <include refid="NS_Paging.footer"/>
+
+    </select>
+
+</mapper>

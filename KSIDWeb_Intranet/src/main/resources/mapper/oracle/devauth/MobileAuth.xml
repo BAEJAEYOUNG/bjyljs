@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_MobileAuth">
+
+    <!-- SMS 전송 이력 관리 -->
+    <insert id="insTimSmsSendHis" parameterType="Map" flushCache="true">
+        INSERT INTO TIM_SMS_SEND_HIS (
+              SP_CD
+            , CUST_ID
+            , SERV_ID
+            , TEL_NO
+            , SEND_DTM
+            , SEND_KIND
+            , SEND_MSG
+        ) VALUES (
+              #{spCd}
+            , #{custId}
+            , #{servId}
+            , #{telNo}
+            , #{sendDtm}
+            , #{sendKind}
+            , #{sendMsg}
+        )
+    </insert>
+
+    <!-- SMS 전송 관리 정보 -->
+    <insert id="insTidSmsSendInfo" parameterType="map" flushCache="true">
+        INSERT INTO TIM_SMS_SEND_INFO (
+              TEL_NO
+            , AUTH_CD
+            , SEND_DTM
+            , SEND_KIND
+            , SEND_MSG
+            , REG_DTM
+        ) VALUES (
+              #{telNo}
+            , #{authCd}
+            , #{sendDtm}
+            , #{sendKind}
+            , #{sendMsg}
+            , #{regDtm}
+        )
+    </insert>
+
+
+    <!-- Real SMS 전송 정보 -->
+    <insert id="insSdkSmsSend" parameterType="map" flushCache="true">
+        INSERT INTO SDK_SMS_SEND (
+              MSG_ID
+            , USER_ID
+            , SCHEDULE_TYPE
+            , SUBJECT
+            , SMS_MSG
+            , CALLBACK_URL
+            , NOW_DATE
+            , SEND_DATE
+            , CALLBACK
+            , DEST_TYPE
+            , DEST_COUNT
+            , DEST_INFO
+        ) VALUES (
+              SDK_SMS_SEQ.nextval
+            , #{userId}
+            , 0
+            , #{subject}
+            , #{smsMsg}
+            , #{callbackUrl}
+            , #{nowDate}
+            , #{sendDate}
+            , #{callback}
+            , 0
+            , 0
+            , #{destInfo}
+        )
+    </insert>
+
+
+    <!-- Real MMS 전송 정보 -->
+    <insert id="insSdkMmsSend" parameterType="map" flushCache="true">
+        INSERT INTO SDK_MMS_SEND (
+              MSG_ID
+            , USER_ID
+            , SCHEDULE_TYPE
+            , NOW_DATE
+            , SEND_DATE
+            , CALLBACK
+            , DEST_COUNT
+            , DEST_INFO
+            , MMS_MSG
+            , CONTENT_COUNT
+        ) VALUES (
+              SDK_MMS_SEQ.nextval
+            , #{userId}
+            , 0
+            , #{nowDate}
+            , #{sendDate}
+            , #{callback}
+            , 0
+            , #{destInfo}
+            , #{mmsMsg}
+            , 0
+        )
+    </insert>
+
+    <!-- 휴대폰 디바이스 인증 정보 INSERT -->
+    <insert id="insTimMobileAuthInfo" parameterType="map" flushCache="true">
+        INSERT INTO TIM_MOBILE_AUTH_INFO (
+              SP_CD
+            , CUST_ID
+            , SERV_ID
+            , TEL_NO
+            , CUST_USER_NO
+            , AUTH_CD
+            , AUTH_STATUS
+            , VALID_DTM
+        ) VALUES (
+              #{spCd}
+            , #{custId}
+            , #{servId}
+            , #{telNo}
+            , #{custUserNo}
+            , #{authCd}
+            , #{authStatus}
+            , #{validDtm}
+        )
+    </insert>
+
+
+    <!-- Select TIM_MOBILE_AUTH_INFO -->
+    <select id="selMobileAuthInfo" parameterType="Map" resultType="CamelMap" flushCache="true">
+        SELECT SP_CD
+             , CUST_ID
+             , SERV_ID
+             , TEL_NO
+             , CUST_USER_NO
+             , AUTH_CD
+             , AUTH_STATUS
+             , VALID_DTM
+          FROM TIM_MOBILE_AUTH_INFO
+         WHERE SP_CD   = #{spCd}
+           AND CUST_ID = #{custId}
+           AND SERV_ID = #{servId}
+           AND TEL_NO  = #{telNo}
+           AND AUTH_CD = #{authCd}
+    </select>
+
+    <!-- Select TIM_MOBILE_AUTH_INFO -->
+    <select id="selMobileAuthStatusInfo" parameterType="Map" resultType="CamelMap" flushCache="true">
+        SELECT SP_CD
+             , CUST_ID
+             , SERV_ID
+             , TEL_NO
+             , CUST_USER_NO
+             , AUTH_CD
+             , AUTH_STATUS
+             , VALID_DTM
+          FROM TIM_MOBILE_AUTH_INFO
+         WHERE SP_CD   = #{spCd}
+           AND CUST_ID = #{custId}
+           AND SERV_ID = #{servId}
+           AND TEL_NO  = #{telNo}
+           AND AUTH_CD = #{authCd}
+    </select>
+
+    <!-- Delete TIM_MOBILE_AUTH_INFO -->
+    <delete id="delMobileAuthInfo" parameterType="Map">
+        DELETE FROM TIM_MOBILE_AUTH_INFO
+         WHERE SP_CD   = #{spCd}
+           AND CUST_ID = #{custId}
+           AND SERV_ID = #{servId}
+           AND TEL_NO  = #{telNo}
+    </delete>
+
+
+    <!-- Delete TIM_MOBILE_AUTH_INFO -->
+    <delete id="delMobileAuthInfoCustNo" parameterType="Map">
+        DELETE FROM TIM_MOBILE_AUTH_INFO
+         WHERE SP_CD   = #{spCd}
+           AND CUST_ID = #{custId}
+           AND SERV_ID = #{servId}
+           AND CUST_USER_NO  = #{custUserNo}
+    </delete>
+
+
+    <!-- Update TIM_MOBILE_AUTH_INFO -->
+    <update id="updMobileAuthInfo" parameterType="Map">
+        UPDATE TIM_MOBILE_AUTH_INFO SET AUTH_STATUS = '1'
+         WHERE SP_CD   = #{spCd}
+           AND CUST_ID = #{custId}
+           AND SERV_ID = #{servId}
+           AND TEL_NO  = #{telNo}
+           AND AUTH_CD = #{authCd}
+    </update>
+
+
+    <!-- Select Join TCM_USER & TCT_CUST_USER -->
+    <select id="selUserRegCheck" parameterType="Map" resultType="CamelMap" flushCache="true">
+        <!-- SELECT SP_CD
+             , CUST_ID
+             , (SELECT USER_ST
+          FROM TCM_USER
+         WHERE MP_NO = #{mpNo}) AS USER_ST
+          FROM TCT_CUST_USER
+         WHERE SP_CD   = #{spCd}
+           AND CUST_ID = #{custId}
+           AND USER_ID = (SELECT USER_ID
+                            FROM TCM_USER
+                           WHERE MP_NO = #{mpNo}) -->
+        SELECT SP_CD
+             , CUST_ID
+             , USER_ID
+             , CUST_USER_NO
+          FROM TCT_CUST_USER
+         WHERE SP_CD   = #{spCd}
+           AND CUST_ID = #{custId}
+           AND CUST_USER_NO = #{custUserNo}
+    </select>
+
+
+    <!-- Select TSL_USER_SERV_PROD_PAY -->
+    <select id="selTslUserServProdPay" parameterType="Map" resultType="CamelMap" flushCache="true">
+        SELECT SP_CD
+             , CUST_ID
+             , SERV_ID
+             , PROD_MCLS_CD
+             , USER_ID
+             , MP_NO
+             , PG_CD
+             , PAY_METHOD
+             , PAY_TID
+             , PAY_MID
+             , PAY_DTM
+          FROM TSL_USER_SERV_PROD_PAY
+         WHERE SP_CD = #{spCd}
+           AND CUST_ID = #{custId}
+           AND SERV_ID = #{servId}
+           AND USER_ID = #{userId}
+    </select>
+
+
+    <!-- Select TSL_CUST_PROD_USER_BILL -->
+    <select id="selTslCustProdUserBill" parameterType="Map" resultType="CamelMap" flushCache="true">
+    <![CDATA[
+        SELECT SP_CD
+             , CUST_ID
+             , SERV_ID
+             , PROD_MCLS_CD
+             , USER_ID
+             , PROD_CHOICE_CD
+             , MP_NO
+             , BILL_STATE
+             , SERV_ST_DTM
+             , SERV_ED_DTM
+             , TA_INSTALL_CNT
+             , TA_UPDATE_CNT
+             , LIMIT_CNT
+             , JOIN_DTM
+             , CANCEL_DTM
+             , CASE WHEN  (TO_DATE(SERV_ED_DTM, 'YYYYMMDDHH24MISS') - SYSDATE) < 31  THEN 'Y' ELSE 'N'
+               END AS PAY_STATE
+          FROM TSL_CUST_PROD_USER_BILL
+         WHERE SP_CD = #{spCd}
+           AND CUST_ID = #{custId}
+           AND SERV_ID = #{servId}
+           AND USER_ID = #{userId}
+     ]]>
+     </select>
+
+
+    <!-- Select TIM_MOBILE_AUTH_INFO auth_Status Check -->
+    <select id="selAuthReqNumCheck" parameterType="Map" resultType="CamelMap" flushCache="true">
+        SELECT SP_CD
+             , CUST_ID
+             , SERV_ID
+             , TEL_NO
+             , AUTH_CD
+             , AUTH_STATUS
+             , VALID_DTM
+          FROM TIM_MOBILE_AUTH_INFO
+         WHERE SP_CD   = #{spCd}
+           AND CUST_ID = #{custId}
+           AND SERV_ID = #{servId}
+           AND TEL_NO  = #{telNo}
+           AND AUTH_STATUS = '1'
+    </select>
+
+
+    <!-- Udate Join TCM_MP  -->
+    <update id="updUserMpOs" parameterType="Map">
+        UPDATE TCM_MP
+           SET MP_OS_TP = #{mpOsTp}
+             , CHG_DTM  = #{chgDtm}
+         WHERE USER_ID = #{userId}
+    </update>
+
+
+    <!-- Select Join TCM_USER & TCT_CUST_USER -->
+    <select id="selUserNoCheck" parameterType="Map" resultType="CamelMap" flushCache="true">
+        SELECT A.MP_NO, A.MP_OS_TP, B.USER_ID
+          FROM TCM_MP A, TCT_CUST_USER B
+         WHERE A.USER_ID = B.USER_ID
+           AND B.SP_CD   = #{spCd}
+           AND B.CUST_ID = #{custId}
+           AND B.CUST_USER_NO = #{custUserNo}
+    </select>
+
+
+    <!-- Select TSL_CUST_FIX_BILL Bill_Price -->
+    <select id="selBilPrice" parameterType="Map" resultType="CamelMap" flushCache="true">
+        SELECT SERV_NM, BILL_PRICE
+          FROM TSL_CUST_FIX_BILL
+         WHERE SP_CD   = #{spCd}
+           AND CUST_ID = #{custId}
+           AND SERV_ID = #{servId}
+    </select>
+
+
+    <!-- Select TSL_CUST_FIX_BILL & TSL_CUST_PROD_USER_BILL JOIN -->
+    <select id="selMmsSendInfo" parameterType="Map" resultType="CamelMap" flushCache="true">
+        SELECT A.SERV_NM
+             , B.SERV_ST_DTM
+             , B.SERV_ED_DTM
+             , A.BILL_PRICE
+          FROM TSL_CUST_FIX_BILL A
+         JOIN TSL_CUST_PROD_USER_BILL B USING(SP_CD, SP_CD, CUST_ID, SERV_ID)
+         WHERE SP_CD   = #{spCd}
+           AND CUST_ID = #{custId}
+           AND SERV_ID = #{servId}
+           AND USER_ID = #{userId}
+    </select>
+
+    <!-- Select PG INFO MID & TSL_CUST_FIX_BILL Join Get -->
+    <select id="selMidJoinInfo" parameterType="Map" resultType="CamelMap" flushCache="true">
+        SELECT A.PG_CD
+             , A.PAY_MID
+             , B.MID_KEY
+          FROM TSL_CUST_FIX_BILL A, TSM_PG_PAY_MID B
+         WHERE B.PG_CD = A.PG_CD
+           AND B.PAY_MID = A.PAY_MID
+           AND A.SP_CD   = #{spCd}
+           AND A.CUST_ID = #{custId}
+           AND A.SERV_ID = #{servId}
+    </select>
+
+
+    <!-- Select TCT_CUST_USER -->
+    <select id="selTctCustUsr" parameterType="Map" resultType="CamelMap" flushCache="true">
+        SELECT SP_CD
+             , CUST_ID
+             , USER_ID
+             , CUST_USER_NO
+             , REG_DTM
+             , REG_ID
+          FROM TCT_CUST_USER
+         WHERE SP_CD   = #{spCd}
+           AND CUST_ID = #{custId}
+           AND CUST_USER_NO = #{custUserNo}
+    </select>
+
+
+    <!-- Select TCT_CUST_USER -->
+    <select id="selUserTelNo" parameterType="Map" resultType="CamelMap" flushCache="true">
+        SELECT SP_CD
+             , CUST_ID
+             , USER_ID
+             , CUST_USER_NO
+          FROM TCT_CUST_USER
+         WHERE SP_CD   = #{spCd}
+           AND CUST_ID = #{custId}
+           AND USER_ID = (SELECT USER_ID
+                            FROM TCM_USER
+                           WHERE MP_NO = #{telNo})
+
+    </select>
+
+
+    <!-- Select TIM_FIDO_ERRCODE_INFO -->
+    <select id="selFidoCodeStr" parameterType="Map" resultType="CamelMap" flushCache="true">
+        SELECT CODE
+             , CODE_REMARK
+          FROM TIM_FIDO_ERRCODE_INFO
+         WHERE CODE  = #{code}
+    </select>
+
+
+    <!-- JOB History Detail Info  Insert -->
+    <insert id="insServHisDetail" parameterType="map" flushCache="true">
+        INSERT INTO TBG_RAW_DTL_GTR_DATA (
+              T_ID
+            , CMD
+            , ST_DTM
+            , ED_DTM
+            , SP_CD
+            , CUST_ID
+            , SERV_ID
+            , TEL_NO
+            , USER_ID
+            , PROD_TP
+            , PROD_CD
+            , AUTH_METHOD
+            , RESULT_CD
+            , STATUS_CD
+            , SERVER_ID
+            , SEND_LOC
+            , RECV_LOC
+        ) VALUES (
+              #{tId}
+            , #{cmd}
+            , #{stDtm}
+            , #{edDtm}
+            , #{spCd}
+            , #{custId}
+            , #{servId}
+            , #{telNo}
+            , #{userId}
+            , #{prodTp}
+            , #{prodCd}
+            , #{authMethod}
+            , #{resultCd}
+            , #{statusCd}
+            , #{serverId}
+            , #{sendLoc}
+            , #{recvLoc}
+        )
+    </insert>
+
+
+    <!-- Select TSL_USER_SERV_PROD_PAY & TSM_PG_PAY_MID Check -->
+    <select id="selDeregPayChk" parameterType="Map" resultType="CamelMap" flushCache="true">
+        SELECT B.PAY_MID
+             , A.PAY_DTM
+             , B.CANCEL_DAY
+          FROM TSL_USER_SERV_PROD_PAY A, TSM_PG_PAY_MID B
+         WHERE A.SP_CD = #{spCd}
+           AND A.CUST_ID = #{custId}
+           AND A.SERV_ID = #{servId}
+           AND B.PAY_MID  = A.PAY_MID
+           AND A.USER_ID = (SELECT USER_ID FROM TCT_CUST_USER WHERE CUST_USER_NO = #{custUserNo})
+    </select>
+
+
+</mapper>

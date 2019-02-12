@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<included>
+
+    <property name="file.logger.path"
+              value="${logger.path:-${${server.type:-ope}-logger.path:-/ksid/app/logs}}/${logger.name:-ksid}"/>
+
+    <appender name="fileDaily" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${file.logger.path}/ksid_${logger.name}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${file.logger.path}/ksid_${logger.name}.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${logger.pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="org.apache" additivity="false">
+        <level value="${${server.type:-ope}-logger.level.org.apache:-ERROR}"/>
+        <appender-ref ref="fileDaily"/>
+    </logger>
+
+    <logger name="org.springframework" additivity="false">
+        <level value="${${server.type:-ope}-logger.level.org.springframework:-ERROR}"/>
+        <appender-ref ref="fileDaily"/>
+    </logger>
+
+    <logger name="org.springframework.security" additivity="false">
+        <level value="${${server.type:-ope}-logger.level.org.springframework.security:-ERROR}"/>
+        <appender-ref ref="fileDaily"/>
+    </logger>
+
+    <logger name="org.apache.ibatis" additivity="false">
+        <level value="${${server.type:-ope}-logger.level.org.apache.ibatis:-ERROR}"/>
+        <appender-ref ref="fileDaily"/>
+    </logger>
+
+    <logger name="org.mybatis" additivity="false">
+        <level value="${${server.type:-ope}-logger.level.root:-ERROR}"/>
+        <appender-ref ref="fileDaily"/>
+    </logger>
+
+    <logger name="ksid" additivity="false">
+        <level value="${${server.type:-ope}-logger.level.ksid:-ERROR}"/>
+        <appender-ref ref="fileDaily"/>
+    </logger>
+
+
+</included>

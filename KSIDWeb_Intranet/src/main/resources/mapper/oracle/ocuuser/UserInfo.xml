@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_UserInfo">
+
+    <!-- Select UserInfo List -->
+    <select id="selCustUserNo" parameterType="Map" resultType="CamelMap">
+        SELECT CUST_USER_NO
+             , USER_ID
+          FROM TCT_CUST_USER
+         WHERE SP_CD   = #{spCd}
+           AND CUST_ID = #{custId}
+           AND CUST_USER_NO = #{custUserNo}
+    </select>
+
+    <!-- Select UserInfo List -->
+    <select id="selUserInfoList" parameterType="Map" resultType="CamelMap">
+        /* NS_UserInfo.selUserInfoList */
+        SELECT A.SERV_ST_DTM              /* 서비스시작일시 */
+             , A.SERV_ED_DTM              /* 서비스종료일시 */
+             , B.SERV_NM
+          FROM TSL_CUST_PROD_USER_BILL A
+               INNER JOIN TSL_CUST_FIX_BILL B
+                       ON B.SP_CD = A.SP_CD
+                      AND B.CUST_ID = A.CUST_ID
+                      AND B.SERV_ID = A.SERV_ID
+                      AND B.PROD_MCLS_CD = A.PROD_MCLS_CD
+         WHERE A.SP_CD = #{spCd}
+           AND A.CUST_ID = #{custId}
+           AND A.USER_ID = #{userId}
+    </select>
+
+    <!-- Select UserInfo -->
+    <select id="selUserInfo" parameterType="Map" resultType="CamelMap">
+        /* NS_UserInfo.selUserInfo */
+        SELECT U.USER_ID                  /* 사용자아이디 */
+             , U.USER_NM                  /* 사용자명 */
+             , U.BIRTH_DAY                /* 생년월일 */
+             , U.MP_NO                    /* 휴대폰번호 */
+             , U.JOIN_DTM                 /* 가입일시 */
+             , U.CANCEL_DTM               /* 해지일시 */
+             , A.CUST_USER_NO             /* 사용자 사번/학번 */
+             , F_GET_CD_NM(#{language}, 'SEX', SEX) AS SEX_NM                /* 성별 */
+          FROM TCT_CUST_USER A     /* 고객사 사용자 */
+               INNER JOIN TCM_USER U
+                       ON U.USER_ID = A.USER_ID
+         WHERE A.SP_CD = #{spCd}
+           AND A.CUST_ID = #{custId}
+           AND A.CUST_USER_NO = #{custUserNo}
+    </select>
+
+    <!-- Select selPayList List -->
+    <select id="selPayList" parameterType="Map" resultType="CamelMap">
+        <![CDATA[
+        /* NS_UserInfo.selPayList */
+        SELECT A.SERV_ID            /* 서비스아이디 */
+             , A.SP_CD              /* 서비스제공자코드 */
+             , A.CUST_ID            /* 고객사아이디 */
+             , A.UDR_DTM            /* 결제일시 */
+             , A.RST_AMT            /* 결제금액 */
+             , A.PAY_METHOD_NM      /* 결제수단 */
+             , A.PAY_CMD_NM         /* 승인/취소 */
+             , A.PAY_CANCELABLE_YN  /* 결제취소가능여부 */
+             , A.CANCEL_PWD         /* 취소비밀번호 */
+             , A.CANCEL_AMT         /* 부분취소금액 */
+             , A.PAY_TID            /* 거래 ID */
+             , A.PAY_MID            /* 가맹점 ID */
+             , A.PAY_CANCEL_AMT     /* 취소가능금액 */
+             , A.PAY_CANCEL_FG      /* 취소구분 ( T:Total[전체], P:Partial[부분], N:Not[불가] ) */
+             , B.SERV_NM            /* 서비스명 */
+        FROM (
+
+            SELECT A.SERV_ID                                  /* 서비스아이디 */
+                 , A.SP_CD                                    /* 서비스제공자코드 */
+                 , A.CUST_ID                                  /* 고객사아이디 */
+                 , A.UDR_DTM                                  /* 결제일시 */
+                 , TO_NUMBER(A.RST_PAY_AMT) AS RST_AMT        /* 결제상품금액 */
+                 , F_GET_CD_NM('kr', 'PAY_METHOD', A.RST_PAY_METHOD) AS PAY_METHOD_NM    /* 현금영수증 타입 */
+                 , '승인' AS PAY_CMD_NM
+                 , M.CANCEL_PWD         /* 취소비밀번호 */
+                 , M.CANCEL_AMT         /* 부분취소금액 */
+                 , P.PAY_TID            /* 거래 ID */
+                 , P.PAY_MID            /* 가맹점 ID */
+                 , CASE WHEN P.MP_NO IS NULL THEN '취소불가(사용종료)'
+                        WHEN M.PAY_MID IS NULL THEN '취소불가(PG사가맹점정보없음)'
+                        WHEN M.CANCEL_DAY IS NULL THEN '취소불가(취소가능기간없음)'
+                        WHEN SYSDATE - TO_DATE(P.PAY_DTM, 'YYYYMMDDHH24MISS') > M.CANCEL_DAY THEN '취소불가(' || M.CANCEL_DAY || '일 초과)'
+                        WHEN ( R.TA_INSTALL_CNT + R.TA_UPDATE_CNT ) > 0 THEN '취소가능(부분취소-' || M.CANCEL_AMT || ')'
+                        ELSE '취소가능(전체취소)'
+                   END AS PAY_CANCELABLE_YN
+                 , CASE WHEN P.MP_NO IS NULL THEN 0
+                        WHEN M.PAY_MID IS NULL THEN 0
+                        WHEN M.CANCEL_DAY IS NULL THEN 0
+                        WHEN SYSDATE - TO_DATE(P.PAY_DTM, 'YYYYMMDDHH24MISS') > M.CANCEL_DAY THEN 0
+                        WHEN ( R.TA_INSTALL_CNT + R.TA_UPDATE_CNT ) > 0 THEN NVL(M.CANCEL_AMT, 0)
+                        ELSE TO_NUMBER(A.RST_PAY_AMT)
+                   END AS PAY_CANCEL_AMT      /* 취소가능금액 */
+                 , CASE WHEN P.MP_NO IS NULL THEN 'N'
+                        WHEN M.PAY_MID IS NULL THEN 'N'
+                        WHEN M.CANCEL_DAY IS NULL THEN 'N'
+                        WHEN SYSDATE - TO_DATE(P.PAY_DTM, 'YYYYMMDDHH24MISS') > M.CANCEL_DAY THEN 'N'
+                        WHEN ( R.TA_INSTALL_CNT + R.TA_UPDATE_CNT ) > 0 THEN 'P'
+                        ELSE 'T'
+                   END AS PAY_CANCEL_FG /* 취소구분 ( T:Total[전체], P:Partial[부분], N:Not[불가] ) */
+              FROM TBG_RAW_PG_APPR_GTR_DATA  A /* PG 결제 승인 처리 데이터 */
+                   LEFT OUTER JOIN TSL_USER_SERV_PROD_PAY P /* 사용자 서비스 상품 선불 결제 */
+                                ON P.SP_CD = A.SP_CD
+                               AND P.CUST_ID = A.CUST_ID
+                               AND P.SERV_ID = A.SERV_ID
+                               AND P.MP_NO = A.TEL_NO
+                               AND P.PAY_TID = A.RST_PAY_TID
+                               AND P.PAY_MID = A.RST_PAY_MID
+                   LEFT OUTER JOIN TSM_PG_PAY_MID M /* PG사 가맹점 정보 */
+                                ON M.PG_CD = P.PG_CD
+                               AND M.PAY_MID = P.PAY_MID
+                   LEFT OUTER JOIN TSL_CUST_PROD_USER_BILL R /* 고객사/사용자 서비스 상품 */
+                                ON R.SP_CD = P.SP_CD
+                               AND R.CUST_ID = P.CUST_ID
+                               AND R.SERV_ID = P.SERV_ID
+                               AND R.PROD_MCLS_CD = P.PROD_MCLS_CD
+                               AND R.USER_ID = P.USER_ID
+             WHERE A.SP_CD = #{spCd}                    /* 서비스제공자 */
+               AND A.CUST_ID = #{custId}                /* 고객사 */
+               AND A.USER_ID = #{userId}                /* 사용자 */
+               AND A.RST_RESULT_CD IN ('3001', '4000', '4100')
+
+            UNION ALL
+
+            SELECT SERV_ID                                  /* 서비스아이디 */
+                 , SP_CD                                    /* 서비스제공자코드 */
+                 , CUST_ID                                  /* 고객사아이디 */
+                 , UDR_DTM                                  /* 결제일시 */
+                 , TO_NUMBER(RST_CANCEL_AMT) AS RST_AMT     /* 결제상품금액 */
+                 , F_GET_CD_NM('kr', 'PAY_METHOD', RST_CANCEL_METHOD) AS PAY_METHOD_NM    /* 현금영수증 타입 */
+                 , '취소' AS PAY_CMD_NM
+                 , '' AS CANCEL_PWD         /* 취소비밀번호 */
+                 , 0  AS CANCEL_AMT         /* 부분취소금액 */
+                 , '' AS PAY_TID            /* 거래 ID */
+                 , '' AS PAY_MID            /* 가맹점 ID */
+                 , '취소완료' AS PAY_CANCELABLE_YN
+                 , 0 AS PAY_CANCEL_AMT      /* 취소가능금액 */
+                 , 'N' AS PAY_CANCEL_FG     /* 취소구분 ( T:Total[전체], P:Partial[부분], N:Not[불가] ) */
+              FROM TBG_RAW_PG_CANCEL_GTR_DATA /* PG 결제 승인 처리 데이터 */
+             WHERE SP_CD = #{spCd}                    /* 서비스제공자 */
+               AND CUST_ID = #{custId}                /* 고객사 */
+               AND USER_ID = #{userId}                /* 사용자 */
+               AND RST_RESULT_CD IN ('2001', '2002', '2211')
+
+            ) A
+            INNER JOIN TSL_CUST_FIX_BILL B
+                    ON B.SERV_ID = A.SERV_ID
+        ORDER BY A.UDR_DTM desc
+        ]]>
+    </select>
+
+</mapper>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <!-- setting -->
+    <settings>
+        <setting name="defaultStatementTimeout" value="60"/>
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <setting name="useGeneratedKeys" value="false"/>
+        <setting name="jdbcTypeForNull" value="VARCHAR"/>
+        <setting name="callSettersOnNulls"      value="true"/>         <!-- null값이 있는 key 도 return 시키기위해 -->
+    </settings>
+
+    <typeAliases>
+        <typeAlias alias="camelMap" type="ksid.core.webmvc.util.CamelMap" />
+    </typeAliases>
+
+    <plugins>
+        <plugin interceptor="ksid.biz.support.intercept.MybatisQueryParameters" />
+        <plugin interceptor="ksid.biz.support.intercept.MybatisUpdateParameters" />
+    </plugins>
+
+</configuration>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_TamFileGtrHis">
+
+    <!-- Select TAM CCI Report 파일  수집이력 List -->
+    <select id="selTamFileGtrHisList" parameterType="Map" resultType="CamelMap">
+        <include refid="NS_Paging.header"/>
+        /* NS_TamFileGtrHis.selTamFileGtrHisList */
+
+        SELECT BILL_MONTH               /* 정산월 */
+             , FILE_NM                  /* 파일 명칭 */
+             , FILE_SZ                  /* 파일 사이즈 */
+             , FILE_LN                  /* 파일 라인수 */
+             , FILE_CHK                 /* 파일 유효성(정상:Y,데이터:E,수신파일:R) */
+             , INSTALL_CNT              /* TA신규설치수 */
+             , UPDATE_CNT               /* TA업데이트수 */
+             , ERR_MSG                  /* 에러메시지 */
+             , GTR_DTM                  /* 파일 수집시간 */
+             , F_GET_CD_NM(#{language}, 'FILE_CHK', FILE_CHK) AS FILE_CHK_NM    /* 파일 유효성(정상:Y,비정상:N) */
+          FROM TBG_TAM_CCI_GTR_FILE   /* 월별 TAM CCI Report 파일 수집 정보 */
+         WHERE BILL_MONTH BETWEEN #{sMonth} AND #{eMonth}
+           AND ( #{fileChk} IS NULL OR FILE_CHK = #{fileChk} )
+          ORDER BY BILL_MONTH desc, FILE_NM
+
+        <include refid="NS_Paging.footer"/>
+
+    </select>
+
+
+</mapper>

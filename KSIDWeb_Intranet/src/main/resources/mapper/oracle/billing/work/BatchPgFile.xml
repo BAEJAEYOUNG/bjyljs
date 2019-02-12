@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_BatchPgFile">
+
+    <!-- Select PG File 목록 List -->
+    <select id="getPgFileHis" parameterType="Map" resultType="CamelMap">
+        /* NS_BatchPgFile.getPgFileHis */
+
+        SELECT PAY_DATE                 /* 대사 일자 */
+             , PAY_TP                   /* 대사 구분(T:거래,S:정산) */
+             , FILE_NM                  /* 파일 명칭 */
+             , FILE_SZ                  /* 파일 사이즈 */
+             , FILE_LN                  /* 파일 라인수 */
+             , FILE_CHK                 /* 파일 유효성(정상:Y,비정상:N) */
+             , APPR_CNT                 /* 결제요청 금액 */
+             , APPR_AMT                 /* 결제취소 건수 */
+             , CANCEL_CNT               /* 결제취소 건수 */
+             , CANCEL_AMT               /* 결제취소 금액 */
+             , ERR_MSG                  /* 에러메시지 */
+             , GTR_DTM                  /* 파일 수집시간 */
+             , F_GET_CD_NM(#{language}, 'PAY_TP', PAY_TP) AS PAY_TP_NM    /* 대사 구분(T:거래,S:정산) */
+             , F_GET_CD_NM(#{language}, 'FILE_CHK', FILE_CHK) AS FILE_CHK_NM    /* 파일 유효성(정상:Y,비정상:N) */
+          FROM TBG_PG_TRANSACT_GTR_FILE /* 일자별 PG사 대사 파일 수집 정보 */
+         WHERE FILE_NM = #{fileNm}
+           AND rownum = 1
+
+    </select>
+
+
+    <select id="pgFileDirList" parameterType="Map" resultType="CamelMap">
+        /* NS_BatchPgFile.pgFileDirList */
+
+        SELECT CODE_CD                  /* 공통코드 */
+             , CODE_NM                  /* 코드명 */
+          FROM TYL_CODE                 /* 코드 */
+         WHERE CODE_GROUP_CD = #{codeGroupCd}
+           AND CODE_CD LIKE #{codeCd}||'%'
+           AND CODE_TYPE = 'N'      /* 공통코드유형[N:일반,S:시스템] */
+           AND USE_YN = 'Y'         /* 사용여부 */
+         ORDER BY SORT_SEQ ASC
+
+    </select>
+
+</mapper>

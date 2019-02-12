@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_SetTaDownHis">
+
+    <!-- Select SetTaDownHis List -->
+    <select id="selSetTaDownHisList" parameterType="Map" resultType="CamelMap">
+        <include refid="NS_Paging.header"/>
+        /* NS_SetTaDownHis.selSetTaDownHisList */
+        SELECT A.UDR_DTM                  /* 과금일시(YYYYMMDDHHMI) */
+             , A.SP_CD                    /* 서비스제공자 */
+             , A.SP_NM                    /* 서비스제공자명 */
+             , A.CUST_ID                  /* 고객사 */
+             , A.CUST_NM                  /* 고객사명 */
+             , A.SERV_ID                  /* 서비스아이디 */
+             , A.SERV_NM                  /* 서비스명 */
+             , A.TEL_NO                   /* 휴대폰 */
+             , U.USER_NM                  /* 사용자명 */
+             , A.PROD_CD                  /* 과금대상분류(S-T-1, S-T-2) */
+             , A.UUID                     /* UUID */
+             , A.SUID                     /* SUID */
+             , A.SYS_ID                   /* 수집시스템(KSID,TAM,ALL) */
+             , A.REG_DTM                  /* 정산시간 */
+             , P.PROD_NM                  /* 상품명 */
+          FROM TBS_TA_DOWN_SETTLE_ACCT_HIS A        /* TA Download 정산 비교 내역 */
+               LEFT OUTER JOIN TSM_PROD P           /* 상품 */
+                   ON P.PROD_CD = A.PROD_CD
+               LEFT OUTER JOIN TCM_MP M                  /* 휴대폰 */
+                   ON M.MP_NO = A.TEL_NO
+               LEFT OUTER JOIN TCM_USER U                /* 사용자 */
+                   ON U.USER_ID = M.USER_ID
+         WHERE A.UDR_DTM BETWEEN #{sDt}||'00' AND #{eDt}||'23'
+         ORDER BY A.UDR_DTM, A.PROD_CD, A.TEL_NO
+        <include refid="NS_Paging.footer"/>
+
+    </select>
+
+</mapper>

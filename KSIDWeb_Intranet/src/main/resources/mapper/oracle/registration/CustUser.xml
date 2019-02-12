@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_CustUser">
+
+    <!-- Select Cust List -->
+    <select id="selCustList" parameterType="Map" resultType="CamelMap">
+        /* NS_CustUser.selCustUserList */
+        SELECT F_GET_CD_NM(#{language}, 'CUST_TP', A.CUST_TP) AS CUST_TP_NM    /* 고객사유형 */
+             , F_GET_CD_NM(#{language}, 'CUST_ST', A.CUST_ST) AS CUST_ST_NM    /* 상태 */
+             , A.SP_CD                    /* 서비스제공자코드 */
+             , A.CUST_ID                  /* 고객사코드 */
+             , A.PA_CUST_ID               /* 상위고객사코드 */
+             , A.CUST_LVL                 /* 고객사레벨 */
+             , A.CUST_NM                  /* 고객사명 */
+             , A.CUST_TP                  /* 고객사유형[01:은행, 02:증권, 03:관공서, 99:기타] */
+             , A.CUST_ST                  /* 상태[0:정상, 9:해지] */
+             , B.SP_NM                    /* 서비스제공자명 */
+          FROM TCM_CUST A                 /* 고객사 */
+               INNER JOIN TCM_SP B                      /* 서비스제공자 */
+                       ON B.SP_CD = A.SP_CD
+         WHERE (#{custId} IS NULL OR A.CUST_ID LIKE '%' || #{custId} || '%'       /* 고객사아이디 */
+                                   OR A.CUST_NM LIKE '%' || #{custId} || '%')     /* 고객사명 */
+        ORDER BY B.SP_NM, A.CUST_NM
+    </select>
+
+    <!-- Select CustUser List -->
+    <select id="selCustUserList" parameterType="Map" resultType="CamelMap">
+        /* NS_CustUser.selUserList */
+        SELECT F_GET_CD_NM(#{language}, 'SEX', U.SEX) AS SEX_NM    /* 성별 */
+             , F_GET_CD_NM(#{language}, 'JOIN_TP', U.JOIN_TP) AS JOIN_TP_NM    /* 가입유형 */
+             , F_GET_CD_NM(#{language}, 'USER_ST', U.USER_ST) AS USER_ST_NM    /* 사용자상태 */
+             , A.USER_ID                  /* 사용자아이디 */
+             , U.USER_NM                  /* 사용자명 */
+             , U.BIRTH_DAY                /* 생년월일 */
+             , U.MP_NO                    /* 휴대폰번호 */
+          FROM TCT_CUST_USER A            /* 고객사-사용자 */
+               LEFT OUTER JOIN TCM_USER U /* 사용자 */
+                            ON U.USER_ID = A.USER_ID
+         WHERE A.SP_CD = #{spCd}        /* 서비스제공자코드 */
+           AND A.CUST_ID = #{custId}    /* 고객사아이디 */
+        ORDER BY U.USER_NM
+    </select>
+
+    <!-- Select DialogUser List -->
+    <select id="selDialogUserList" parameterType="Map" resultType="CamelMap">
+        /* NS_CustUser.selDialogUserList */
+        SELECT F_GET_CD_NM(#{language}, 'SEX', U.SEX) AS SEX_NM    /* 성별 */
+             , F_GET_CD_NM(#{language}, 'JOIN_TP', U.JOIN_TP) AS JOIN_TP_NM    /* 가입유형 */
+             , F_GET_CD_NM(#{language}, 'USER_ST', U.USER_ST) AS USER_ST_NM    /* 사용자상태 */
+             , U.USER_ID                  /* 사용자아이디 */
+             , U.USER_NM                  /* 사용자명 */
+             , U.BIRTH_DAY                /* 생년월일 */
+             , U.MP_NO                    /* 휴대폰번호 */
+          FROM TCM_USER U                 /* 사용자 */
+               LEFT OUTER JOIN TCT_CUST_USER A   /* 고객사-사용자 */
+                            ON A.USER_ID = U.USER_ID
+                           AND A.SP_CD = #{spCd}        /* 서비스제공자코드 */
+                           AND A.CUST_ID = #{custId}    /* 고객사아이디 */
+         WHERE A.USER_ID IS NULL
+        ORDER BY U.USER_NM
+    </select>
+
+    <!-- Insert CustUser List -->
+    <insert id="insCustUser" parameterType="Map">
+        /* NS_CustUser.insCustUser */
+        INSERT INTO TCT_CUST_USER (    /* 고객사-사용자 */
+              SP_CD                    /* 서비스제공자코드 */
+            , CUST_ID                  /* 고객사아이디 */
+            , USER_ID                  /* 사용자아이디 */
+            , REG_DTM                  /* 등록일시 */
+            , REG_ID                   /* 등록자 */
+        )
+        SELECT A.SP_CD                    /* 서비스제공자코드 */
+             , A.CUST_ID                  /* 고객사아이디 */
+             , A.USER_ID                  /* 사용자아이디 */
+             , A.REG_DTM                  /* 등록일시 */
+             , A.REG_ID                   /* 등록자 */
+          FROM   (
+                    SELECT #{spCd}   AS SP_CD      /* 서비스제공자코드 */
+                         , #{custId} AS CUST_ID    /* 고객사코드 */
+                         , #{userId} AS USER_ID    /* 사용자아이디 */
+                         , TO_CHAR(SYSDATE, 'yyyymmddhh24miss') AS REG_DTM   /* 등록일시 */
+                         , #{regId}  AS REG_ID     /* 등록자 */
+                      FROM DUAL
+                 ) A
+               LEFT OUTER JOIN TCT_CUST_USER B  /* 고객사-사용자 */
+                            ON B.SP_CD = A.SP_CD
+                           AND B.CUST_ID = A.CUST_ID
+                           AND B.USER_ID = A.USER_ID
+         WHERE B.USER_ID IS NULL
+    </insert>
+
+    <!-- Delete CustUser List -->
+    <delete id="delCustUser" parameterType="Map">
+        /* NS_CustUser.delCustUser */
+        DELETE FROM TCT_CUST_USER  /* 고객사-사용자 */
+         WHERE SP_CD = #{spCd}      /* 서비스제공자코드 */
+           AND CUST_ID = #{custId}  /* 고객사아이디 */
+           AND USER_ID = #{userId}  /* 사용자아이디 */
+    </delete>
+
+</mapper>

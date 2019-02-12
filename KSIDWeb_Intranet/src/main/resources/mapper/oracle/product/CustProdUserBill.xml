@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_CustProdUserBill">
+
+    <!-- Select CustProdUserBill List -->
+    <select id="selCustProdUserBillList" parameterType="Map" resultType="CamelMap">
+        /* NS_CustProdUserBill.selCustProdUserList */
+        SELECT F_GET_CD_NM(#{language}, 'BILL_STATE', A.BILL_STATE) AS BILL_STATE_NM    /* 과금상태  */
+             , A.SP_CD                    /* 서비스제공자코드 */
+             , A.CUST_ID                  /* 고객사코드 */
+             , A.SERV_ID                  /* 서비스아이디 */
+             , M.SERV_NM                  /* 서비스 명칭 */
+             , A.PROD_MCLS_CD             /* 상품코드 */
+             , A.USER_ID                  /* 사용자아이디 */
+             , C.CUST_USER_NO             /* 학번사번      */
+             , A.PROD_CHOICE_CD           /* 과금대상선택코드 */
+             , A.MP_NO                    /* 휴대폰번호 */
+             , A.BILL_STATE               /* 과금상태[0:정상, 1:미납부, 2:연체, 9:해지] */
+             , A.SERV_ST_DTM              /* 서비스시작일시 */
+             , A.SERV_ED_DTM              /* 서비스종료일시 */
+             , A.TA_INSTALL_CNT           /* TA현재신규설치수 */
+             , A.TA_UPDATE_CNT            /* TA현재업데이트수 */
+             , A.LIMIT_CNT                /* TA최대다운수 */
+             , A.JOIN_DTM                 /* 가입일시 */
+             , A.CANCEL_DTM               /* 해지일시 */
+             , S.SP_NM                    /* 서비스제공자명 */
+             , T.CUST_NM                  /* 고객사명 */
+             , U.USER_NM                  /* 사용자명 */
+       FROM TSL_CUST_PROD_USER_BILL A     /* 고객사별 상품별_사용자_과금 */
+            LEFT OUTER JOIN TCM_SP S                  /* 서비스제공자 */
+                       ON S.SP_CD = A.SP_CD
+            LEFT OUTER JOIN TCM_CUST T                /* 고객사 */
+                       ON T.CUST_ID = A.CUST_ID
+            LEFT OUTER JOIN TCM_USER U                /* 사용자 */
+                       ON U.USER_ID = A.USER_ID
+            LEFT OUTER JOIN TSL_CUST_FIX_BILL M       /* 고객사 서비스 */
+                       ON M.SERV_ID = A.SERV_ID
+            LEFT OUTER JOIN TCT_CUST_USER C       /* 고객사 서비스 */
+                       ON C.USER_ID = A.USER_ID
+        WHERE ( #{spCd} IS NULL OR A.SP_CD = #{spCd} )             /* 서비스제공자코드 */
+          AND ( #{custId} IS NULL OR A.CUST_ID = #{custId} )     /* 고객사아이디 */
+          AND ( #{userId} IS NULL OR A.USER_ID = #{userId} )     /* 사용자아이디 */
+          AND ( #{custUserNo} IS NULL OR A.USER_ID LIKE '%'||#{custUserNo}||'%')     /* 학번 */
+          AND ( #{userNm} IS NULL OR U.USER_NM LIKE '%'||#{userNm}||'%' )
+        ORDER BY A.SERV_ST_DTM
+
+    </select>
+
+</mapper>

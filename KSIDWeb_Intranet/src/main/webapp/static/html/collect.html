@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<style>
+/* css 초기화 */
+/*기본태그 정의*/
+html, body {padding:0;margin:0;}
+body, td, select, textarea, input {font-size:12px;font-family:'돋움','Dotum', 'verdana';color:#666666;}
+
+/* 마진과 패딩의 초기화 */
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, p, blockquote, th, td {margin:0;padding:0;}
+
+/* 헤더 폰트 사이즈 초기화 */
+h1, h2, h3, h4, h5, h6 {font-size:100%;}
+
+/* 리스트의 스타일 제거 */
+ol, ul, li {list-style:none;}
+
+/* 테이블 스타일 초기화 */
+table {border-collapse:collapse;border-spacing:0;table-layout:fixed;}
+
+/* 이미지 및 필드셋에서 보더 표시 초기화 */
+fieldset, img {border:0;}
+img{vertical-align:middle;}
+
+/* 캡션 텍스트 정렬 초기화 */
+caption {text-align:left;}
+
+/* 폼태그의 초기화 */
+select {font-size:12px;font-family:'돋움','Dotum', 'verdana';vertical-align:middle;color:#666666;}
+input {font-size:12px;font-family:'돋움','Dotum', 'verdana';vertical-align:middle;color:#666666;}
+textarea {font:12px;font-family:'돋움','Dotum', 'verdana';line-height:140%;color:#666666;}
+input[type="radio"]{vertical-align:middle;position:relative;top:-2px;margin-right:4px;}
+
+a:link    {color:#666666; text-decoration:none;}
+a:active    {color:#666666; text-decoration:none;}
+a:visited    {color:#666666; text-decoration:none;}
+a:hover    {color:#666666; text-decoration:none;}
+
+/* 개인정보활용동의 textarea */
+.agree-box{margin-top:10px;}
+.agree-box .title-agree{border:1px solid #b9b9b9;background:#666 url(../images/sub/img-teach-agree.gif) no-repeat right 50%;color:#fff;font-weight:normal;padding:10px;}
+.agree-box .teach-agree-scroll{overflow-x:hidden;overflow-y:auto;height:600px;margin-top:9px;border:1px solid #b9b9b9;padding:20px;line-height:24px;}
+
+.agree-box dt.first{margin-top:20px;font-weight:bold;font-size:14px;}
+.agree-box dt.first:first-child{margin-top:0;}
+
+.agree-box dt.second{margin-top:20px;font-weight:normal;font-size:13px;}
+.agree-box dt.second:first-child{margin-top:0;}
+
+.agree-box li.first_letter{text-indent:-16px;padding-left:16px;}
+.agree-box li.first_letter span{margin-right:5px;}
+
+.agree-box li.second_letter{text-indent:-16px;padding-left:32px;}
+.agree-box li.second_letter span{margin-right:5px;}
+
+/* 개인정보활용동의 라디오 */
+.step-box-radio{width:100%;padding:16px 0 20px 0;}
+.step-box-radio ul{text-align:center;}
+.step-box-radio li{display:inline-block;margin-left:36px;}
+.step-box-radio li.radio label{font-size:16px !important;}
+
+/* 강사지원 -  테이블 공통 btn */
+.line-btn-box{padding-top:20px;text-align:center;}
+.line-btn-box li{display:inline-block;margin:0 3px;}
+
+.line-btn{display:inline-block;padding:10px 0 9px 0;font-size:14px !important;;border:1px solid #aaaaaa;background:#fff;text-align:center;}
+.line-btn.co-red{background:#ed1c24;color: #fff;border: 1px solid #ed1c24;}
+.line-btn.co-gray{background:#aaa;color: #fff;border: 1px solid #aaa;}
+
+
+</style>
+</head>
+<body class="lecturer">
+    <!-- wrap -->
+    <div id="wrap"> <!-- [D] 상단 버튼이 있는 테마 일 경우 theme1 추가 -->
+
+        <!-- container -->
+        <div id="container">
+            <div id="contents" class="inner rslt-step">
+
+                <!-- 출강 강사 약정서 -->
+                <div class="agree-box">
+                    <p class="title-agree">한국스마트아이디 개인정보수집 약관</p>
+                    <div class="teach-agree-scroll">
+                        <dl class="section">
+                            <p>“지문 인증 서비스(이하, ‘서비스’라 합니다.)”의 서비스 제공과 관련하여 “한국스마트아이디 주식회사(이하, ‘회사’라 합니다.)”가 본인으로부터 취득한 개인정보는 통신비밀보호법, 전기통신사업법, 정보통신망 이용촉진 및 정보보호 등에 관한 법률 등 정보통신서비스제공자가 준수하여야 할 관련 법령상의 개인정보보호 규정에 따라 제3자에 제공하거나 영업목적으로 이용 시 동의를 받아야 하는 정보입니다. 이에 본인은, 귀사가 본인으로부터 취득한 개인정보를 아래와 같은 목적으로 이용하거나 제휴업체에게 제공하는데 동의합니다. 회사는 본 서비스를 가입자에게 제공하기 위해 다음과 같이 개인정보를 수집/이용합니다.</p>
+                            <dt class="first">1. 개인정보수집 및 이용</dt>
+                                <li class="first_letter"><span>①</span> 수집항목 - 휴대폰정보, 단말기 모델명, 단말푸쉬기기정보, 서비스 가입/해지일자, 서비스 가입 및 실행이력, 카드결제이력</li>
+                                <li class="first_letter"><span>②</span>  이용목적 - 서비스 제공에 관한 계약 이행 및 서비스 제공에 따른 요금정산, 본인확인, 점유인증, 요금 결제</li>
+                                <li class="second_letter">- 회원관리 : 회원제 서비스 이용에 따른 본인확인, 개인식별, 불량회원의 부정 이용 방지와 비인가 사용 방지, 가입 의사 확인, 가입 및 가입횟수 제한, 분쟁 조정을 위한 기록보존, 불만처리 등 민원처리, 고지사항 전달</li>
+                                <li class="second_letter">- 마케팅 및 광고에 활용 : 신규 서비스(제품) 개발 및 특화, 인구통계학적 특성에 따른 서비스 제공 및 광고 게재, 접속 빈도 파악 또는 회원의 서비스 이용에 대한 통계, 이벤트 등 광고성 정보를 push메시지 등을 통해 전달</li>
+
+                            <dt class="first">2. 개인정보 취급 위탁</dt>
+                            <p>회사는 이용자의 동의 없이 이용자의 개인정보 취급을 외부 업체에 위탁하지 않습니다. 향후 그러한 필요가 생길 경우, 위탁 대상자와 위탁 업무 내용에 대해 이용자에게 통지하고 필요한 경우 사전 동의를 받도록 하겠습니다. </p>
+
+                            <dt class="first">3. 개인정보 보유 및 이용기간</dt>
+                            <p>본 서비스 가입 일로부터 해지 후 정산 완료 시까지 단, 상법, 국세기본법 등에서 소비자보호에 관한 법률 등 관계 법령에 따라 보존할 필요가 있는 경우 회사는 관계법령에서 정한 기간 동안 회원정보를 보관합니다. 이 경우 회사는 보관하는 정보를 그 보관의 목적으로만 이용하며 보존기간은 다음과 같습니다.</p>
+                            <li class="first_letter">- 거래에 관한 장부 및 증빙서류 : 5년(국세기본법, 법인세법, 부가가치세법 등)</li>
+                            <li class="first_letter">- 대금결제 및 재화 등의 공급에 관한 기록 : 5년(전자상거래등에서의 소비자보호에 관한 법률)</li>
+                            <li class="first_letter">- 표시/광고에 관한 기록 : 6개월(전자상거래에서의 소비자보호에 관한 법률)</li>
+                            <li class="first_letter">- 계약 또는 청약철회 등에 관한 기록 : 5년(전자상거래에서의 소비자보호에 관한 법률)</li>
+                            <li class="first_letter">- 소비자 불만 또는 분쟁처리에 관한 기록 : 3년(전자상거래에서의 소비자보호에 관한 법률)</li>
+                            <li class="first_letter">(그 외, 법령에 정해진 개인정보 보유기간이 있을 경우 그에 따름)</li>
+
+                            <dt class="first">4. 개인정보 수집 및 이용 동의 철회</dt>
+
+                            <p>서비스 해지시 개인정보 수집 이용동의가 철회됩니다.</p>
+
+                            <dt class="first">5. 수집한 개인정보의 파기 절차</dt>
+
+                            <p>회사는 서비스 가입자가 가입시 제공한 개인정보의 이용 목적이 달성된 후에는 보관 기간 및 이용기간에 따라 해당 정보를 파기하되 , 그 파기 절차 및 방법 등은 다음과 같습니다.</p>
+                            <li class="first_letter">- 파기절차 : 가입자가 서비스 가입 등을 위해 회사에 제공한 개인정보는 서비스 해지 등 이용목적이 달성된 후 내부 방침 및 기타 관련 법령에 이한 정보보호 방침에 의한 정보보호 사유가 따른 보유기간이 경과한 후에 삭제하거나 파기합니다. 회사가 가입자의 서비스 가입 당시 수집하여 전자적 파일 형태로 관리하는 개인정보는 서비스 자발적 해지 시점에 삭제됩니다.</li>
+                            <li class="first_letter">- 파기기한 : 가입자의 개인정보 보유기간이 경과된 경우에 삭제합니다. 단, 고객 응대 및 불법적 사용자에 대한 관련 수사기관 협조, 상법 등 관련 법령의 규정에 의하여 거래 관련 권리 의무 관계의 확인 등을 이유로 보유하여야 할 필요가 있을 경우에는 일정 기간 동안 가입자의 데이터를 보유합니다. 또한 고객에게 미리 고지하고 개별 동의를 받은 경우에는 동의한 내용에 따른 기간 동안 보유합니다.</li>
+                            <li class="first_letter">- 파기 방법 : 개인정보의 파기는, 가입신청서 등 서면 양식에 기재하거나, 종이에 출력된 개인정보는 분쇄기로 분쇄 또는 소각하거나 화학약품 처리를 하여 용해하여 파기하고, 전자적 파일 형태로 저장된 개인정보는 기록을 재생할 수 없는 기술적 방법을 사용하여 삭제합니다.</li>
+
+                            <dt class="first">6. 개인정보관리 책임자 및 담당 연락처</dt>
+                            <li class="first_letter">- 이름/소속/직위 : 김봉룡/연구개발본부/총괄</li>
+                            <li class="first_letter">- 전화/메일 : 031)8060-0165/bykim@emobileid.co.kr</li>
+
+                                <p>부칙 (2017. 8. 28.)</p>
+                                <p>이 약관은 2017. 8. 28.부터 시행합니다.</p>
+                                <p>공고일자: 2017년 8월 28일</p>
+                                <p>시행일자: 2017년 8월 28일</p>
+
+                        </div>
+                    </div>
+
+
+                <ul class="line-btn-box">
+                    <li><a href="javascript:window.close();" class="line-btn co-red" style="width:98px;">확인</a></li>
+                </ul>
+                <!-- //지원 결과 조회 -->
+            </div>
+        </div>
+
+
+    </div>
+    <!-- //wrap -->
+
+</body>
+</html>

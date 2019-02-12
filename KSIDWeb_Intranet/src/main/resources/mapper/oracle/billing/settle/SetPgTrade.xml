@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_SetPgTrade">
+
+    <!-- Select 거래대사 내역 List -->
+    <select id="selSetPgTradeList" parameterType="Map" resultType="CamelMap">
+        /* NS_SetPgTrade.selSetPgTradeList */
+
+        SELECT A.BILL_DATE                /* 거래일자 */
+             , A.KSID_APPR_CNT            /* KSID 결제요청 건수 */
+             , A.KSID_CANCEL_CNT          /* KSID 결제취소 건수 */
+             , A.KSID_APPR_AMT            /* KSID 결제요청 금액 */
+             , A.KSID_CANCEL_AMT          /* KSID 결제취소 건수 */
+             , A.PGC_APPR_CNT             /* PG사 결제요청 건수 */
+             , A.PGC_CANCEL_CNT           /* PG사 결제취소 건수 */
+             , A.PGC_APPR_AMT             /* PG사 결제요청 금액 */
+             , A.PGC_CANCEL_AMT           /* PG사 결제취소 금액 */
+             , F_GET_CD_NM(#{language}, 'CHK_TP', A.APPR_CNT_CHK)    APPR_CNT_CHK    /* 결제개수 체크(Y:일치, N:불일치) */
+             , F_GET_CD_NM(#{language}, 'CHK_TP', A.APPR_AMT_CHK)    APPR_AMT_CHK    /* 결제금액 체크(Y:일치, N:불일치) */
+             , F_GET_CD_NM(#{language}, 'CHK_TP', A.CANCEL_CNT_CHK)  CANCEL_CNT_CHK  /* 취소개수 체크(Y:일치, N:불일치) */
+             , F_GET_CD_NM(#{language}, 'CHK_TP', A.CANCEL_AMT_CHK)  CANCEL_AMT_CHK  /* 취소개수 체크(Y:일치, N:불일치) */
+          FROM TBS_PG_TRD_SETTLE_ACCT  A  /* PG사 거래대사 내역 */
+         WHERE A.BILL_DATE BETWEEN #{sDt} AND #{eDt}
+         ORDER BY A.BILL_DATE
+
+    </select>
+
+</mapper>

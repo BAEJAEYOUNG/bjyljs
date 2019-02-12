@@ -1,0 +1,37 @@
+@charset "utf-8";
+
+@import url("./plugins/jquery-ui.css");         /* jquery ui css */
+@import url("./plugins/ui.jqgrid.css");         /* jqgrid css */
+
+@import url("./lib/select2.min.css");           /* select css */
+
+@import url("./ksid/layout.css");               /* layout 구조 */
+@import url("./ksid/default.css");              /* css 초기값 셋팅 */
+
+@import url("./plugins/BootSideMenu.css");      /* Lnb Menu */
+@import url("./plugins/easyui.css");            /* Tab Menu */
+
+@import url("./ksid/contents.css");             /* Contents Style */
+@import url("./ksid/main.css");                 /* Main Style */
+
+@import url("./ksid/plugins-custom.css")
+
+/* 폰트 */
+/*
+@font-face {
+    font-family: 'NanumGothic';
+    src: url('../fonts/font/NanumGothic.eot');
+    src: local("☺"),
+        url('../fonts/font/NanumGothic.woff') format('woff'),
+        url('../fonts/font/NanumGothic.ttf') format('truetype'),
+        url('../fonts/font/NanumGothic.svg#webfonturzspG4F') format('svg');
+}
+@font-face {
+    font-family: 'NanumGothicBold';
+    src: url('../fonts/font/NanumGothicBold.eot');
+    src: local("☺"),
+        url('../fonts/font/NanumGothicBold.woff') format('woff'),
+        url('../fonts/font/NanumGothicBold.ttf') format('truetype'),
+        url('../fonts/font/NanumGothicBold.svg#webfontqaHEB3q2') format('svg');
+}
+*/

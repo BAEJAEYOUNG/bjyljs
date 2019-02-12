@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- Default Datasource -->
+    <bean id="defaultDataSource" class="org.apache.commons.dbcp2.BasicDataSource">
+        <property name="driverClassName">
+            <value>#{database[systemProperties['server.type'] + '.' + system['application.name'] + '.driverClassName']}</value>
+        </property>
+        <property name="url" value="#{database[systemProperties['server.type'] + '.' + system['application.name'] + '.url']}" />
+        <property name="username" value="#{database[systemProperties['server.type'] + '.' + system['application.name'] + '.username']}" />
+        <property name="password" value="#{database[systemProperties['server.type'] + '.' + system['application.name'] + '.password']}" />
+        <property name="validationQuery" value="SELECT 1 FROM DUAL" />
+        <property name="testOnBorrow" value="true" />
+    </bean>
+
+</beans>

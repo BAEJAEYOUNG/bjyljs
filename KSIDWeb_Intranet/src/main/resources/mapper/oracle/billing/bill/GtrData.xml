@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_GtrData">
+
+    <!-- Select GtrData List -->
+    <select id="selGtrDataList" parameterType="Map" resultType="CamelMap">
+        <include refid="NS_Paging.header"/>
+        /* NS_GtrData.selGtrDataList */
+        SELECT A.RECV_TP                  /* 수신 TYPE */
+             , A.T_ID                     /* 트랜잭션 ID */
+             , A.TEL_NO                   /* 휴대폰 */
+             , A.ST_DTM                   /* TA 다운로드 시작시각 */
+             , A.ED_DTM                   /* TA 다운로드 종료시각 (과금 생성 기준 일시) */
+             , A.CMD                      /* 요청 명령어 */
+             , A.SP_CD                    /* 서비스제공자코드 */
+             , A.CUST_ID                  /* 고객사 ID(은행,증권,기타) */
+             , A.SERV_ID                  /* 서비스아이디 */
+             , A.USER_ID                  /* 사용자 ID */
+             , A.PROD_TP                  /* 서비스 중분류(S-F,S-T,S-C) */
+             , A.PROD_CD                  /* 서비스 소분류(S-F-1,S-T-1,S-C-1) */
+             , A.RESULT_CD                /* 처리 결과 */
+             , A.STATUS_CD                /* 상태 코드 */
+             , A.SERVER_ID                /* 연동 서버 ID */
+             , A.RECV_LOC                 /* 수신 인터페이스 위치 */
+             , A.TA_VER                   /* TA 버전 정보 */
+             , A.APP_VER                  /* APP 버전 정보 */
+             , A.UUID                     /* UUID */
+             , A.SUID                     /* SUID */
+             , A.SEND_LOC                 /* 송신 위치 */
+             , A.AUTH_METHOD              /* 인증 수단(UAF 프로토콜 값) */
+             , S.SP_NM                    /* 서비스제공자명 */
+             , T.CUST_NM                  /* 고객사명 */
+             , U.USER_NM                  /* 사용자명 */
+             , P.PROD_NM                  /* 상품명 */
+             , J.SERV_NM                  /* 서비스명 */
+        FROM (
+            SELECT 'TA'    RECV_TP         /* 수신 TYPE */
+
+                 , T_ID                     /* 트랜잭션 ID */
+                 , TEL_NO                   /* 휴대폰 */
+                 , ST_DTM                   /* TA 다운로드 시작시각 */
+                 , ED_DTM                   /* TA 다운로드 종료시각 (과금 생성 기준 일시) */
+                 , CMD                      /* 요청 명령어 */
+                 , SP_CD                    /* 서비스제공자코드 */
+                 , CUST_ID                  /* 고객사 ID(은행,증권,기타) */
+                 , SERV_ID                  /* 서비스아이디 */
+                 , USER_ID                  /* 사용자 ID */
+                 , PROD_TP                  /* 서비스 중분류(S-F,S-T,S-C) */
+                 , PROD_CD                  /* 서비스 소분류(S-F-1,S-T-1,S-C-1) */
+                 , RESULT_CD                /* 처리 결과 */
+                 , STATUS_CD                /* 상태 코드 */
+                 , SERVER_ID                /* 연동 서버 ID */
+                 , RECV_LOC                 /* 수신 인터페이스 위치 */
+
+                 , TA_VER                   /* TA 버전 정보 */
+                 , APP_VER                  /* APP 버전 정보 */
+                 , UUID                     /* UUID */
+                 , SUID                     /* SUID */
+
+                 , '' SEND_LOC              /* 송신 위치 */
+                 , '' AUTH_METHOD           /* 인증 수단(UAF 프로토콜 값) */
+
+              FROM TBG_RAW_TA_DOWN_GTR_DATA/* 원시 TA Download 수집 내역 */
+            WHERE ST_DTM BETWEEN #{sDt} || '000000' AND #{eDt} || '999999'
+              AND SP_CD = #{spCd}
+              AND ( #{custId} = '' OR #{custId} IS NULL OR CUST_ID = #{custId} )
+              AND ( #{userId} = '' OR #{userId} IS NULL OR USER_ID = #{userId} )
+              AND ( #{prodCd} = '' OR #{prodCd} IS NULL OR PROD_CD = #{prodCd} )
+
+            UNION ALL
+
+            SELECT 'NOTTA'  RECV_TP         /* 인증 TYPE */
+                 , T_ID                     /* 트랜잭션 ID */
+                 , TEL_NO                   /* 휴대폰 */
+                 , ST_DTM                   /* 명령어 시작시각 */
+                 , ED_DTM                   /* 명령어 종료시각 */
+                 , CMD                      /* 작업 명령어 */
+                 , SP_CD                    /* 서비스제공자코드 */
+                 , CUST_ID                  /* 고객사 ID(은행,증권,기타) */
+                 , SERV_ID                  /* 서비스아이디 */
+                 , USER_ID                  /* 사용자 ID */
+                 , PROD_TP                  /* 서비스 중분류(S-F,S-T,S-C)-코드테이블 참조 */
+                 , PROD_CD                  /* 서비스 소분류(S-F-1,S-T-1,S-C-1) */
+                 , RESULT_CD                /* 처리 결과  */
+                 , STATUS_CD                /* 상태 코드 */
+                 , SERVER_ID                /* 연동 서버 ID */
+                 , RECV_LOC                 /* 수신 위치 */
+
+                 , '' TA_VER                /* TA 버전 정보 */
+                 , '' APP_VER               /* APP 버전 정보 */
+                 , '' UUID                  /* UUID */
+                 , '' SUID                  /* SUID */
+
+                 , SEND_LOC                 /* 송신 위치 */
+                 , AUTH_METHOD              /* 인증 수단(UAF 프로토콜 값) */
+
+              FROM TBG_RAW_DTL_GTR_DATA   /* 원시 과금 상세 수집 내역 */
+            WHERE ST_DTM BETWEEN #{sDt} || '000000' AND #{eDt} || '999999'
+              AND SP_CD = #{spCd}
+              AND ( #{custId} = '' OR #{custId} IS NULL OR CUST_ID = #{custId} )
+              AND ( #{telNo} IS NULL OR USER_ID LIKE '%' || #{telNo} || '%' )
+              AND ( #{prodCd} = '' OR #{prodCd} IS NULL OR PROD_CD = #{prodCd} )
+
+        ) A
+           LEFT OUTER JOIN TCM_SP S                  /* 서비스제공자 */
+                   ON S.SP_CD = A.SP_CD
+           LEFT OUTER JOIN TCM_CUST T                /* 고객사 */
+                   ON T.CUST_ID = A.CUST_ID
+           LEFT OUTER JOIN TCM_USER U                /* 사용자 */
+                   ON U.USER_ID = A.USER_ID
+           LEFT OUTER JOIN TSM_PROD P                /* 과금분류 */
+                   ON P.PROD_CD = A.PROD_CD
+           LEFT OUTER JOIN TSL_CUST_FIX_BILL J       /* 서비스명 */
+                   ON J.SERV_ID = A.SERV_ID
+        WHERE  ( #{recvTp} = '' OR #{recvTp} IS NULL OR RECV_TP = #{recvTp} )
+
+         ORDER BY A.ST_DTM  DESC           /* 명령어 시작시각 */
+                , A.SP_CD                  /* 서비스제공자코드 */
+                , A.CUST_ID                /* 고객사 ID(은행,증권,기타) */
+                , A.SERV_ID                /* 서비스아이디 */
+                , A.USER_ID                /* 사용자 ID */
+                , A.PROD_TP                /* 서비스 중분류(S-F,S-T,S-C)-코드테이블 참조 */
+                , A.PROD_CD                /* 서비스 소분류(S-F-1,S-T-1,S-C-1) */
+        <include refid="NS_Paging.footer"/>
+    </select>
+
+</mapper>

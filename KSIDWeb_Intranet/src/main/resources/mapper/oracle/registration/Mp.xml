@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_Mp">
+
+    <!-- Select Mp List -->
+    <select id="selMpList" parameterType="Map" resultType="CamelMap">
+        /* NS_Mp.selMpList */
+        SELECT A.ADMIN_ID                 /* 관리자아이디 */
+             , A.ADMIN_PW                 /* 관리자비밀번호 */
+             , A.ADMIN_NM                 /* 관리자명 */
+             , A.HP_NO                    /* 휴대폰번호 */
+             , A.REG_DTM                  /* 등록일시 */
+             , A.REG_ID                   /* 등록자 */
+             , A.CHG_DTM                  /* 변경일시 */
+             , A.CHG_ID                   /* 변경자 */
+             , Y.ADMIN_NM AS REG_NM       /* 등록자 */
+             , Z.ADMIN_NM AS CHG_NM       /* 변경자 */
+          FROM TYM_ADMIN A                /* 관리자 */
+               LEFT OUTER JOIN TYM_ADMIN Y
+                            ON Y.ADMIN_ID = A.REG_ID
+               LEFT OUTER JOIN TYM_ADMIN Z
+                            ON Z.ADMIN_ID = A.REG_ID
+         WHERE (#{adminId} IS NULL OR A.ADMIN_ID LIKE '%' || #{adminId} || '%'      /* 관리자아이디 */
+                                   OR A.ADMIN_NM LIKE '%' || #{adminId} || '%')     /* 관리자명 */
+        ORDER BY A.ADMIN_NM
+    </select>
+
+    <!-- Select Mp -->
+    <select id="selMp" parameterType="Map" resultType="CamelMap">
+        /* NS_Mp.selMp */
+        SELECT ADMIN_ID                 /* 관리자아이디 */
+             , ADMIN_PW                 /* 관리자비밀번호 */
+             , ADMIN_NM                 /* 관리자명 */
+             , HP_NO                    /* 휴대폰번호 */
+             , REG_DTM                  /* 등록일시 */
+             , REG_ID                   /* 등록자 */
+             , CHG_DTM                  /* 변경일시 */
+             , CHG_ID                   /* 변경자 */
+          FROM TYM_ADMIN                /* 관리자 */
+         WHERE ADMIN_ID = #{adminId}
+    </select>
+
+    <!-- Insert Mp List -->
+    <insert id="insMp" parameterType="Map">
+        /* NS_Mp.insMp */
+        INSERT INTO TYM_ADMIN (        /* 관리자 */
+              ADMIN_ID                 /* 관리자아이디 */
+            , ADMIN_PW                 /* 관리자비밀번호 */
+            , ADMIN_NM                 /* 관리자명 */
+            , HP_NO                    /* 휴대폰번호 */
+            , REG_DTM                  /* 등록일시 */
+            , REG_ID                   /* 등록자 */
+            , CHG_DTM                  /* 변경일시 */
+            , CHG_ID                   /* 변경자 */
+        ) VALUES (
+              #{adminId}               /* 관리자아이디 */
+            , #{adminPw}               /* 관리자비밀번호 */
+            , #{adminNm}               /* 관리자명 */
+            , #{hpNo}                  /* 휴대폰번호 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')   /* 등록일시 */
+            , #{regId}                 /* 등록자 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')   /* 변경일시 */
+            , #{chgId}                 /* 변경자 */
+        )
+    </insert>
+
+    <!-- Update Mp List -->
+    <update id="updMp" parameterType="Map">
+        /* NS_Mp.updMp */
+        UPDATE TYM_ADMIN                /* 관리자 */
+           SET ADMIN_ID               = #{adminId}                 /* 관리자아이디 */
+             , ADMIN_PW               = #{adminPw}                 /* 관리자비밀번호 */
+             , ADMIN_NM               = #{adminNm}                 /* 관리자명 */
+             , HP_NO                  = #{hpNo}                    /* 휴대폰번호 */
+             , CHG_DTM                = TO_CHAR(SYSDATE, 'yyyymmddhh24miss')   /* 변경일시 */
+             , CHG_ID                 = #{chgId}                   /* 변경자 */
+         WHERE ADMIN_ID = #{adminId}
+    </update>
+
+    <!-- Delete Mp List -->
+    <delete id="delMp" parameterType="Map">
+        /* NS_Mp.delMp */
+        DELETE FROM TYM_ADMIN                /* 관리자 */
+         WHERE ADMIN_ID = #{adminId}
+    </delete>
+
+</mapper>

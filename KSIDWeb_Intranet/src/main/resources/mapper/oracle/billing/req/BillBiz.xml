@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_BillBiz">
+
+    <!-- Select BillBiz List -->
+    <select id="selBillBizList" parameterType="Map" resultType="CamelMap">
+        /* NS_BillBiz.selBillBizList */
+        SELECT F_GET_CD_NM(#{language}, 'WD_FLAG', A.WD_FLAG) AS WD_FLAG_NM     /* 인출여부 */
+             , F_GET_CD_NM(#{language}, 'RC_FLAG', A.RC_FLAG) AS RC_FLAG_NM     /* 수납여부 */
+             , A.BILL_MONTH               /* 요금청구월 */
+             , A.SP_CD                    /* 서비스제공자코드 */
+             , A.CUST_ID                  /* 고객사 ID(은행,증권,기타) */
+             , A.SERV_ID                  /* 서비스아이디 */
+             , A.BIZ_NO                   /* 법인번호 */
+             , A.TOT_USER_CNT             /* 전체사용자수 */
+             , A.TOT_UDR_CNT              /* 전체사용건수 */
+             , A.TOT_UDR_FEE              /* 전체사용요금 */
+             , A.TOT_DC_FEE               /* 전체할인요금 */
+             , A.TOT_REAL_FEE             /* 전체청구대상요금(전체사용요금-전체할인요금) */
+             , A.BS_DC_CD1                /* 기본 할인 코드#1 */
+             , A.BS_DC_CD2                /* 기본 할인 코드#2 */
+             , A.BS_DC_CD3                /* 기본 할인 코드#3 */
+             , A.BS_DC_CD4                /* 기본 할인 코드#4 */
+             , A.BS_DC_FEE1               /* 기본 할인 금액#1 */
+             , A.BS_DC_FEE2               /* 기본 할인 금액#2 */
+             , A.BS_DC_FEE3               /* 기본 할인 금액#3 */
+             , A.BS_DC_FEE4               /* 기본 할인 금액#4 */
+             , A.BILL_FEE                 /* 청구요금 */
+             , A.VAT_FEE                  /* 부가세 */
+             , A.WD_FLAG                  /* 인출여부 */
+             , A.RC_FLAG                  /* 수납여부 */
+             , S.SP_NM                    /* 서비스제공자명 */
+             , T.CUST_NM                  /* 고객사명 */
+             , X.SERV_NM                  /* 서비스명 */
+             , U.USER_NM                  /* 법인명 */
+             , U.BIZ_NO                   /* 사업자번호 */
+             , P1.PROMO_NM BS_DC_CD_NM1   /* 프로모션 할인 명칭#1 */
+             , P2.PROMO_NM BS_DC_CD_NM2   /* 프로모션 할인 명칭#2 */
+             , P3.PROMO_NM BS_DC_CD_NM3   /* 프로모션 할인 명칭#3 */
+             , P4.PROMO_NM BS_DC_CD_NM4   /* 프로모션 할인 명칭#4 */
+          FROM TBB_WT_FEE_BILL_BIZ A                     /* 종량요금 청구서(법인) */
+               LEFT OUTER JOIN TCM_SP S                  /* 서비스제공자 */
+                       ON S.SP_CD = A.SP_CD
+               LEFT OUTER JOIN TCM_CUST T                /* 고객사 */
+                       ON T.CUST_ID = A.CUST_ID
+               LEFT OUTER JOIN TSL_CUST_FIX_BILL X       /* 서비스명 */
+                       ON X.SERV_ID = A.SERV_ID
+              INNER JOIN (
+                                SELECT USER_NM
+                                     , BIZ_NO
+                                  FROM TCM_USER
+                                 WHERE CORP_YN = 'Y'
+                                   AND BIZ_NO IS NOT NULL
+                               GROUP BY USER_NM
+                                      , BIZ_NO
+                           ) U /* 법인 */
+                       ON U.BIZ_NO = A.BIZ_NO
+               LEFT OUTER JOIN TSM_PROMO_DISCOUNT P1    /* 프로모션#1 */
+                       ON P1.PROMO_ID = A.BS_DC_CD1
+               LEFT OUTER JOIN TSM_PROMO_DISCOUNT P2    /* 프로모션#2 */
+                       ON P2.PROMO_ID = A.BS_DC_CD2
+               LEFT OUTER JOIN TSM_PROMO_DISCOUNT P3    /* 프로모션#3 */
+                       ON P3.PROMO_ID = A.BS_DC_CD3
+               LEFT OUTER JOIN TSM_PROMO_DISCOUNT P4    /* 프로모션#4 */
+                       ON P4.PROMO_ID = A.BS_DC_CD4
+         WHERE A.BILL_MONTH BETWEEN #{sM} AND #{eM}       /* 요금청구월 */
+           AND A.SP_CD = #{spCd}
+           AND ( #{custId} IS NULL OR A.CUST_ID = #{custId} )
+           AND ( #{bizNo} IS NULL OR U.BIZ_NO LIKE '%' || #{bizNo} || '%' )
+           AND ( #{userNm} IS NULL OR U.USER_NM LIKE '%' || #{userNm} || '%' )
+    </select>
+
+    <select id="selBillBizDtlList" parameterType="Map" resultType="CamelMap">
+        /* NS_BillBiz.selBillBizDtlList */
+        SELECT A.BILL_MONTH               /* 요금청구월 */
+             , A.SP_CD                    /* 서비스제공자코드 */
+             , A.CUST_ID                  /* 고객사 ID(은행,증권,기타) */
+             , A.SERV_ID                  /* 서비스 ID */
+             , A.PROD_TP                  /* 요금종류(S-T:TA Download, S-F:Fido, S-C:공인인증) */
+             , A.TOT_USER_CNT             /* 전체사용자수 */
+             , A.TOT_UDR_CNT              /* 전체사용건수 */
+             , A.TOT_UDR_FEE              /* 전체사용요금 */
+             , A.TOT_DC_FEE               /* 전체할인요금 */
+             , A.TOT_REAL_FEE             /* 전체청구대상요금(전체사용요금-전체할인요금) */
+             , S.SP_NM                    /* 서비스제공자명 */
+             , T.CUST_NM                  /* 고객사명 */
+             , J.SERV_NM                  /* 서비스명 */
+             , F_GET_CD_NM(#{language}, 'PROD_TP', A.PROD_TP) AS PROD_TP_NM     /* 과금분류명 */
+          FROM TBB_WT_FEE_BILL_BIZ_DTL A                 /* 종량요금 상세 청구서(고객사) */
+               LEFT OUTER JOIN TCM_SP S                  /* 서비스제공자 */
+                       ON S.SP_CD = A.SP_CD
+               LEFT OUTER JOIN TCM_CUST T                /* 고객사 */
+                       ON T.CUST_ID = A.CUST_ID
+               LEFT OUTER JOIN TSL_CUST_FIX_BILL J       /* 서비스명 */
+                       ON J.SERV_ID = A.SERV_ID
+         WHERE A.BILL_MONTH = #{billMonth}    /* 요금청구월 */
+           AND A.SP_CD = #{spCd}              /* 서비스제공자코드 */
+           AND A.CUST_ID = #{custId}          /* 고객사 ID */
+    </select>
+
+</mapper>

@@ -1,0 +1,102 @@
+/**
+ * login.jsp
+ */
+/*
+* {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-weight: inherit;
+    font-style: inherit;
+    font-size: 100%;
+    font-family: inherit;
+    vertical-align: baseline;
+}
+*/
+
+.login .top {
+    background: #e7e7e7;
+    margin: 0px;
+    height: 16px;
+    border-bottom: 2px solid #4f81bd;
+    padding: 21px 30px;
+    min-width: 600px;
+}
+
+.login .top h1 {
+    color: #222;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.login .top h1 img {
+    margin-right: 15px;
+}
+
+.login .top h1 img {
+    height: 35px;
+}
+
+.login .top h1 span {
+}
+
+.login .content {
+    background: url(../../image/ksid/bg_login.png) no-repeat left;
+    background-size: 800px;
+    width: 1270px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    padding-top: 250px;
+    margin: -350px 0 0 -650px;
+    height: 540px;
+    overflow: hidden;
+}
+
+.login .content .loginBox {
+    width: 340px;
+    padding: 25px 35px;
+    float: left;
+}
+
+.login .content .title {
+    font-weight: bold;
+    font-size: 21px;
+    color: #333;
+    font-family: "verdana"
+}
+
+.login .content .loginBox input {
+    width: 318px;
+    margin: 5px 0;
+    padding-left: 10px;
+    height: 30px;
+    font-size: 15px;
+    border: 1px solid #bbbbbb;
+}
+
+.login .content .loginBox a {
+    background: #4f81bd;
+    color: #FFF;
+    font-family: "dotum", Arial, Helvetica, Tahoma;
+    font-size: 14px;
+    text-align: center;
+    width: 306px;
+    display: block;
+    padding: 10px 11px;
+    border: 1px solid #c2ddfe;
+    margin: 5px 0;
+}
+
+.login .content .floatLeft {
+    float: right
+}
+
+.login .content .loginCardBox {
+    width: 340px;
+    padding: 25px 35px;
+    float: left;
+}
+
+

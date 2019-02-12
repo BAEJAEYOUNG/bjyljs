@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_CustMo">
+
+    <!-- Select CustMo List -->
+    <select id="selCustMoList" parameterType="Map" resultType="CamelMap">
+        /* NS_CustMo.selCustMoList */
+        SELECT F_GET_CD_NM(#{language}, 'CALC_TYPE', A.CALC_TYPE) AS CALC_TYPE_NM        /* 일할계산여부 */
+             , F_GET_CD_NM(#{language}, 'PAY_FLAG', A.PAY_FLAG) AS PAY_FLAG_NM           /* 청구여부 */
+             , A.UDR_MONTH                /* 요금청구월 */
+             , A.SP_CD                    /* 서비스제공자코드 */
+             , A.CUST_ID                  /* 고객사 ID(은행,증권,기타) */
+             , A.PROD_MCLS_CD             /* 상품코드 */
+             , A.ST_DTM                   /* 과금시작일 */
+             , A.ED_DTM                   /* 과금종료일 */
+             , A.CALC_DAY                 /* 과금일수 */
+             , A.CALC_FEE                 /* 사용요금 */
+             , A.CALC_TYPE                /* 일할계산여부(Y:일할,N:전체) */
+             , A.PAY_FLAG                 /* 청구여부(완료,미완료) */
+             , S.SP_NM                    /* 서비스제공자명 */
+             , T.CUST_NM                  /* 고객사명 */
+             , U.SERV_NM                  /* 서비스명 */
+             , M.PROD_MCLS_NM             /* 상품명 */
+          FROM TBR_CUST_MO_FEE_DATA A                    /* 고객사 월정요금 데이터(고정) */
+               LEFT OUTER JOIN TCM_SP S                  /* 서비스제공자 */
+                       ON S.SP_CD = A.SP_CD
+               LEFT OUTER JOIN TCM_CUST T                /* 고객사 */
+                       ON S.SP_CD = A.SP_CD
+                      AND T.CUST_ID = A.CUST_ID
+               LEFT OUTER JOIN TSM_PROD_MCLS M           /* 상품 */
+                       ON M.PROD_MCLS_CD = A.PROD_MCLS_CD
+               LEFT OUTER JOIN TSL_CUST_FIX_BILL U       /* 서비스명 */
+                       ON U.SERV_ID = A.SERV_ID
+         WHERE A.UDR_MONTH BETWEEN #{sM} AND #{eM}
+           AND A.SP_CD = #{spCd}
+           AND ( #{custId} = '' OR #{custId} IS NULL OR A.CUST_ID = #{custId} )
+         ORDER BY A.ST_DTM
+    </select>
+
+</mapper>

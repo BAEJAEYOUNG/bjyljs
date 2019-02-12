@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_Pg">
+
+    <!-- Select PG List -->
+    <select id="selPgList" parameterType="Map" resultType="CamelMap">
+        /* NS_Pg.selPgList */
+        SELECT PG_CD                    /* PG사코드 */
+             , PG_NM                    /* PG사명 */
+             , PG_MNGR_NM               /* PG사담당자명 */
+             , PG_MNGR_TEL_NO           /* PG사담당자연락처 */
+             , ISSU_CD                  /* 발급코드 */
+             , REMARK                   /* 비고 */
+             , REG_DTM                  /* 등록일시 */
+             , REG_ID                   /* 등록자 */
+             , CHG_DTM                  /* 변경일시 */
+             , CHG_ID                   /* 변경자 */
+          FROM TSM_PG                 /* PG사 */
+         WHERE PG_CD LIKE '%' || #{pgCd} || '%'      /* PG사명 */
+           OR  PG_NM LIKE '%' || #{pgCd} || '%'
+              ORDER BY REG_DTM
+    </select>
+
+    <!-- Select PG -->
+    <select id="selPgCd" parameterType="Map" resultType="CamelMap">
+        /* NS_Pg.selPgCd */
+        SELECT PG_CD                    /* PG사코드 */
+             , PG_NM                    /* PG사명 */
+             , PG_MNGR_NM               /* PG사담당자명 */
+             , PG_MNGR_TEL_NO           /* PG사담당자연락처 */
+             , ISSU_CD                  /* 발급코드 */
+             , REMARK                   /* 비고 */
+             , REG_DTM                  /* 등록일시 */
+             , REG_ID                   /* 등록자 */
+             , CHG_DTM                  /* 변경일시 */
+             , CHG_ID                   /* 변경자 */
+          FROM TSM_PG                 /* PG사 */
+        WHERE PG_CD = #{pgCd}
+
+    </select>
+
+    <!-- Insert PG List -->
+    <insert id="insPg" parameterType="Map">
+        /* NS_Pg.insPg */
+
+        INSERT INTO TSM_PG (           /* PG사 */
+              PG_CD                    /* PG사코드 */
+            , PG_NM                    /* PG사명 */
+            , PG_MNGR_NM               /* PG사담당자명 */
+            , PG_MNGR_TEL_NO           /* PG사담당자연락처 */
+            , ISSU_CD                  /* 발급코드 */
+            , REMARK                   /* 비고 */
+            , REG_DTM                  /* 등록일시 */
+            , REG_ID                   /* 등록자 */
+            , CHG_DTM                  /* 변경일시 */
+            , CHG_ID                   /* 변경자 */
+        ) VALUES (
+              #{pgCd}                  /* PG사코드 */
+            , #{pgNm}                  /* PG사명 */
+            , #{pgMngrNm}              /* PG사담당자명 */
+            , #{pgMngrTelNo}           /* PG사담당자연락처 */
+            , #{issuCd}                /* 발급코드 */
+            , #{remark}                /* 비고 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')     /* 등록일시 */
+            , #{regId}                 /* 등록자 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')     /* 변경일시 */
+            , #{chgId}                 /* 변경자 */
+        )
+
+    </insert>
+
+    <!-- Update PG List -->
+    <update id="updPg" parameterType="Map">
+        /* NS_Pg.updPg */
+
+        UPDATE TSM_PG                   /* PG사 */
+           SET PG_NM                  = #{pgNm}                    /* PG사명 */
+             , PG_MNGR_NM             = #{pgMngrNm}                /* PG사담당자명 */
+             , PG_MNGR_TEL_NO         = #{pgMngrTelNo}             /* PG사담당자연락처 */
+             , ISSU_CD                = #{issuCd}                  /* 발급코드 */
+             , REMARK                 = #{remark}                  /* 비고 */
+             , CHG_DTM                = TO_CHAR(SYSDATE, 'yyyymmddhh24miss')   /* 변경일시 */
+             , CHG_ID                 = #{chgId}                   /* 변경자 */
+        WHERE PG_CD = #{pgCd}
+
+    </update>
+
+    <!-- Delete PG List -->
+    <delete id="delPg" parameterType="Map">
+        /* NS_Pg.delPg */
+        DELETE FROM TSM_PG                   /* PG사 */
+        WHERE PG_CD = #{pgCd}
+
+    </delete>
+
+</mapper>

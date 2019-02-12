@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_BatchFile">
+
+    <!-- Select File List -->
+    <select id="selBatchFileList" parameterType="Map" resultType="CamelMap">
+        /* NS_BatchFile.selFileList */
+        SELECT FILE_ID                  /* 파일아이디[자동부여된 파일식별ID] */
+             , FILE_PATH                /* 파일경로[파일/FTP 등으로 저장될때 의 경로] */
+             , PHYSICAL_FILE_NM         /* 물리파일명[파일ID의 이름으로 저장] */
+             , LOGICAL_FILE_NM          /* 원본파일명[첨부시 원래파일이름] */
+             , FILE_EXT                 /* 파일확장자[소문자] */
+             , FILE_SIZE                /* 파일크기[단위:byte] */
+             , CONTENT_TYPE             /* 컨텐츠타입[MIME] */
+             , CONTENT_INLINE_YN        /* 내용포함여부[Y/N, 사진첨부와 같이 내용에 포함된 파일인지 여부] */
+             , COMP_CD                  /* 회사코드[ASP 서비스를 위한 회사코드] */
+             , FILE_OWNER_CD            /* 파일소유코드 */
+             , FILE_OWNER_TYPE          /* 파일소유유형 */
+             , FILE_OWNER_KEY1          /* 파일소유키1[파일소유코드별 참조 PK 첫번째] */
+             , FILE_OWNER_KEY2          /* 파일소유키2[파일소유코드별 참조 PK 두번재] */
+             , FILE_OWNER_KEY3          /* 파일소유키3[파일소유코드별 참조 PK 세번째] */
+             , FILE_OWNER_REF           /* 파일소유참조 */
+             , APPROVAL_YN              /* 승인여부[Y/N, 승인되지않은 파일은 배치에서 삭제될수 있다] */
+             , DEL_YN                   /* 삭제여부[Y/N] */
+             , REG_DTM                  /* 등록일시 */
+             , REG_ID                   /* 등록자 */
+             , CHG_DTM                  /* 변경일시 */
+             , CHG_ID                   /* 변경자 */
+          FROM TSM_FILE                 /* 첨부파일 */
+         WHERE FILE_OWNER_CD = #{fileOwnerCd}                                                                               /* 파일소유코드 */
+           AND FILE_OWNER_KEY1 = #{fileOwnerKey1}                                                                           /* 파일소유키1[파일소유코드별 참조 PK 첫번째] */
+           AND REG_DTM BETWEEN #{sDt} || '000000' AND #{eDt} || '999999'                                                    /* 파일생성일자조회 */
+           AND ( #{fileOwnerKey2} IS NULL OR FILE_OWNER_KEY2 = #{fileOwnerKey2} )                                           /* 파일소유키2[파일소유코드별 참조 PK 두번재] */
+           AND ( #{fileOwnerKey3} IS NULL OR FILE_OWNER_KEY3 = #{fileOwnerKey3} )                                           /* 파일소유키3[파일소유코드별 참조 PK 세번째] */
+           AND ( #{fileOwnerType} IS NULL OR FILE_OWNER_TYPE IN ( SELECT * FROM TABLE(F_SPLIT(#{fileOwnerType}, ',')) ) )   /* 파일소유유형 */
+           AND ( #{fileOwnerRef} IS NULL OR FILE_OWNER_REF = #{fileOwnerRef} )                                              /* 파일소유참조 */
+           AND ( #{logicalFileNm} IS NULL OR LOGICAL_FILE_NM  LIKE '%' || #{logicalFileNm} || '%' )                         /* 원본파일명[첨부시 원래파일이름] */
+           AND DEL_YN = 'N'             /* 삭제여부[Y/N] */
+           AND APPROVAL_YN = 'Y'        /* 승인여부[Y/N, 승인되지않은 파일은 배치에서 삭제될수 있다] */
+       ORDER BY FILE_ID
+    </select>
+
+    <!-- Select File -->
+    <select id="selFileId" parameterType="Map" resultType="String">
+        /* NS_BatchFile.selFile */
+        SELECT F_GET_ID('FILE_ID')
+          FROM DUAL
+    </select>
+
+    <!-- Select File -->
+    <select id="getPublicFileInfo" parameterType="Map" resultType="CamelMap">
+        /* NS_BatchFile.selFile */
+        SELECT FILE_ID                  /* 파일아이디[자동부여된 파일식별ID] */
+             , FILE_PATH                /* 파일경로[파일/FTP 등으로 저장될때 의 경로] */
+             , PHYSICAL_FILE_NM         /* 물리파일명[파일ID의 이름으로 저장] */
+             , LOGICAL_FILE_NM          /* 원본파일명[첨부시 원래파일이름] */
+             , FILE_EXT                 /* 파일확장자[소문자] */
+             , FILE_SIZE                /* 파일크기[단위:byte] */
+             , CONTENT_TYPE             /* 컨텐츠타입[MIME] */
+             , CONTENT_INLINE_YN        /* 내용포함여부[Y/N, 사진첨부와 같이 내용에 포함된 파일인지 여부] */
+             , COMP_CD                  /* 회사코드[ASP 서비스를 위한 회사코드] */
+             , FILE_OWNER_CD            /* 파일소유코드 */
+             , FILE_OWNER_TYPE          /* 파일소유유형 */
+             , FILE_OWNER_KEY1          /* 파일소유키1[파일소유코드별 참조 PK 첫번째] */
+             , FILE_OWNER_KEY2          /* 파일소유키2[파일소유코드별 참조 PK 두번재] */
+             , FILE_OWNER_KEY3          /* 파일소유키3[파일소유코드별 참조 PK 세번째] */
+             , FILE_OWNER_REF           /* 파일소유참조 */
+             , APPROVAL_YN              /* 승인여부[Y/N, 승인되지않은 파일은 배치에서 삭제될수 있다] */
+             , DEL_YN                   /* 삭제여부[Y/N] */
+             , REG_DTM                  /* 등록일시 */
+             , REG_ID                   /* 등록자 */
+             , CHG_DTM                  /* 변경일시 */
+             , CHG_ID                   /* 변경자 */
+          FROM TSM_FILE               /* 첨부파일 */
+         WHERE FILE_ID = #{fileId}
+    </select>
+
+    <!-- 첨부파일 INSERT (승인전 정보저장) -->
+    <insert id="insBatchFile" parameterType="Map">
+        /* NS_BatchFile.insFile */
+        INSERT INTO TSM_FILE (         /* 첨부파일 */
+              FILE_ID                  /* 파일아이디[자동부여된 파일식별ID] */
+            , FILE_PATH                /* 파일경로[파일/FTP 등으로 저장될때 의 경로] */
+            , PHYSICAL_FILE_NM         /* 물리파일명[파일ID의 이름으로 저장] */
+            , LOGICAL_FILE_NM          /* 원본파일명[첨부시 원래파일이름] */
+            , FILE_EXT                 /* 파일확장자[소문자] */
+            , FILE_SIZE                /* 파일크기[단위:byte] */
+            , CONTENT_TYPE             /* 컨텐츠타입[MIME] */
+            , CONTENT_INLINE_YN        /* 내용포함여부[Y/N, 사진첨부와 같이 내용에 포함된 파일인지 여부] */
+            , COMP_CD                  /* 회사코드[ASP 서비스를 위한 회사코드] */
+            , FILE_OWNER_CD            /* 파일소유코드 */
+            , FILE_OWNER_TYPE          /* 파일소유유형 */
+            , FILE_OWNER_KEY1          /* 파일소유키1[파일소유코드별 참조 PK 첫번째] */
+            , FILE_OWNER_KEY2          /* 파일소유키2[파일소유코드별 참조 PK 두번재] */
+            , FILE_OWNER_KEY3          /* 파일소유키3[파일소유코드별 참조 PK 세번째] */
+            , FILE_OWNER_REF           /* 파일소유참조 */
+            , APPROVAL_YN              /* 승인여부[Y/N, 승인되지않은 파일은 배치에서 삭제될수 있다] */
+            , DEL_YN                   /* 삭제여부[Y/N] */
+            , REG_DTM                  /* 등록일시 */
+            , REG_ID                   /* 등록자 */
+            , CHG_DTM                  /* 변경일시 */
+            , CHG_ID                   /* 변경자 */
+        ) VALUES (
+              #{fileId}                /* 파일아이디[자동부여된 파일식별ID] */
+            , #{filePath}              /* 파일경로[파일/FTP 등으로 저장될때 의 경로] */
+            , #{physicalFileNm}        /* 물리파일명[파일ID의 이름으로 저장] */
+            , #{logicalFileNm}         /* 원본파일명[첨부시 원래파일이름] */
+            , #{fileExt}               /* 파일확장자[소문자] */
+            , #{fileSize}              /* 파일크기[단위:byte] */
+            , #{contentType}           /* 컨텐츠타입[MIME] */
+            , 'N'                      /* 내용포함여부[Y/N, 사진첨부와 같이 내용에 포함된 파일인지 여부] */
+            , #{compCd}                /* 회사코드[ASP 서비스를 위한 회사코드] */
+            , #{fileOwnerCd}           /* 파일소유코드 */
+            , #{fileOwnerType}         /* 파일소유유형 */
+            , #{fileOwnerKey1}         /* 파일소유키1[파일소유코드별 참조 PK 첫번째] */
+            , #{fileOwnerKey2}         /* 파일소유키2[파일소유코드별 참조 PK 두번재] */
+            , #{fileOwnerKey3}         /* 파일소유키3[파일소유코드별 참조 PK 세번째] */
+            , #{fileOwnerRef}          /* 파일소유참조 */
+            , #{approvalYn}            /* 승인여부[Y/N, 승인되지않은 파일은 배치에서 삭제될수 있다] */
+            , #{delYn}                 /* 삭제여부[Y/N] */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')     /* 등록일시 */
+            , #{regId}                 /* 등록자 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')     /* 변경일시 */
+            , #{chgId}                 /* 변경자 */
+        )
+    </insert>
+
+    <!-- 배치 첨부파일 경로 가져오기 -->
+    <select id="selFilePath" parameterType="Map" resultType="String">
+        /* NS_BatchFile.selFilePath */
+
+        SELECT CODE_NM
+        FROM TYL_CODE
+        WHERE CODE_GROUP_CD = 'BATCH_DIR'
+          AND (
+                    INSTR(CODE_CD, '_' || #{batchTp} || '_', 1, 1) > 0      /* 배치타입( PG:PG배치, TAM:TAM배치 */
+                AND INSTR(CODE_CD, #{serverTp} || '_', 1, 1) > 0
+              )
+
+    </select>
+
+     <!-- 첨부파일 UPDATE ( 파일삭제플래그처리 ) -->
+    <update id="updatePublicFileWidthDelFlag" parameterType="Map">
+        /* NS_BatchFile.updFileDelFlag */
+        UPDATE TSM_FILE               /* 첨부파일 */
+           SET DEL_YN                 = 'Y'                        /* 삭제여부 */
+             , CHG_DTM                = TO_CHAR(SYSDATE, 'yyyymmddhh24miss')   /* 변경일시 */
+             , CHG_ID                 = #{chgId}                   /* 변경자 */
+         WHERE FILE_ID = #{fileId}
+    </update>
+
+    <!-- 첨부파일 DELETE ( 파일 삭제 처리 ) -->
+    <delete id="delBatchFile" parameterType="Map">
+        /* NS_Code.delCodeGroup */
+        DELETE FROM TSM_FILE           /* 첨부파일 */
+         WHERE FILE_ID = #{fileId}
+    </delete>
+
+</mapper>

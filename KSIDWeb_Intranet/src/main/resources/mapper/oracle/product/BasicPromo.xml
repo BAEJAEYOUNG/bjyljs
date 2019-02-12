@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_BasicPromo">
+
+    <!-- Select BasicPromo List -->
+    <select id="selBasicPromoList" parameterType="Map" resultType="CamelMap">
+        /* NS_BasicPromo.selBasicPromoList */
+        SELECT F_GET_CD_NM(#{language}, 'PB_TARGET_FG', A.PB_TARGET_FG) AS PB_TARGET_FG_NM          /* 기준할인대상구분 */
+             , F_GET_CD_NM(#{language}, 'PB_TARGET_TP', A.PB_TARGET_TP) AS PB_TARGET_TP_NM          /* 기준할인대상유형 */
+             , F_GET_CD_NM(#{language}, 'PB_PRICE_TP', A.PB_PRICE_TP) AS PB_PRICE_TP_NM             /* 할인금액유형 */
+             , A.PB_ID                    /* 기준할인아이디 */
+             , A.PB_NM                    /* 기준할인행사명 */
+             , A.PB_TARGET_FG             /* 기준할인대상구분[U:사용자, E:건수] */
+             , A.PB_TARGET_TP             /* 기준할인대상유형[M:명수이상, E:건수이상] */
+             , A.PB_TARGET_CNT            /* 기준할인대상수량 */
+             , A.PB_PRICE_TP              /* 할인금액유형[R:율, P:금액, A:모두] */
+             , A.SALE_RATE                /* 할인율 */
+             , A.SALE_PRICE               /* 할인금액 */
+             , A.ST_DTM                   /* 시작일시 */
+             , A.ED_DTM                   /* 종료일시 */
+             , A.REMARK                   /* 비고 */
+             , A.REG_DTM                  /* 등록일시 */
+             , A.REG_ID                   /* 등록자 */
+             , A.CHG_DTM                  /* 변경일시 */
+             , A.CHG_ID                   /* 변경자 */
+             , Y.ADMIN_NM AS REG_NM       /* 등록자 */
+             , Z.ADMIN_NM AS CHG_NM       /* 변경자 */
+          FROM TSM_BASIC_DISCOUNT A       /* 기준할인 */
+               LEFT OUTER JOIN TYM_ADMIN Y
+                            ON Y.ADMIN_ID = A.REG_ID    /* 등록자 */
+               LEFT OUTER JOIN TYM_ADMIN Z
+                            ON Z.ADMIN_ID = A.REG_ID    /* 변경자 */
+      ORDER BY A.PB_ID ASC
+    </select>
+
+    <!-- Select BasicPromo -->
+    <select id="selBasicPromo" parameterType="Map" resultType="CamelMap">
+        /* NS_BasicPromo.selBasicPromo */
+        SELECT PB_ID                    /* 기준할인아이디 */
+             , PB_NM                    /* 기준할인행사명 */
+             , PB_TARGET_FG             /* 기준할인대상구분[U:사용자, E:건수] */
+             , PB_TARGET_TP             /* 기준할인대상유형[M:명수이상, E:건수이상] */
+             , PB_TARGET_CNT            /* 기준할인대상수량 */
+             , PB_PRICE_TP              /* 할인금액유형[R:율, P:금액, A:모두] */
+             , SALE_RATE                /* 할인율 */
+             , SALE_PRICE               /* 할인금액 */
+             , ST_DTM                   /* 시작일시 */
+             , ED_DTM                   /* 종료일시 */
+             , REMARK                   /* 비고 */
+             , REG_DTM                  /* 등록일시 */
+             , REG_ID                   /* 등록자 */
+             , CHG_DTM                  /* 변경일시 */
+             , CHG_ID                   /* 변경자 */
+          FROM TSM_BASIC_DISCOUNT     /* 기준할인 */
+         WHERE PB_ID = #{pbId}
+    </select>
+
+    <!-- Insert BasicPromo -->
+    <insert id="insBasicPromo" parameterType="Map">
+        /* NS_BasicPromo.insBasicPromo */
+        INSERT INTO TSM_BASIC_DISCOUNT (/* 기준할인 */
+              PB_ID                    /* 기준할인아이디 */
+            , PB_NM                    /* 기준할인행사명 */
+            , PB_TARGET_FG             /* 기준할인대상구분[U:사용자, E:건수] */
+            , PB_TARGET_TP             /* 기준할인대상유형[M:명수이상, E:건수이상] */
+            , PB_TARGET_CNT            /* 기준할인대상수량 */
+            , PB_PRICE_TP              /* 할인금액유형[R:율, P:금액, A:모두] */
+            , SALE_RATE                /* 할인율 */
+            , SALE_PRICE               /* 할인금액 */
+            , ST_DTM                   /* 시작일시 */
+            , ED_DTM                   /* 종료일시 */
+            , REMARK                   /* 비고 */
+            , REG_DTM                  /* 등록일시 */
+            , REG_ID                   /* 등록자 */
+            , CHG_DTM                  /* 변경일시 */
+            , CHG_ID                   /* 변경자 */
+        ) VALUES (
+              F_GET_ID('PB_ID')        /* 기준할인아이디 */
+            , #{pbNm}                  /* 기준할인행사명 */
+            , #{pbTargetFg}            /* 기준할인대상구분[U:사용자, E:건수] */
+            , #{pbTargetTp}            /* 기준할인대상유형[M:명수이상, E:건수이상] */
+            , #{pbTargetCnt}           /* 기준할인대상수량 */
+            , #{pbPriceTp}             /* 할인금액유형[R:율, P:금액, A:모두] */
+            , #{saleRate}              /* 할인율 */
+            , #{salePrice}             /* 할인금액 */
+            , #{stDtm}                 /* 시작일시 */
+            , #{edDtm}                 /* 종료일시 */
+            , #{remark}                /* 비고 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')   /* 등록일시 */
+            , #{regId}                 /* 등록자 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')   /* 변경일시 */
+            , #{chgId}                 /* 변경자 */
+        )
+    </insert>
+
+    <!-- Update BasicPromo -->
+    <update id="updBasicPromo" parameterType="Map">
+        /* NS_BasicPromo.updBasicPromo */
+        UPDATE TSM_BASIC_DISCOUNT       /* 기준할인 */
+           SET PB_NM                  = #{pbNm}                    /* 기준할인행사명 */
+             , PB_TARGET_FG           = #{pbTargetFg}              /* 기준할인대상구분[U:사용자, E:건수] */
+             , PB_TARGET_TP           = #{pbTargetTp}              /* 기준할인대상유형[M:명수이상, E:건수이상] */
+             , PB_TARGET_CNT          = #{pbTargetCnt}             /* 기준할인대상수량 */
+             , PB_PRICE_TP            = #{pbPriceTp}               /* 할인금액유형[R:율, P:금액, A:모두] */
+             , SALE_RATE              = #{saleRate}                /* 할인율 */
+             , SALE_PRICE             = #{salePrice}               /* 할인금액 */
+             , ST_DTM                 = #{stDtm}                   /* 시작일시 */
+             , ED_DTM                 = #{edDtm}                   /* 종료일시 */
+             , REMARK                 = #{remark}                  /* 비고 */
+             , CHG_DTM                = TO_CHAR(SYSDATE, 'yyyymmddhh24miss')     /* 변경일시 */
+             , CHG_ID                 = #{chgId}                 /* 변경자 */
+         WHERE PB_ID = #{pbId}
+    </update>
+
+    <!-- Delete BasicPromo -->
+    <delete id="delBasicPromo" parameterType="Map">
+        /* NS_BasicPromo.delBasicPromo */
+        DELETE FROM TSM_BASIC_DISCOUNT       /* 기준할인 */
+        WHERE PB_ID = #{pbId}
+    </delete>
+
+
+    <!-- Select BasicPromo List -->
+    <select id="selCustBasicDiscountList" parameterType="Map" resultType="CamelMap">
+        /* NS_BasicPromo.selCustBasicDiscountList */
+        SELECT A.SP_CD                    /* 서비스제공자코드 */
+             , A.CUST_ID                  /* 고객사코드 */
+             , A.PB_ID                    /* 기준할인아이디 */
+             , A.ST_DTM                   /* 시작일시 */
+             , A.ED_DTM                   /* 종료일시 */
+             , A.REMARK                   /* 비고 */
+             , A.REG_DTM                  /* 등록일시 */
+             , A.REG_ID                   /* 등록자 */
+             , A.CHG_DTM                  /* 변경일시 */
+             , A.CHG_ID                   /* 변경자 */
+             , P.SP_NM                    /* 서비스제공자명 */
+             , C.BIZ_NO                   /* 사업자번호 */
+             , C.CUST_NM                  /* 고객사명 */
+             , F_GET_CD_NM(#{language}, 'CUST_TP', C.CUST_TP) AS CUST_TP_NM    /* 고객사유형[01:은행, 02:증권, 03:관공서, 99:기타] */
+             , Y.ADMIN_NM AS REG_NM       /* 등록자 */
+             , Z.ADMIN_NM AS CHG_NM       /* 변경자 */
+          FROM TST_CUST_BASIC_DISCOUNT  A       /* 고객사별_기준할인 */
+               INNER JOIN TCM_SP        P       /* 서비스제공자 */
+                    ON P.SP_CD = A.SP_CD
+               INNER JOIN TCM_CUST      C       /* 고객사 */
+                    ON C.SP_CD = A.SP_CD
+                   AND C.CUST_ID = A.CUST_ID
+               LEFT OUTER JOIN TYM_ADMIN Y
+                            ON Y.ADMIN_ID = A.REG_ID    /* 등록자 */
+               LEFT OUTER JOIN TYM_ADMIN Z
+                            ON Z.ADMIN_ID = A.REG_ID    /* 변경자 */
+         WHERE A.PB_ID = #{pbId}
+         ORDER BY A.SP_CD
+                , C.CUST_NM
+    </select>
+
+    <!-- Select BasicPromo selCustList -->
+    <select id="selCustList" parameterType="Map" resultType="CamelMap">
+        <include refid="NS_Paging.header"/>
+        /* NS_BasicPromo.selCustList */
+        SELECT A.SP_CD                    /* 서비스제공자코드 */
+             , A.CUST_ID                  /* 고객사코드 */
+             , A.CUST_NM                  /* 고객사명 */
+             , A.BIZ_NO                   /* 사업자번호 */
+             , F_GET_CD_NM(#{language}, 'CUST_TP', A.CUST_TP) AS CUST_TP_NM    /* 고객사유형[01:은행, 02:증권, 03:관공서, 99:기타] */
+             , S.SP_NM                    /* 서비스제공자명 */
+          FROM TCM_CUST A                 /* 고객사 */
+               INNER JOIN TCM_SP S
+                  ON S.SP_CD = A.SP_CD
+               LEFT OUTER JOIN TST_CUST_BASIC_DISCOUNT B
+                  ON B.SP_CD = A.SP_CD
+                 AND B.CUST_ID = A.CUST_ID
+                 AND B.PB_ID = #{pbId}
+         WHERE A.CUST_ST = '0'
+           AND B.CUST_ID IS NULL
+           AND A.CUST_NM LIKE '%' || #{custNm} || '%'
+           AND A.BIZ_NO LIKE '%' || #{bizNo} || '%'
+        ORDER BY A.SP_CD
+               , A.CUST_NM
+        <include refid="NS_Paging.footer"/>
+    </select>
+
+    <!-- Insert TST_CUST_BASIC_DISCOUNT List -->
+    <insert id="insCustList" parameterType="Map">
+        /* NS_BasicPromo.insCustList */
+        INSERT INTO TST_CUST_BASIC_DISCOUNT (/* 고객사별_기준할인 */
+              SP_CD                    /* 서비스제공자코드 */
+            , CUST_ID                  /* 고객사코드 */
+            , PB_ID                    /* 기준할인아이디 */
+            , ST_DTM                   /* 시작일시 */
+            , ED_DTM                   /* 종료일시 */
+            , REG_DTM                  /* 등록일시 */
+            , REG_ID                   /* 등록자 */
+            , CHG_DTM                  /* 변경일시 */
+            , CHG_ID                   /* 변경자 */
+        )
+        SELECT A.SP_CD                    /* 서비스제공자코드 */
+             , A.CUST_ID                  /* 고객사코드 */
+             , A.PB_ID                    /* 기준할인아이디 */
+             , A.ST_DTM                   /* 시작일시 */
+             , A.ED_DTM                   /* 종료일시 */
+             , A.REG_DTM                  /* 등록일시 */
+             , A.REG_ID                   /* 등록자 */
+             , A.CHG_DTM                  /* 변경일시 */
+             , A.CHG_ID                   /* 변경자 */
+
+        FROM (
+            SELECT #{spCd}    AS SP_CD                  /* 서비스제공자코드 */
+                 , #{custId}  AS CUST_ID                /* 고객사코드 */
+                 , PB_ID                    /* 기준할인아이디 */
+                 , ST_DTM                   /* 시작일시 */
+                 , ED_DTM                   /* 종료일시 */
+                 , TO_CHAR(SYSDATE, 'yyyymmddhh24miss') AS REG_DTM    /* 등록일시 */
+                 , #{regId} AS REG_ID                                 /* 등록자 */
+                 , TO_CHAR(SYSDATE, 'yyyymmddhh24miss') AS CHG_DTM    /* 변경일시 */
+                 , #{chgId} AS CHG_ID                                 /* 변경자 */
+              FROM TSM_BASIC_DISCOUNT
+             WHERE PB_ID = #{pbId}
+        ) A
+        LEFT OUTER JOIN TST_CUST_BASIC_DISCOUNT B
+                     ON B.SP_CD = A.SP_CD
+                    AND B.CUST_ID = A.CUST_ID
+                    AND B.PB_ID = A.PB_ID
+        WHERE B.CUST_ID IS NULL
+    </insert>
+
+    <!-- Update TST_CUST_BASIC_DISCOUNT List -->
+    <update id="updCustList" parameterType="Map">
+        /* NS_BasicPromo.updCustList */
+        UPDATE TST_CUST_BASIC_DISCOUNT  /* 고객사별_기준할인 */
+           SET ST_DTM                 = #{stDtm}                   /* 시작일시 */
+             , ED_DTM                 = #{edDtm}                   /* 종료일시 */
+             , REMARK                 = #{remark}                  /* 비고 */
+             , CHG_DTM                = TO_CHAR(SYSDATE, 'yyyymmddhh24miss')     /* 변경일시 */
+             , CHG_ID                 = #{chgId}                    /* 변경자 */
+         WHERE SP_CD = #{spCd}
+           AND CUST_ID = #{custId}
+           AND PB_ID = #{pbId}
+    </update>
+
+    <!-- delete TST_CUST_BASIC_DISCOUNT List -->
+    <delete id="delCustList" parameterType="Map">
+        /* NS_BasicPromo.delCustList */
+        DELETE FROM TST_CUST_BASIC_DISCOUNT  /* 고객사별_기준할인 */
+         WHERE SP_CD = #{spCd}
+           AND CUST_ID = #{custId}
+           AND PB_ID = #{pbId}
+    </delete>
+
+</mapper>

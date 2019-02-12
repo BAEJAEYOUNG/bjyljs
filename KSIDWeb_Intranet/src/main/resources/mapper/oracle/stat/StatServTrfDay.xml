@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_StatServTrfDay">
+
+    <!-- Select StatServTrfDay List -->
+    <select id="selStatServTrfDayList" parameterType="Map" resultType="CamelMap">
+        /* NS_StatServTrfDay.selStatServTrfDayList */
+        SELECT STAT_DTM                         /* 통계일자(YYYYMMDD) */
+             <if test="chkSp != null and chkSp.equalsIgnoreCase('Y')">
+             , SP_CD                            /* 서비스제공자 */
+             , MAX(SP_NM)   SP_NM               /* 서비스제공자명 */
+             </if>
+             <if test="chkCust != null and chkCust.equalsIgnoreCase('Y')">
+             , CUST_ID                          /* 고객사 */
+             , MAX(CUST_NM) CUST_NM             /* 고객사명 */
+             </if>
+             <if test="chkProd != null and chkProd.equalsIgnoreCase('Y')">
+             , PROD_MCLS_CD                     /* 상품코드 */
+             , MAX(PROD_MCLS_NM) PROD_MCLS_NM   /* 상품명 */
+             </if>
+             <if test="chkServ != null and chkServ.equalsIgnoreCase('Y')">
+             , SERV_ID                          /* 서비스아이디 */
+             , MAX(SERV_NM) SERV_NM             /* 서비스명 */
+             </if>
+             <if test="chkBillCls != null and chkBillCls.equalsIgnoreCase('Y')">
+             , PROD_CD                          /* 과금분류코드 */
+             , MAX(PROD_NM) PROD_NM             /* 과금분류명 */
+             </if>
+             , SUM(USER_CNT)        USER_CNT    /* 사용자수 */
+             , SUM(BILL_CNT)        BILL_CNT    /* 유료건수 */
+             , SUM(FREE_CNT)        FREE_CNT    /* 무료건수 */
+             , SUM(ERROR_CNT)       ERROR_CNT   /* 에러건수 */
+          FROM TBD_SERV_TRF_STATS    /* 서비스 트래픽 현황 통계(선불,후불 건별/정액) */
+         WHERE STAT_DTM BETWEEN #{sDt} AND #{eDt}                         /* 조회시작일, 종료일 */
+           AND ( #{spCd} IS NULL OR SP_CD = #{spCd} )                     /* 서비스제공자코드 */
+           AND ( #{custId} IS NULL OR CUST_ID = #{custId} )               /* 고객사아이디 */
+           AND ( #{servId} IS NULL OR SERV_ID = #{servId} )               /* 서비스아이디 */
+           AND ( #{prodMclsCd} IS NULL OR PROD_MCLS_CD = #{prodMclsCd} )  /* 상품코드 */
+           AND ( #{prodCd} IS NULL OR PROD_CD = #{prodCd} )               /* 상품코드 */
+      GROUP BY STAT_DTM                 /* 매출일자 */
+             <if test="chkSp != null and chkSp.equalsIgnoreCase('Y')">
+             , SP_CD                    /* 서비스제공자 */
+             </if>
+             <if test="chkCust != null and chkCust.equalsIgnoreCase('Y')">
+             , CUST_ID                  /* 고객사 */
+             </if>
+             <if test="chkProd != null and chkProd.equalsIgnoreCase('Y')">
+             , PROD_MCLS_CD             /* 상품코드 */
+             </if>
+             <if test="chkServ != null and chkServ.equalsIgnoreCase('Y')">
+             , SERV_ID                  /* 서비스아이디 */
+             </if>
+             <if test="chkBillCls != null and chkBillCls.equalsIgnoreCase('Y')">
+             , PROD_CD                  /* 과금분류코드 */
+             </if>
+      ORDER BY STAT_DTM
+             <if test="chkSp != null and chkSp.equalsIgnoreCase('Y')">
+             , SP_CD                    /* 서비스제공자 */
+             </if>
+             <if test="chkCust != null and chkCust.equalsIgnoreCase('Y')">
+             , CUST_ID                  /* 고객사 */
+             </if>
+             <if test="chkProd != null and chkProd.equalsIgnoreCase('Y')">
+             , PROD_MCLS_CD             /* 상품코드 */
+             </if>
+             <if test="chkServ != null and chkServ.equalsIgnoreCase('Y')">
+             , SERV_ID                  /* 서비스아이디 */
+             </if>
+             <if test="chkBillCls != null and chkBillCls.equalsIgnoreCase('Y')">
+             , PROD_CD                  /* 과금분류코드 */
+             </if>
+    </select>
+
+</mapper>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_BillingComm">
+
+    <select id="selComboList" parameterType="Map" resultType="CamelMap">
+        /* NS_BillingComm.selCustList */
+        SELECT CUST_ID AS CODE_CD                 /* 고객사코드 */
+             , CUST_NM AS CODE_NM                 /* 고객사명 */
+          FROM TCM_CUST                           /* 고객사 */
+         WHERE SP_CD = #{spCd}
+           AND (#{custId} IS NULL OR CUST_ID = #{custId} )
+        ORDER BY CUST_NM
+    </select>
+
+    <select id="selServIdList" parameterType="Map" resultType="CamelMap">
+        /* NS_BillingComm.selServIdList */
+        SELECT SERV_ID AS CODE_CD                 /* 고객사코드 */
+             , SERV_NM AS CODE_NM                 /* 고객사명 */
+          FROM TSL_CUST_FIX_BILL                  /* 고객사 서비스 상품 */
+         WHERE SP_CD = #{spCd}
+           AND CUST_ID = #{custId}
+        ORDER BY SERV_NM
+    </select>
+
+    <select id="selProdChoicdCdList" parameterType="Map" resultType="CamelMap">
+        /* NS_Cust.selProdChoicdCdList */
+        SELECT PROD_CD AS CODE_CD         /* 과금대상코드 */
+             , PROD_NM AS CODE_NM         /* 과금대상명 */
+          FROM TSM_PROD                   /* 과금대상 */
+         WHERE PROD_MCLS_CD = #{prodMclsCd} /* 상품코드 */
+        ORDER BY PROD_LVL
+    </select>
+
+
+    <select id="selComboPayMidList" parameterType="Map" resultType="CamelMap">
+        /* NS_BillingComm.selComboPayMidList */
+        SELECT PAY_MID AS CODE_CD                 /* 가맹점 ID */
+             , PAY_MID||'-'||MID_KOR_NM AS CODE_NM              /* 가맹점명 */
+          FROM TSM_PG_PAY_MID                     /* PG사 가맹점 정보 */
+         WHERE PG_CD = #{pgCd}
+        ORDER BY PAY_MID
+    </select>
+
+
+    <select id="getSysUrl" parameterType="Map" resultType="CamelMap">
+        /* NS_BillingComm.getSysUrl */
+        SELECT CODE_CD                  /* 공통코드 */
+             , CODE_NM                  /* 코드명 */
+          FROM TYL_CODE                 /* 코드 */
+         WHERE CODE_GROUP_CD = #{codeGroupCd}
+           AND CODE_CD = #{codeCd}
+           AND CODE_TYPE = 'N'      /* 공통코드유형[N:일반,S:시스템] */
+           AND USE_YN = 'Y'         /* 사용여부 */
+    </select>
+
+
+    <select id="fileDirList" parameterType="Map" resultType="CamelMap">
+        /* NS_BillingComm.fileDirList */
+
+        SELECT CODE_GROUP_CD            /* 코드그룹코드 */
+             , CODE_CD                  /* 공통코드 */
+             , CODE_NM                  /* 코드명 */
+             , SORT_SEQ                 /* 정렬순번 */
+          FROM TYL_CODE                 /* 코드 */
+         WHERE CODE_GROUP_CD = #{codeGroupCd}
+           AND CODE_CD LIKE #{codeCd}||'%'
+           AND CODE_TYPE = 'N'      /* 공통코드유형[N:일반,S:시스템] */
+           AND USE_YN = 'Y'         /* 사용여부 */
+         ORDER BY SORT_SEQ ASC
+
+    </select>
+
+
+</mapper>

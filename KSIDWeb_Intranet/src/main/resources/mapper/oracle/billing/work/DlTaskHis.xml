@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_DlTaskHis">
+
+    <!-- Select 일/월 마감 이력 List -->
+    <select id="selDlTaskHisList" parameterType="Map" resultType="CamelMap">
+        <include refid="NS_Paging.header"/>
+        /* NS_DlTaskHis.selDlTaskHisList */
+
+        SELECT JOB_DATE                 /* 작업 일자 */
+             , JOB_TYPE                 /* 작업 구분(과금변환/요금계산/청구/정산) */
+             , JOB_CD                   /* 작업 코드(작업구분별 코드) */
+             , RESULT_CD                /* 작업 결과 */
+             , JOB_MSG                  /* 작업 메시지 */
+             , CHG_DTM                  /* 최종 작업일시 */
+             , DL_FLAG                  /* 마갑 여부(1:마감, 0:미정) */
+             , DL_DTM                   /* 마감 설정일시 */
+             , F_GET_CD_NM(#{language}, 'JOB_TYPE', JOB_TYPE) AS JOB_TYPE_NM
+             , F_GET_CD_NM(#{language}, 'JOB_CD', JOB_CD) AS JOB_CD_NM
+             , F_GET_CD_NM(#{language}, 'DL_RESULT_CD', RESULT_CD) AS RESULT_CD_NM
+             , F_GET_CD_NM(#{language}, 'DL_FLAG', DL_FLAG) AS DL_FLAG_NM
+          FROM TBT_TASK_DL_INFO       /* 일/월 마감 정보(요금계산/청구/정산) */
+         WHERE DL_DTM BETWEEN #{sDt} || '000000' AND #{eDt} || '999999'
+           AND ( #{jobType} IS NULL OR JOB_TYPE = #{jobType} )
+           AND ( #{jobCd} IS NULL OR JOB_CD = #{jobCd} )
+           AND ( #{resultCd} IS NULL OR RESULT_CD = #{resultCd} )
+           AND ( #{dlFlag} IS NULL OR DL_FLAG = #{dlFlag} )
+          ORDER BY JOB_DATE desc, DL_DTM desc
+        <include refid="NS_Paging.footer"/>
+
+    </select>
+
+
+    <update id="updSetDlFlag" parameterType="map">
+        /* NS_DlTaskHis."updSetDlFlag" */
+
+        UPDATE TBT_TASK_DL_INFO         /* 일/월 마감 정보(요금계산/청구/정산) */
+           SET DL_FLAG   = #{dlFlag}                  /* 마갑 여부(1:마감, 0:미정) */
+             , DL_DTM    = TO_CHAR(SYSDATE, 'yyyymmddhh24miss')                   /* 마감 설정일시 */
+         WHERE JOB_DATE  = #{jobDate}                 /* 작업 일자 */
+           AND JOB_TYPE  = #{jobType}                 /* 작업 구분(과금변환/요금계산/청구/정산) */
+           AND JOB_CD    = #{jobCd}                   /* 작업 코드(작업구분별 코드) */
+
+    </update>
+
+
+
+    <select id="codeComboList" parameterType="Map" resultType="CamelMap">
+        /* NS_DlTaskHis.codeComboList */
+
+        SELECT CODE_GROUP_CD            /* 코드그룹코드 */
+             , CODE_CD                  /* 공통코드 */
+             , CODE_NM                  /* 코드명 */
+             , SORT_SEQ                 /* 정렬순번 */
+          FROM TYL_CODE                 /* 코드 */
+         WHERE CODE_GROUP_CD = #{codeGroupCd}
+           AND CODE_CD LIKE #{codeCd}||'%'
+           AND CODE_TYPE = 'N'      /* 공통코드유형[N:일반,S:시스템] */
+           AND USE_YN = 'Y'         /* 사용여부 */
+         ORDER BY SORT_SEQ ASC
+
+    </select>
+
+
+</mapper>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_PgPayMid">
+
+    <!-- Select PG_PAY_MID List -->
+    <select id="selPgPayMidList" parameterType="Map" resultType="CamelMap">
+        /* NS_PgPayMid.selPgPayMidList */
+        SELECT A.PG_CD                    /* PG사코드 */
+             , A.PAY_MID                  /* 가맹점 ID */
+             , A.MID_KOR_NM               /* 가맹점명(한글) */
+             , A.MID_ENG_NM               /* 가맹점명(영어) */
+             , A.MID_IPADDR               /* 상점 고유 IP */
+             , A.GOODS_NM                 /*  */
+             , A.CANCEL_PWD               /* 취소비밀번호 */
+             , A.CANCEL_DAY               /* 취소가능한 기간(10일) */
+             , A.CANCEL_AMT               /* 부분취소금액 */
+             , A.ENC_KEY                  /* 인증요청용 EncKey */
+             , A.HASH_KEY                 /* 인증요청용 HashKey */
+             , A.MID_KEY                  /* 상점키 */
+             , A.REG_DTM                  /* 등록일시 */
+             , A.REG_ID                   /* 등록자 */
+             , A.CHG_DTM                  /* 변경일시 */
+             , A.CHG_ID                   /* 변경자 */
+             , P.PG_NM                    /* PG사명 */
+          FROM TSM_PG_PAY_MID  A       /* PG사 가맹점 정보 */
+               LEFT OUTER JOIN TSM_PG P
+                        ON P.PG_CD = A.PG_CD     /* PG사코드 */
+         WHERE ( #{pgCd} IS NULL OR A.PG_CD = #{pgCd} )
+              ORDER BY A.REG_DTM
+    </select>
+
+    <!-- Select PG_PAY_MID -->
+    <select id="selPgPayMid" parameterType="Map" resultType="CamelMap">
+        /* NS_PgPayMid.selPgPayMid */
+        SELECT PG_CD                    /* PG사코드 */
+             , PAY_MID                  /* 가맹점 ID */
+             , MID_KOR_NM               /* 가맹점명(한글) */
+             , MID_ENG_NM               /* 가맹점명(영어) */
+             , MID_IPADDR               /* 상점 고유 IP */
+             , GOODS_NM                 /* 결제상품명 */
+             , CANCEL_PWD               /* 취소비밀번호 */
+             , CANCEL_DAY               /* 취소가능한 기간(10일) */
+             , CANCEL_AMT               /* 부분취소금액 */
+             , ENC_KEY                  /* 인증요청용 EncKey */
+             , HASH_KEY                 /* 인증요청용 HashKey */
+             , MID_KEY                  /* 상점키 */
+             , REG_DTM                  /* 등록일시 */
+             , REG_ID                   /* 등록자 */
+             , CHG_DTM                  /* 변경일시 */
+             , CHG_ID                   /* 변경자 */
+          FROM TSM_PG_PAY_MID         /* PG사 가맹점 정보 */
+        WHERE PG_CD = #{pgCd}
+          AND PAY_MID = #{payMid}
+
+    </select>
+
+    <!-- Insert PG_PAY_MID List -->
+    <insert id="insPgPayMid" parameterType="Map">
+        /* NS_PgPayMid.insPgPayMid */
+
+        INSERT INTO TSM_PG_PAY_MID (   /* PG사 가맹점 정보 */
+              PG_CD                    /* PG사코드 */
+            , PAY_MID                  /* 가맹점 ID */
+            , MID_KOR_NM               /* 가맹점명(한글) */
+            , MID_ENG_NM               /* 가맹점명(영어) */
+            , MID_IPADDR               /* 상점 고유 IP */
+            , GOODS_NM                 /* 결제상품명 */
+            , CANCEL_PWD               /* 취소비밀번호 */
+            , CANCEL_DAY               /* 취소가능한 기간(10일) */
+            , CANCEL_AMT               /* 부분취소금액 */
+            , ENC_KEY                  /* 인증요청용 EncKey */
+            , HASH_KEY                 /* 인증요청용 HashKey */
+            , MID_KEY                  /* 상점키 */
+            , REG_DTM                  /* 등록일시 */
+            , REG_ID                   /* 등록자 */
+            , CHG_DTM                  /* 변경일시 */
+            , CHG_ID                   /* 변경자 */
+        ) VALUES (
+              #{pgCd}                  /* PG사코드 */
+            , #{payMid}                /* 가맹점 ID */
+            , #{midKorNm}              /* 가맹점명(한글) */
+            , #{midEngNm}              /* 가맹점명(영어) */
+            , #{midIpaddr}             /* 상점 고유 IP */
+            , #{goodsNm}               /* 결제상품명 */
+            , #{cancelPwd}             /* 취소비밀번호 */
+            , #{cancelDay}             /* 취소가능한 기간(10일) */
+            , #{cancelAmt}             /* 부분취소금액 */
+            , #{encKey}                /* 인증요청용 EncKey */
+            , #{hashKey}               /* 인증요청용 HashKey */
+            , #{midKey}                /* 상점키 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')     /* 등록일시 */
+            , #{regId}                 /* 등록자 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')     /* 변경일시 */
+            , #{chgId}                 /* 변경자 */
+        )
+
+    </insert>
+
+    <!-- Update PG_PAY_MID List -->
+    <update id="updPgPayMid" parameterType="Map">
+        /* NS_PgPayMid.updPgPayMid */
+
+        UPDATE TSM_PG_PAY_MID           /* PG사 가맹점 정보 */
+           SET MID_KOR_NM             = #{midKorNm}                /* 가맹점명(한글) */
+             , MID_ENG_NM             = #{midEngNm}                /* 가맹점명(영어) */
+             , MID_IPADDR             = #{midIpaddr}               /* 상점 고유 IP */
+             , GOODS_NM               = #{goodsNm}                 /* 결제상품명 */
+             , CANCEL_PWD             = #{cancelPwd}               /* 취소비밀번호 */
+             , CANCEL_DAY             = #{cancelDay}               /* 취소가능한 기간(10일) */
+             , CANCEL_AMT             = #{cancelAmt}               /* 부분취소금액 */
+             , ENC_KEY                = #{encKey}                  /* 인증요청용 EncKey */
+             , HASH_KEY               = #{hashKey}                 /* 인증요청용 HashKey */
+             , MID_KEY                = #{midKey}                  /* 상점키 */
+             , CHG_DTM                = TO_CHAR(SYSDATE, 'yyyymmddhh24miss')   /* 변경일시 */
+             , CHG_ID                 = #{chgId}                   /* 변경자 */
+        WHERE PG_CD = #{pgCd}
+          AND PAY_MID = #{payMid}
+
+    </update>
+
+    <!-- Delete PG_PAY_MID List -->
+    <delete id="delPgPayMid" parameterType="Map">
+        /* NS_PgPayMid.delPgPayMid */
+        DELETE FROM TSM_PG_PAY_MID           /* PG사 가맹점 정보 */
+        WHERE PG_CD = #{pgCd}
+          AND PAY_MID = #{payMid}
+
+    </delete>
+
+</mapper>

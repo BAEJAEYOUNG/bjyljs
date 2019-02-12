@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_Manager">
+
+    <!-- Select Manager List -->
+    <select id="selManagerList" parameterType="Map" resultType="CamelMap">
+        /* NS_Manager.selManagerList */
+        SELECT A.ADMIN_ID                 /* 관리자아이디 */
+             , A.ADMIN_TP                 /* 관리자유형[T:전체관리자, S:서비스제공자관리자, C:고객사관리자, E:기타관리자] */
+             , A.SP_CD                    /* 서비스제공자코드 */
+             , A.CUST_ID                  /* 고객사코드 */
+             , A.ADMIN_PW                 /* 관리자비밀번호 */
+             , A.ADMIN_NM                 /* 관리자명 */
+             , A.HP_NO                    /* 휴대폰번호 */
+             , A.REG_DTM                  /* 등록일시 */
+             , A.REG_ID                   /* 등록자 */
+             , A.CHG_DTM                  /* 변경일시 */
+             , A.CHG_ID                   /* 변경자 */
+             , Y.ADMIN_NM AS REG_NM       /* 등록자 */
+             , Z.ADMIN_NM AS CHG_NM       /* 변경자 */
+             , F_GET_CD_NM(#{language}, 'ADMIN_TP', A.ADMIN_TP) AS ADMIN_TP_NM    /* 관리자유형[T:전체관리자, S:서비스제공자관리자, C:고객사관리자, E:기타관리자] */
+             , S.SP_NM                    /* 서비스제공자명 */
+             , C.CUST_NM                  /* 고객사명 */
+          FROM TYM_ADMIN A                /* 관리자 */
+               LEFT OUTER JOIN TCM_SP S
+                            ON S.SP_CD = A.SP_CD
+               LEFT OUTER JOIN TCM_CUST C
+                            ON C.SP_CD = A.SP_CD
+                           AND C.CUST_ID = A.CUST_ID
+               LEFT OUTER JOIN TYM_ADMIN Y
+                            ON Y.ADMIN_ID = A.REG_ID
+               LEFT OUTER JOIN TYM_ADMIN Z
+                            ON Z.ADMIN_ID = A.REG_ID
+         WHERE ( #{adminTp} IS NULL OR A.ADMIN_TP = #{adminTp} )
+           AND ( (#{spCd} IS NULL OR A.SP_CD = #{spCd}) OR (#{spCd} IS NOT NULL AND A.SP_CD IS NULL) )
+           AND ( (#{custId} IS NULL OR A.CUST_ID = #{custId}) OR (#{custId} IS NOT NULL AND A.CUST_ID IS NULL) )
+           AND (#{adminId} IS NULL OR A.ADMIN_ID LIKE '%' || #{adminId} || '%'      /* 관리자아이디 */
+                                   OR A.ADMIN_NM LIKE '%' || #{adminId} || '%')     /* 관리자명 */
+        ORDER BY A.ADMIN_TP
+               , A.ADMIN_NM
+    </select>
+
+    <!-- Select Manager -->
+    <select id="selManager" parameterType="Map" resultType="CamelMap">
+        /* NS_Manager.selManager */
+        SELECT ADMIN_ID                 /* 관리자아이디 */
+             , ADMIN_TP                 /* 관리자유형[T:전체관리자, S:서비스제공자관리자, C:고객사관리자, E:기타관리자] */
+             , SP_CD                    /* 서비스제공자코드 */
+             , CUST_ID                  /* 고객사코드 */
+             , ADMIN_PW                 /* 관리자비밀번호 */
+             , ADMIN_NM                 /* 관리자명 */
+             , HP_NO                    /* 휴대폰번호 */
+             , REG_DTM                  /* 등록일시 */
+             , REG_ID                   /* 등록자 */
+             , CHG_DTM                  /* 변경일시 */
+             , CHG_ID                   /* 변경자 */
+          FROM TYM_ADMIN                /* 관리자 */
+         WHERE ADMIN_ID = #{adminId}
+    </select>
+
+    <!-- Insert Manager List -->
+    <insert id="insManager" parameterType="Map">
+        /* NS_Manager.insManager */
+        INSERT INTO TYM_ADMIN (        /* 관리자 */
+              ADMIN_ID                 /* 관리자아이디 */
+            , ADMIN_TP                 /* 관리자유형[T:전체관리자, S:서비스제공자관리자, C:고객사관리자, E:기타관리자] */
+            , SP_CD                    /* 서비스제공자코드 */
+            , CUST_ID                  /* 고객사코드 */
+            , ADMIN_PW                 /* 관리자비밀번호 */
+            , ADMIN_NM                 /* 관리자명 */
+            , HP_NO                    /* 휴대폰번호 */
+            , REG_DTM                  /* 등록일시 */
+            , REG_ID                   /* 등록자 */
+            , CHG_DTM                  /* 변경일시 */
+            , CHG_ID                   /* 변경자 */
+        ) VALUES (
+              #{adminId}               /* 관리자아이디 */
+            , #{adminTp}               /* 관리자유형[T:전체관리자, S:서비스제공자관리자, C:고객사관리자, E:기타관리자] */
+            , #{spCd}                  /* 서비스제공자코드 */
+            , #{custId}                /* 고객사코드 */
+            , #{adminPw}               /* 관리자비밀번호 */
+            , #{adminNm}               /* 관리자명 */
+            , #{hpNo}                  /* 휴대폰번호 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')   /* 등록일시 */
+            , #{regId}                 /* 등록자 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')   /* 변경일시 */
+            , #{chgId}                 /* 변경자 */
+        )
+    </insert>
+
+    <!-- Update Manager List -->
+    <update id="updManager" parameterType="Map">
+        /* NS_Manager.updManager */
+        UPDATE TYM_ADMIN                /* 관리자 */
+           SET ADMIN_ID               = #{adminId}                 /* 관리자아이디 */
+             , ADMIN_TP               = #{adminTp}                 /* 관리자유형[T:전체관리자, S:서비스제공자관리자, C:고객사관리자, E:기타관리자] */
+             , SP_CD                  = #{spCd}                    /* 서비스제공자코드 */
+             , CUST_ID                = #{custId}                  /* 고객사코드 */
+             , ADMIN_PW               = #{adminPw}                 /* 관리자비밀번호 */
+             , ADMIN_NM               = #{adminNm}                 /* 관리자명 */
+             , HP_NO                  = #{hpNo}                    /* 휴대폰번호 */
+             , CHG_DTM                = TO_CHAR(SYSDATE, 'yyyymmddhh24miss')   /* 변경일시 */
+             , CHG_ID                 = #{chgId}                   /* 변경자 */
+         WHERE ADMIN_ID = #{adminId}
+    </update>
+
+    <!-- Delete Manager List -->
+    <delete id="delManager" parameterType="Map">
+        /* NS_Manager.delManager */
+        DELETE FROM TYM_ADMIN                /* 관리자 */
+         WHERE ADMIN_ID = #{adminId}
+    </delete>
+
+</mapper>

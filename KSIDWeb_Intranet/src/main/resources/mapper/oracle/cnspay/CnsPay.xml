@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_CnsPay">
+
+    <!-- Insert TBG_RAW_PG_APPR_GTR_DATA -->
+    <insert id="insTbgRawPgApprGtrData" parameterType="Map" flushCache="true">
+        /* NS_CnsPay.insTbgRawPgApprGtrData */
+        INSERT INTO TBG_RAW_PG_APPR_GTR_DATA (
+              UDR_DTM
+            , SP_CD
+            , CUST_ID
+            , SERV_ID
+            , TEL_NO
+            , USER_ID
+            , USER_NM
+            , CUST_USER_NO
+            , RST_RESULT_CD
+            , RST_RESULT_MSG
+            , RST_PAY_TID
+            , RST_PAY_OID
+            , RST_PAY_MID
+            , RST_PAY_METHOD
+            , RST_PAY_AMT
+            , RST_AUTH_DTM
+            , RST_AUTH_CD
+            , RST_CARD_CD
+            , RST_CARD_NM
+            , RST_CARD_QUOTA
+            , RST_CARD_BIN
+            , RST_VAN_CD
+            , RST_CARD_PT
+            , RST_BANK_CD
+            , RST_BANK_NM
+            , RST_RCPT_TP
+            , RST_RCPT_AUTH_CD
+            , RST_RCPT_TID
+            , RST_VBANK_CD
+            , RST_VBANK_NM
+            , RST_VBANK_NO
+            , RST_VBANK_EXP_DTM
+            , RST_CARRIER
+            , RST_DST_ADDR
+        ) VALUES (
+              to_char(to_date(#{rstAuthDtm}, 'YYMMDDHH24MISS'), 'YYYYMMDDHH24MISS')
+            , #{spCd}
+            , #{custId}
+            , #{servId}
+            , #{telNo}
+            , #{userId}
+            , #{userNm}
+            , #{custUserNo}
+            , #{rstResultCd}
+            , #{rstResultMsg}
+            , #{rstPayTid}
+            , #{rstPayOid}
+            , #{rstPayMid}
+            , #{rstPayMethod}
+            , #{rstPayAmt}
+            , #{rstAuthDtm}
+            , #{rstAuthCd}
+            , #{rstCardCd}
+            , #{rstCardNm}
+            , #{rstCardQuota}
+            , #{rstCardBin}
+            , #{rstVanCd}
+            , #{rstCardPt}
+            , #{rstBankCd}
+            , #{rstBankNm}
+            , #{rstRcptTp}
+            , #{rstRcptAuthCd}
+            , #{rstRcptTid}
+            , #{rstVbankCd}
+            , #{rstVbankNm}
+            , #{rstVbankNo}
+            , #{rstVbankExpDtm}
+            , #{rstCarrier}
+            , #{rstDstAddr}
+        )
+    </insert>
+
+
+    <!-- SELECT Join TCM_MP & TCM_USER -->
+    <select id="selPgReqUserIdGet" parameterType="Map" resultType="CamelMap" flushCache="true">
+        /* NS_CnsPay.selPgReqUserIdGet */
+        SELECT A.USER_ID
+             , A.MP_OS_TP
+             , B.USER_NM
+             , C.CUST_USER_NO
+          FROM TCM_MP A, TCM_USER B, TCT_CUST_USER C
+         WHERE A.USER_ID = B.USER_ID
+           AND C.USER_ID = B.USER_ID
+           AND C.SP_CD   = #{spCd}
+           AND C.CUST_ID = #{custId}
+           AND C.CUST_USER_NO = #{custUserNo}
+    </select>
+
+
+    <!-- SELECT Join TCM_MP & TCM_USER -->
+    <select id="selPgCustUserNo" parameterType="Map" resultType="CamelMap" flushCache="true">
+        /* NS_CnsPay.selPgCustUserNo */
+        SELECT A.USER_ID
+             , A.MP_OS_TP
+             , B.USER_NM
+             , C.CUST_USER_NO
+          FROM TCM_MP A, TCM_USER B, TCT_CUST_USER C
+         WHERE A.USER_ID = B.USER_ID
+           AND C.USER_ID = B.USER_ID
+           AND C.SP_CD   = #{spCd}
+           AND C.CUST_ID = #{custId}
+           AND C.USER_ID   = #{userId}
+    </select>
+
+
+
+    <!-- SELECT ORDER_ID GET -->
+    <select id="selPgOrderIdGet" parameterType="Map" resultType="CamelMap" flushCache="true">
+        /* NS_CnsPay.selPgOrderIdGet */
+        SELECT F_GET_ID('ORDER_ID') AS ORDER_ID FROM DUAL
+    </select>
+
+
+
+    <select id="getCnspayDir" parameterType="Map" resultType="CamelMap">
+        /* NS_CnsPay.getCnspayDir */
+        SELECT CODE_CD                  /* 공통코드 */
+             , CODE_NM                  /* 코드명 */
+          FROM TYL_CODE                 /* 코드 */
+         WHERE CODE_GROUP_CD = #{codeGroupCd}
+           AND CODE_CD LIKE #{codeCd}
+           AND CODE_TYPE = 'N'      /* 공통코드유형[N:일반,S:시스템] */
+           AND USE_YN = 'Y'         /* 사용여부 */
+         ORDER BY SORT_SEQ ASC
+    </select>
+
+
+</mapper>

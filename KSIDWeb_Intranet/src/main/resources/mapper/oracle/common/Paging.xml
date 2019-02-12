@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_Paging">
+
+   <sql id="header">
+       <![CDATA[
+        SELECT *
+          FROM (
+                   SELECT PGT.*
+                        , ROWNUM                                AS rnum
+                        , FLOOR((ROWNUM - 1) / #{pagecnt}) + 1  AS pagenow     /* 현재페이지 */
+                        , COUNT(1) OVER()                       AS totrowcnt   /* 전체페이지수 */
+                     FROM (
+       ]]>
+    </sql>
+
+    <sql id="footer">
+       <![CDATA[
+                          ) PGT
+               )
+         WHERE pagenow = #{pagenow}
+       ]]>
+    </sql>
+
+</mapper>

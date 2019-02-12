@@ -1,0 +1,119 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+
+
+<script type="text/javascript" language="javascript">
+
+/*****************************************************
+ * 함수명 : init
+ * 설명   : onload 시 ready 함수에서 호출
+ *****************************************************/
+function init() {
+
+
+
+
+ }
+
+function searchpanelComboAjaxAfterDoQuery() {
+
+    $("#search-panel select[name=batchTp]").change(function() {
+
+
+        ksid.file.multi_attacher_01.config.batchTp = $(this).val();
+        ksid.file.multi_attacher_01.config.store   = {
+            fileOwnerCd:"batchfile",
+            fileOwnerKey1: $(this).val(),
+            fileOwnerType: "ATTACH"
+        };
+
+        ksid.file.multi_attacher_01.attacherReInit();
+
+        setTimeout(function(){
+            doQuery();
+        }, 100);
+
+    });
+
+    var params = ksid.form.flushPanel('search-panel');
+
+    ksid.file.multi_attacher_01 = new ksid.multiAttacher();
+
+    ksid.file.multi_attacher_01.config.title = "배치파일목록";
+    ksid.file.multi_attacher_01.config.downloadUrl    = "/billing/work/batchfile/download";
+    ksid.file.multi_attacher_01.config.ownerFilesUrl  = "/billing/work/batchfile/list";
+    ksid.file.multi_attacher_01.config.uploadUrl      = "/billing/work/batchfile/upload";
+    ksid.file.multi_attacher_01.config.batchTp        = params.batchTp;
+    ksid.file.multi_attacher_01.config.delDirect      = true;
+    ksid.file.multi_attacher_01.config.store          = {
+        fileOwnerCd:"batchfile",
+        fileOwnerKey1: params.batchTp,
+        fileOwnerType: "ATTACH"
+    };
+
+    ksid.file.multi_attacher_01.init({refId:"multi_attacher_01", panelId:"file_upload_01", dialogId:"file_dialog_01"});
+
+    doQuery();
+
+}
+
+function doQuery() {
+
+    var params = ksid.form.flushPanel('search-panel');
+
+    ksid.file.multi_attacher_01.loadStore({
+
+        fileOwnerCd:"batchfile",
+        fileOwnerKey1: params.batchTp,
+        fileOwnerType: "ATTACH"
+
+    });
+
+    ksid.file.multi_attacher_01.config.store = {
+
+        fileOwnerCd:"batchfile",
+        fileOwnerKey1: params.batchTp,
+        fileOwnerType: "ATTACH"
+
+    };
+
+}
+
+</script>
+
+
+
+<div class="contents-wrap">
+
+    <div class="location-wrap">
+        <p class="location"><span class="btn_home"></span>&nbsp;> <span name="menu">작업관리</span> > <span name="menu">배치파일관리</span></p>
+    </div>
+
+    <!-- 검색조건 시작 -->
+    <div id="search-panel" class="search-panel">
+        <div class="styleDlTable">
+            <dl>
+                <dt name="title"><label for="">배치유형</label></dt>
+                <dd>
+                    <select class="style-select" style="width:100px;" name="batchTp" title="배치유형" codeGroupCd="BATCH_TP"></select>
+                </dd>            </dl>
+        </div>
+
+        <div class="button-bar">
+            <button type="button" class="style-btn" auth="R" onclick="doQuery()">조회</button>
+        </div>
+
+    </div>
+    <!-- 검색조건 끝 -->
+
+    <section id="file_01">
+
+        <div id="file_upload_01" ></div>
+        <div id="file_dialog_01" title="파일첨부" class="pop_cnt" style="overflow:hidden"></div>
+
+    </section>
+
+</div>
+

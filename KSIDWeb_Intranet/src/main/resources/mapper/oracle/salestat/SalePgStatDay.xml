@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_SalePgStatDay">
+
+    <!-- Select SalePgStatDay List -->
+    <select id="selSalePgStatDayList" parameterType="Map" resultType="CamelMap">
+        /* NS_SalePgStatDay.selSalePgStatDayList */
+        SELECT T.STAT_DTM                 /* 통계일자(YYYYMMDD) */
+             <if test="chkSp != null and chkSp.equalsIgnoreCase('Y')">
+             , T.SP_CD                    /* 서비스제공자 */
+             , MAX(T.SP_NM) SP_NM         /* 서비스제공자명 */
+             </if>
+             <if test="chkCust != null and chkCust.equalsIgnoreCase('Y')">
+             , T.CUST_ID                  /* 고객사 */
+             , MAX(T.CUST_NM) AS CUST_NM  /* 고객사명 */
+             </if>
+             <if test="chkServ != null and chkServ.equalsIgnoreCase('Y')">
+             , T.SERV_ID                  /* 서비스아이디 */
+             , MAX(T.SERV_NM) AS SERV_NM  /* 서비스명 */
+             </if>
+             <if test="chkProd != null and chkProd.equalsIgnoreCase('Y')">
+             , T.PROD_MCLS_CD                       /* 상품코드 */
+             , MAX(T.PROD_MCLS_NM) AS PROD_MCLS_NM  /* 상품명 */
+             </if>
+             , T.PAY_METHOD                             /* 지불수단 */
+             , SUM(T.USER_CNT)        AS USER_CNT          /* 사용자수 */
+             , SUM(T.KSID_APPR_CNT  ) AS KSID_APPR_CNT     /* KSID 결제요청 건수 */
+             , SUM(T.KSID_CANCEL_CNT) AS KSID_CANCEL_CNT   /* KSID 결제취소 건수 */
+             , SUM(T.KSID_APPR_AMT  ) AS KSID_APPR_AMT     /* KSID 결제요청 금액 */
+             , SUM(T.KSID_CANCEL_AMT) AS KSID_CANCEL_AMT   /* KSID 결제취소 금액 */
+             , SUM(T.PGC_APPR_CNT   ) AS PGC_APPR_CNT      /* PGC 결제요청 건수  */
+             , SUM(T.PGC_CANCEL_CNT ) AS PGC_CANCEL_CNT    /* PGC 결제취소 건수  */
+             , SUM(T.PGC_APPR_AMT   ) AS PGC_APPR_AMT      /* PGC 결제요청 금액  */
+             , SUM(T.PGC_CANCEL_AMT ) AS PGC_CANCEL_AMT    /* PGC 결제취소 금액  */
+          FROM (
+
+                SELECT A.STAT_DTM                 /* 통계일자(YYYYMMDD) */
+                     <if test="chkSp != null and chkSp.equalsIgnoreCase('Y')">
+                     , A.SP_CD                    /* 서비스제공자 */
+                     , A.SP_NM                    /* 서비스제공자명 */
+                     </if>
+                     <if test="chkCust != null and chkCust.equalsIgnoreCase('Y')">
+                     , A.CUST_ID                  /* 고객사 */
+                     , A.CUST_NM                  /* 고객사명 */
+                     </if>
+                     <if test="chkServ != null and chkServ.equalsIgnoreCase('Y')">
+                     , A.SERV_ID                  /* 서비스아이디 */
+                     , A.SERV_NM                  /* 서비스명 */
+                     </if>
+                     <if test="chkProd != null and chkProd.equalsIgnoreCase('Y')">
+                     , A.PROD_MCLS_CD             /* 상품코드 */
+                     , A.PROD_MCLS_NM             /* 상품명 */
+                     </if>
+                     , A.PAY_METHOD        /* 지불수단 */
+                     , A.USER_CNT          /* 사용자 건수 */
+                     , A.KSID_APPR_CNT     /* KSID 결제요청 건수 */
+                     , A.KSID_CANCEL_CNT   /* KSID 결제취소 건수 */
+                     , A.KSID_APPR_AMT     /* KSID 결제요청 금액 */
+                     , A.KSID_CANCEL_AMT   /* KSID 결제취소 금액 */
+                     , A.PGC_APPR_CNT      /* PGC 결제요청 건수  */
+                     , A.PGC_CANCEL_CNT    /* PGC 결제취소 건수  */
+                     , A.PGC_APPR_AMT      /* PGC 결제요청 금액  */
+                     , A.PGC_CANCEL_AMT    /* PGC 결제취소 금액  */
+                  FROM TBD_SALES_PG_STATS A   /* 서비스 매출 현황 통계 */
+                 WHERE A.STAT_DTM BETWEEN #{sDt} AND #{eDt}                         /* 조회시작일, 종료일 */
+                   AND ( #{spCd} IS NULL OR A.SP_CD = #{spCd} )                     /* 서비스제공자코드 */
+                   AND ( #{custId} IS NULL OR A.CUST_ID = #{custId} )               /* 고객사아이디 */
+                   AND ( #{servId} IS NULL OR A.SERV_ID = #{servId} )               /* 서비스아이디 */
+                   AND ( #{prodMclsCd} IS NULL OR A.PROD_MCLS_CD = #{prodMclsCd} )  /* 상품코드 */
+              ) T
+      GROUP BY T.STAT_DTM                 /* 매출일자 */
+             <if test="chkSp != null and chkSp.equalsIgnoreCase('Y')">
+             , T.SP_CD                    /* 서비스제공자 */
+             </if>
+             <if test="chkCust != null and chkCust.equalsIgnoreCase('Y')">
+             , T.CUST_ID                  /* 고객사 */
+             </if>
+             <if test="chkServ != null and chkServ.equalsIgnoreCase('Y')">
+             , T.SERV_ID                  /* 서비스아이디 */
+             </if>
+             <if test="chkProd != null and chkProd.equalsIgnoreCase('Y')">
+             , T.PROD_MCLS_CD             /* 상품코드 */
+             </if>
+             , T.PAY_METHOD               /* 지불수단 */
+      ORDER BY T.STAT_DTM
+            <if test="chkSp != null and chkSp.equalsIgnoreCase('Y')">
+             , T.SP_CD                    /* 서비스제공자 */
+             </if>
+             <if test="chkCust != null and chkCust.equalsIgnoreCase('Y')">
+             , T.CUST_ID                  /* 고객사 */
+             </if>
+             <if test="chkServ != null and chkServ.equalsIgnoreCase('Y')">
+             , T.SERV_ID                  /* 서비스아이디 */
+             </if>
+             <if test="chkProd != null and chkProd.equalsIgnoreCase('Y')">
+             , T.PROD_MCLS_CD             /* 상품코드 */
+             </if>
+             , T.PAY_METHOD               /* 지불수단 */
+
+    </select>
+
+</mapper>

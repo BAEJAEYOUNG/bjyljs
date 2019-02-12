@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_StatUser">
+
+    <!-- 사용자 목록 조회 -->
+    <select id="selStatUserList" parameterType="Map" resultType="CamelMap">
+        <include refid="NS_Paging.header"/>
+        /* NS_StatUser.selStatUserList */
+        SELECT A.USER_NM
+             , B.MP_NO
+             , F_GET_CD_NM('kr', 'USER_TP', A.USER_TP) AS USER_TP_NM
+             , F_GET_CD_NM('kr', 'JOIN_TP', A.JOIN_TP) AS JOIN_TP_NM
+             , F_GET_CD_NM('kr', 'USER_ST', A.USER_ST) AS USER_ST_NM
+             , F_GET_CD_NM('kr', 'SEX', A.SEX) AS SEX_NM
+             , F_GET_CD_NM('kr', 'CORP_YN', A.CORP_YN) AS CORP_YN_NM
+             , A.BIZ_NO
+             , A.BIRTH_DAY
+             , A.SEX
+             , A.NATION
+             , A.JOIN_DTM
+             , A.CANCEL_DTM
+             , A.CANCEL_RSN
+             , A.USER_ID
+             , A.USER_TP
+             , A.CORP_YN
+             , A.JOIN_TP
+             , A.USER_ST
+          FROM TCM_USER A
+               JOIN TCM_MP B
+                    ON B.USER_ID = A.USER_ID
+         WHERE (#{userNm} IS NULL OR A.USER_NM LIKE '%' || #{userNm} || '%')
+           AND (#{mpNo} IS NULL OR B.MP_NO LIKE '%' || #{mpNo} || '%')
+           AND (#{userSt} IS NULL OR A.USER_ST = #{userSt})
+         ORDER BY A.USER_NM
+        <include refid="NS_Paging.footer"/>
+    </select>
+
+    <!-- 사용자별 서비스 목록 조회 -->
+    <select id="selFixServByUserList" parameterType="Map" resultType="CamelMap">
+        /* NS_StatCust.selFixServByUserList */
+        SELECT D.SP_NM
+             , E.CUST_NM
+             , B.SERV_NM
+             , C.PROD_MCLS_NM
+             , F_GET_CD_NM('kr', 'BILL_STATE', A.BILL_STATE) AS BILL_STATE_NM
+             , A.SERV_ST_DTM
+             , A.SERV_ED_DTM
+             , A.TA_INSTALL_CNT
+             , A.TA_UPDATE_CNT
+             , A.LIMIT_CNT
+             , A.SP_CD
+             , A.CUST_ID
+             , A.SERV_ID
+             , A.PROD_MCLS_CD
+             , A.USER_ID
+             , A.PROD_CHOICE_CD
+             , A.MP_NO
+             , A.BILL_STATE
+             , A.JOIN_DTM
+             , A.CANCEL_DTM
+          FROM TSL_CUST_PROD_USER_BILL A
+               JOIN TSL_CUST_FIX_BILL B
+                 ON B.SP_CD = A.SP_CD
+                AND B.CUST_ID = A.CUST_ID
+                AND B.SERV_ID = A.SERV_ID
+                AND B.PROD_MCLS_CD = A.PROD_MCLS_CD
+               LEFT OUTER JOIN TSM_PROD_MCLS C
+                            ON C.PROD_MCLS_CD = B.PROD_MCLS_CD
+               LEFT OUTER JOIN TCM_SP D
+                            ON D.SP_CD = A.SP_CD
+               LEFT OUTER JOIN TCM_CUST E
+                            ON E.CUST_ID = A.CUST_ID
+         WHERE A.USER_ID = #{userId}
+           AND (#{spCd} IS NULL OR B.SP_CD = #{spCd})
+           AND (#{custId} IS NULL OR B.CUST_ID = #{custId})
+         ORDER BY B.SERV_NM
+    </select>
+
+    <!-- 사용자별 서비스 이력 목록 조회 -->
+    <select id="selFixServHisByUserList" parameterType="Map" resultType="CamelMap">
+        /* NS_StatCust.selFixServHisByUserList */
+        SELECT F_GET_CD_NM(#{language}, 'BILL_STATE', A.BILL_STATE) AS BILL_STATE_NM
+             , F_GET_CD_NM(#{language}, 'CHARGE_FG', B.CHARGE_FG) AS CHARGE_FG_NM
+             , F_GET_CD_NM(#{language}, 'BILL_TAR_TP', B.BILL_TAR_TP) AS BILL_TAR_TP_NM
+             , F_GET_CD_NM(#{language}, 'PAY_FG', B.PAY_FG) AS PAY_FG_NM
+             , F_GET_CD_NM(#{language}, 'BILL_FG', B.BILL_FG) AS BILL_FG_NM
+             , D.SP_NM
+             , E.CUST_NM
+             , B.SERV_NM
+             , C.PROD_MCLS_NM
+             , A.SERV_ST_DTM
+             , A.SERV_ED_DTM
+             , A.TA_INSTALL_CNT
+             , A.TA_UPDATE_CNT
+             , A.LIMIT_CNT
+             , A.SP_CD
+             , A.CUST_ID
+             , A.SERV_ID
+             , A.PROD_MCLS_CD
+             , A.USER_ID
+             , A.PROD_CHOICE_CD
+             , A.MP_NO
+             , A.BILL_STATE
+             , A.JOIN_DTM
+             , A.CANCEL_DTM
+          FROM TSL_CUST_PROD_USER_BILL_HIS A
+               JOIN TSL_CUST_FIX_BILL B
+                 ON B.SP_CD = A.SP_CD
+                AND B.CUST_ID = A.CUST_ID
+                AND B.SERV_ID = A.SERV_ID
+                AND B.PROD_MCLS_CD = A.PROD_MCLS_CD
+               LEFT OUTER JOIN TSM_PROD_MCLS C
+                            ON C.PROD_MCLS_CD = B.PROD_MCLS_CD
+               LEFT OUTER JOIN TCM_SP D
+                            ON D.SP_CD = A.SP_CD
+               LEFT OUTER JOIN TCM_CUST E
+                            ON E.CUST_ID = A.CUST_ID
+         WHERE (#{spCd} IS NULL OR A.SP_CD = #{spCd})
+           AND (#{custId} IS NULL OR A.CUST_ID = #{custId})
+           AND (#{servId} IS NULL OR A.SERV_ID = #{servId})
+           AND (#{prodMclsCd} IS NULL OR A.PROD_MCLS_CD = #{prodMclsCd})
+           AND A.USER_ID = #{userId}
+         ORDER BY B.SERV_NM, A.SERV_ST_DTM desc
+    </select>
+
+
+    <select id="selPgPayByUserList" parameterType="Map" resultType="CamelMap">
+        /* NS_StatCust.selPgPayByUserList */
+        SELECT *
+          FROM
+          (
+            SELECT A.UDR_DTM                  /* 결제일시 */
+                 , A.SP_CD                    /* 서비스제공자코드 */
+                 , A.CUST_ID                  /* 고객사코드 */
+                 , A.SERV_ID                  /* 서비스아이디 */
+                 , B.PROD_MCLS_CD             /* 상품코드 */
+                 , A.USER_ID                  /* 사용자아이디 */
+                 , A.TEL_NO            AS MP_NO        /* 핸드폰 */
+                 , '승인'              AS PAY_CMD      /* 결제방법 */
+                 , A.RST_RESULT_CD            /* 결제 결과코드 */
+                 , A.RST_RESULT_MSG           /* 결제 결과메시지 */
+                 , A.RST_PAY_METHOD    AS PAY_METHOD   /* 결제수단(카드:CARD,은행:BANK,VBNK,MOBILE) */
+                 , TO_NUMBER(A.RST_PAY_AMT)       AS PAY_AMT      /* 결제금액 */
+                 , A.RST_CARD_QUOTA    AS PAY_MONTH    /* 할부개월 */
+                 , CASE
+                        WHEN A.RST_PAY_METHOD = 'CARD' THEN
+                             A.RST_CARD_NM
+                        WHEN A.RST_PAY_METHOD = 'BANK' THEN
+                             A.RST_BANK_NM
+                        WHEN A.RST_PAY_METHOD = 'VBNK' THEN
+                             A.RST_VBANK_NM
+                        WHEN A.RST_PAY_METHOD = 'MOBILE' THEN
+                             A.RST_CARRIER
+                        ELSE ''
+                   END PAY_BANK  /* 결제은행/카드 */
+                 , D.SP_NM
+                 , E.CUST_NM
+                 , B.SERV_NM
+                 , C.PROD_MCLS_NM
+                 , F_GET_CD_NM(#{language}, 'PAY_METHOD', A.RST_PAY_METHOD) AS PAY_METHOD_NM    /* 결제수단 */
+              FROM TBG_RAW_PG_APPR_GTR_DATA A /* PG 결제 승인 처리 데이터 */
+                   JOIN TSL_CUST_FIX_BILL B
+                     ON B.SP_CD = A.SP_CD
+                    AND B.CUST_ID = A.CUST_ID
+                    AND B.SERV_ID = A.SERV_ID
+                   LEFT OUTER JOIN TSM_PROD_MCLS C
+                                ON C.PROD_MCLS_CD = B.PROD_MCLS_CD
+                   LEFT OUTER JOIN TCM_SP D
+                                ON D.SP_CD = A.SP_CD
+                   LEFT OUTER JOIN TCM_CUST E
+                                ON E.CUST_ID = A.CUST_ID
+             WHERE A.USER_ID = #{userId}
+               AND (#{spCd} IS NULL OR B.SP_CD = #{spCd})
+               AND (#{custId} IS NULL OR B.CUST_ID = #{custId})
+               AND A.RST_RESULT_CD IN ('3001', '4000', '4100')
+
+           UNION ALL
+
+            SELECT A.UDR_DTM                  /* 결제일시 */
+                 , A.SP_CD                    /* 서비스제공자코드 */
+                 , A.CUST_ID                  /* 고객사코드 */
+                 , A.SERV_ID                  /* 서비스아이디 */
+                 , B.PROD_MCLS_CD             /* 상품코드 */
+                 , A.USER_ID                  /* 사용자아이디 */
+                 , A.TEL_NO            AS MP_NO        /* 핸드폰 */
+                 , '취소'              AS PAY_CMD      /* 결제방법 */
+                 , A.RST_RESULT_CD            /* 결제 결과코드 */
+                 , A.RST_RESULT_MSG           /* 결제 결과메시지 */
+                 , A.RST_CANCEL_METHOD AS PAY_METHOD   /* 결제수단(카드:CARD,은행:BANK,VBNK,MOBILE) */
+                 , TO_NUMBER(A.RST_CANCEL_AMT)    AS PAY_AMT      /* 취소금액 */
+                 , ''                  AS PAY_MONTH    /* 할부개월 */
+                 , ''                  AS PAY_BANK     /* 결제은행명 */
+                 , D.SP_NM
+                 , E.CUST_NM
+                 , B.SERV_NM
+                 , C.PROD_MCLS_NM
+                 , F_GET_CD_NM(#{language}, 'PAY_METHOD', A.RST_CANCEL_METHOD) AS PAY_METHOD_NM    /* 결제수단 */
+              FROM TBG_RAW_PG_CANCEL_GTR_DATA  A /* PG 결제 취소 처리 데이터 */
+                   JOIN TSL_CUST_FIX_BILL B
+                           ON B.SP_CD = A.SP_CD
+                          AND B.CUST_ID = A.CUST_ID
+                          AND B.SERV_ID = A.SERV_ID
+                   LEFT OUTER JOIN TSM_PROD_MCLS C
+                           ON C.PROD_MCLS_CD = B.PROD_MCLS_CD
+                   LEFT OUTER JOIN TCM_SP D
+                           ON D.SP_CD = A.SP_CD
+                   LEFT OUTER JOIN TCM_CUST E
+                           ON E.CUST_ID = A.CUST_ID
+             WHERE A.USER_ID = #{userId}
+               AND (#{spCd} IS NULL OR B.SP_CD = #{spCd})
+               AND (#{custId} IS NULL OR B.CUST_ID = #{custId})
+               AND A.RST_RESULT_CD IN ('2001', '2002', '2211')
+          )
+         ORDER BY UDR_DTM desc
+    </select>
+
+
+    <select id="selMpNoChgHisByUserList" parameterType="Map" resultType="CamelMap">
+        /* NS_StatCust.selMpNoChgHisByUserList */
+
+        SELECT A.USER_ID                  /* 사용자아이디 */
+             , A.OLD_MP_NO                /* 기존 휴대폰번호 */
+             , A.NEW_MP_NO                /* 신규 휴대폰번호 */
+             , A.CHG_DTM                  /* 변경일시 */
+             , A.CHG_ID                   /* 변경자 */
+             , B.ADMIN_NM AS CHG_NM       /* 변경자 */
+          FROM TCL_USER_MPNO_CHG_HIS  A  /* 번호이동 이력 */
+               LEFT OUTER JOIN TYM_ADMIN  B
+                       ON B.ADMIN_ID = A.CHG_ID    /* 변경자 */
+         WHERE A.USER_ID = #{userId}
+         ORDER BY A.CHG_DTM desc
+
+    </select>
+
+</mapper>

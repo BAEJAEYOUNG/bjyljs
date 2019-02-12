@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_Lcls">
+
+    <!-- Select Lcls List -->
+    <select id="selLclsList" parameterType="Map" resultType="CamelMap">
+        /* NS_Lcls.selLclsList */
+        SELECT PROD_LCLS_CD             /* 상품대분류코드 */
+             , PROD_LCLS_NM             /* 상품대분류명 */
+             , REMARK                   /* 비고 */
+             , REG_DTM                  /* 등록일시 */
+             , REG_ID                   /* 등록자 */
+             , CHG_DTM                  /* 변경일시 */
+             , CHG_ID                   /* 변경자 */
+            FROM TSM_PROD_LCLS          /* 상품대분류 */
+                WHERE PROD_LCLS_CD LIKE '%' || #{prodLclsCd} || '%'
+                    ORDER BY PROD_LCLS_CD
+    </select>
+
+    <!-- Select Lcls -->
+    <select id="selLcls" parameterType="Map" resultType="CamelMap">
+        /* NS_Lcls.selLcls */
+        SELECT PROD_LCLS_CD             /* 상품대분류코드 */
+             , PROD_LCLS_NM             /* 상품대분류명 */
+             , REMARK                   /* 비고 */
+             , REG_DTM                  /* 등록일시 */
+             , REG_ID                   /* 등록자 */
+             , CHG_DTM                  /* 변경일시 */
+             , CHG_ID                   /* 변경자 */
+            FROM TSM_PROD_LCLS          /* 상품대분류 */
+            WHERE PROD_LCLS_CD = #{prodLclsCd}
+    </select>
+
+    <!-- Insert Lcls List -->
+    <insert id="insLcls" parameterType="Map">
+        /* NS_Lcls.insLcls */
+        INSERT INTO TSM_PROD_LCLS (    /* 상품대분류 */
+              PROD_LCLS_CD             /* 상품대분류코드 */
+            , PROD_LCLS_NM             /* 상품대분류명 */
+            , REMARK                   /* 비고 */
+            , REG_DTM                  /* 등록일시 */
+            , REG_ID                   /* 등록자 */
+            , CHG_DTM                  /* 변경일시 */
+            , CHG_ID                   /* 변경자 */
+        ) VALUES (
+              #{prodLclsCd}            /* 상품대분류코드 */
+            , #{prodLclsNm}            /* 상품대분류명 */
+            , #{remark}                /* 비고 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')                /* 등록일시 */
+            , #{regId}                 /* 등록자 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')                /* 변경일시 */
+            , #{chgId}                 /* 변경자 */
+        )
+    </insert>
+
+    <!-- Update Lcls List -->
+    <update id="updLcls" parameterType="Map">
+        /* NS_Lcls.updLcls */
+        UPDATE TSM_PROD_LCLS                                       /* 상품대분류 */
+           SET PROD_LCLS_NM           = #{prodLclsNm}              /* 상품대분류명 */
+             , REMARK                 = #{remark}                  /* 비고 */
+             , CHG_DTM                = TO_CHAR(SYSDATE, 'yyyymmddhh24miss')                  /* 변경일시 */
+             , CHG_ID                 = #{chgId}                   /* 변경자 */
+           WHERE PROD_LCLS_CD = #{prodLclsCd}
+    </update>
+
+    <!-- Delete Lcls List -->
+    <delete id="delLcls" parameterType="Map">
+        /* NS_Lcls.delLcls */
+        DELETE FROM TSM_PROD_LCLS            /* 상품대분류 */
+         WHERE PROD_LCLS_CD = #{prodLclsCd}
+    </delete>
+
+    <!-- Delete Mcls in Lcls List -->
+    <delete id="delMclsInLcls" parameterType="Map">
+        /* NS_Lcls.delLcls */
+        DELETE FROM TSM_PROD_MCLS            /* 상품대분류 */
+         WHERE PROD_LCLS_CD = #{prodLclsCd}
+    </delete>
+
+    <!-- Select Mcls List -->
+    <select id="selMclsList" parameterType="Map" resultType="CamelMap">
+        /* NS_Lcls.selMclsList */
+        SELECT PROD_MCLS_CD             /* 상품중분류코드 */
+             , PROD_MCLS_NM             /* 상품중분류명 */
+             , REMARK                   /* 비고 */
+             , REG_DTM                  /* 등록일시 */
+             , REG_ID                   /* 등록자 */
+             , CHG_DTM                  /* 변경일시 */
+             , CHG_ID                   /* 변경자 */
+            FROM TSM_PROD_MCLS          /* 상품중분류 */
+
+            WHERE PROD_MCLS_CD LIKE '%' || #{prodMclsCd} || '%'
+               OR PROD_MCLS_NM LIKE '%' || #{prodMclsCd} || '%'
+            ORDER BY PROD_MCLS_CD
+    </select>
+
+    <!-- Select Mcls -->
+    <select id="selMcls" parameterType="Map" resultType="CamelMap">
+        /* NS_Lcls.selMcls */
+        SELECT PROD_MCLS_CD             /* 상품중분류코드 */
+             , PROD_MCLS_NM             /* 상품중분류명 */
+             , REMARK                   /* 비고 */
+             , REG_DTM                  /* 등록일시 */
+             , REG_ID                   /* 등록자 */
+             , CHG_DTM                  /* 변경일시 */
+             , CHG_ID                   /* 변경자 */
+            FROM TSM_PROD_MCLS          /* 상품중분류 */
+            WHERE PROD_MCLS_CD = #{prodMclsCd}
+    </select>
+
+    <!-- Insert Mcls List -->
+    <insert id="insMcls" parameterType="Map">
+        /* NS_Lcls.insMcls */
+        INSERT INTO TSM_PROD_MCLS (    /* 상품중분류 */
+            , PROD_MCLS_CD             /* 상품중분류코드 */
+            , PROD_MCLS_NM             /* 상품중분류명 */
+            , REMARK                   /* 비고 */
+            , REG_DTM                  /* 등록일시 */
+            , REG_ID                   /* 등록자 */
+            , CHG_DTM                  /* 변경일시 */
+            , CHG_ID                   /* 변경자 */
+        ) VALUES (
+            , #{prodMclsCd}            /* 상품중분류코드 */
+            , #{prodMclsNm}            /* 상품중분류명 */
+            , #{remark}                /* 비고 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')                /* 등록일시 */
+            , #{regId}                 /* 등록자 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')                /* 변경일시 */
+            , #{chgId}                 /* 변경자 */
+        )
+    </insert>
+
+    <!-- Update Mcls List -->
+    <update id="updMcls" parameterType="Map">
+        /* NS_Lcls.updMcls */
+        UPDATE TSM_PROD_MCLS            /* 상품중분류 */
+           SET PROD_MCLS_NM           = #{prodMclsNm}              /* 상품중분류명 */
+             , REMARK                 = #{remark}                  /* 비고 */
+             , CHG_DTM                = TO_CHAR(SYSDATE, 'yyyymmddhh24miss')                  /* 변경일시 */
+             , CHG_ID                 = #{chgId}                   /* 변경자 */
+         WHERE ROD_MCLS_CD           = #{prodMclsCd}              /* 상품중분류코드 */
+    </update>
+
+    <!-- Delete Mcls List -->
+    <delete id="delMcls" parameterType="Map">
+        /* NS_Lcls.delMcls */
+        DELETE FROM TSM_PROD_MCLS    /* 상품중분류 */
+        WHERE PROD_MCLS_CD           = #{prodMclsCd}    /* 상품중분류코드 */
+    </delete>
+
+
+
+    <select id="selComboList" parameterType="Map" resultType="CamelMap">
+        /* NS_Lcls.selComboList */
+        SELECT PROD_LCLS_CD
+             , PROD_MCLS_NM
+          FROM TSM_PROD_MCLS
+         WHERE PROD_LSLS_CD = #{prodLclsCd}
+         ORDER BY PROD_LSLS_CD
+
+         <!--  WHERE ( LANGUAGE = #{language} OR LANGUAGE = 'ALL' )
+          AND CODE_GROUP_CD = #{codeGroupCd}
+         ORDER BY SORT_SEQ  -->
+    </select>
+
+
+</mapper>

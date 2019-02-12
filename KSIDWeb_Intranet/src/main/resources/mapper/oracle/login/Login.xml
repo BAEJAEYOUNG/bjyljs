@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_Login">
+
+    <!--  -->
+    <select id="selLogin" parameterType="map" resultType="camelMap">
+        /* NS_Login.selLogin */
+        SELECT A.ADMIN_ID
+             , A.ADMIN_PW
+             , B.AUTH_GROUP_CD
+          FROM TYM_ADMIN A
+               LEFT OUTER JOIN TYT_AUTH_GROUP_ADMIN B
+                            ON B.ADMIN_ID = A.ADMIN_ID
+         WHERE A.ADMIN_ID = #{adminId}
+    </select>
+
+    <!--  -->
+    <select id="selSessionInfo" parameterType="map" resultType="camelMap">
+        /* NS_Login.selSessionInfo */
+        SELECT ADMIN_ID                 /* 관리자아이디 */
+             , ADMIN_TP                 /* 관리자유형[T:전체관리자, S:서비스제공자관리자, C:고객사관리자, E:기타관리자] */
+             , SP_CD                    /* 서비스제공자코드 */
+             , CUST_ID                  /* 고객사코드 */
+             , ADMIN_PW                 /* 관리자비밀번호 */
+             , ADMIN_NM                 /* 관리자명 */
+             , HP_NO                    /* 휴대폰번호 */
+             , REG_DTM                  /* 등록일시 */
+             , REG_ID                   /* 등록자 */
+             , CHG_DTM                  /* 변경일시 */
+             , CHG_ID                   /* 변경자 */
+          FROM TYM_ADMIN                /* 관리자 */
+         WHERE ADMIN_ID = #{adminId}
+    </select>
+
+</mapper>

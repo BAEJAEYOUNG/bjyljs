@@ -1,0 +1,479 @@
+@charset "utf-8";
+
+/**
+ * --------------------------------------------------
+ * --------------------------------------------------
+ * main.css
+ * --------------------------------------------------
+ * --------------------------------------------------
+ */
+.layout-main {
+}
+
+/**
+ * --------------------------------------------------
+ * layout-top
+ * --------------------------------------------------
+ */
+.layout-top {
+    background: url(../../image/ksid/bg_gnb.png) repeat-x;
+    margin: 0px;
+    height: 73px;
+    min-width: 870px;
+    width: 100%;
+}
+
+.layout-top .logo {
+    margin: 0px;
+    width: 183px;
+    height: 73px;
+    float: left;
+}
+
+.layout-top span.title {
+    color: #222;
+    background: #FFF;
+    font-family: "12롯데마트드림Medium";
+    font-size: 14px;
+    line-height: 20px;
+    padding: 14px 20px 12px 20px;
+    width: 143px;
+    border-right: 1px solid #a3a3a3;
+    height: 45px;
+    float: left;
+    border-bottom: 2px solid #4f81bd;
+}
+
+
+/* 상단 영역 - 주메뉴 */
+.layout-top .top-menu {
+    /*padding: 0 0px 0 184px;*/
+    min-width: 630px;
+    position: relative;
+}
+
+.layout-top .top-menu li {
+    display: inline-block;
+    background: url(../../image/ksid/line_gnb.png) right center no-repeat;
+}
+
+.layout-top .top-menu li:first-child {
+    margin-left: 10px;
+}
+
+.layout-top .top-menu li:last-child {
+    background: none;
+}
+
+.layout-top .top-menu li a {
+    font-size: 14px;
+    font-family: "12롯데마트드림Medium";
+    color: #000;
+    padding: 13px 16px;
+    font-weight: bold;
+    display: block;
+}
+
+.layout-top .top-menu li a:hover, .layout-top .top-menu li .on {
+    color: #4f81bd;
+}
+
+/* 상단 영역 - 전체닫기 */
+.layout-top .top-menu .btn_selectALl{position:absolute;top:8px;right:10px;z-index:100;}
+.layout-top .top-menu .btn_selectALl a{font-size:12px; font-family:"12롯데마트드림Medium";width:80px;background:#606060; border:1px solid #383838; border-radius:2px; color:#FFF; padding:6px 2px; display:block; cursor:pointer;text-align:center;}
+.layout-top .top-menu .btn_selectALl a:hover{font-size:12px; font-family:"12롯데마트드림Medium";background:#4f81bd; border:1px solid #383838; border-radius:2px; color:#FFF; padding:6px 2px; display:block; cursor:pointer;text-align:center;}
+.layout-top .top-menu a.btn_selectALl{font-size:12px; font-family:"12롯데마트드림Medium";width:80px;background:#606060; border:1px solid #383838; border-radius:2px; color:#FFF; padding:6px 2px; display:block; cursor:pointer;text-align:center;}
+.layout-top .top-menu a.btn_selectALl:hover{font-size:12px; font-family:"12롯데마트드림Medium";background:#4f81bd; border:1px solid #383838; border-radius:2px; color:#FFF; padding:6px 2px; display:block; cursor:pointer;text-align:center;}
+
+
+.layout-body {
+    position: relative;
+}
+
+/* 왼쪽영역 - 로그인정보 */
+.layout-body .login-info {
+    height: 74px;
+    padding-top: 16px;
+    background: #e8e8e8;
+    border-bottom: 1px solid #797979;
+    width: 100%;
+}
+
+.layout-body .login-info div {
+    display: block;
+    text-align: center;
+}
+
+.layout-body .login-info div strong {
+    background: url(../../image/ksid/icon_profile.gif) no-repeat 0 5px;
+    display: inline-block;
+    padding: 5px 0 0 16px;
+    font-family: "12롯데마트드림Medium";
+}
+
+.layout-body .login-info .btnLogout {
+    background: #606060;
+    font-family: "12롯데마트드림Medium";
+    border: 1px solid #383838;
+    width: 100px;
+    margin: 13px auto 0 auto;
+    text-align: center;
+    border-radius: 2px;
+    color: #FFF;
+    padding: 6px 2px;
+    display: block;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.layout-body .search {
+    width: 90px;
+    height: 15px;
+    border-right: none;
+    float: left;
+}
+
+.layout-body a.lnbBtnImg {
+    background: url(../../image/btn_lnb_close.png) no-repeat;
+    display: block;
+    height: 31px;
+    width: 13px;
+}
+
+.layout-body a.lnbBtnImgOff {
+    background: url(../../image/btn_lnb_open.png) no-repeat;
+    display: block;
+    height: 31px;
+    width: 13px;
+}
+
+/* 왼쪽영역 - 메뉴정보 */
+.layout-left {
+    position: relative;
+    font-family: dotum;
+    top: 0px;
+    width: 183px;
+    float: left;
+    height: -moz-calc(100% - 75px);     /* Firefox */
+    height: -webkit-calc(100% - 75px);  /* Chrome, Safari */
+    height: calc(100% - 75px);          /* IE9+ and future browsers */
+}
+
+.layout-left .lnbBtnArea {
+    height: 100%;
+    float: left;
+    position: relative;
+}
+
+.layout-left .lnbBtn {
+    top: 50%;
+    position: absolute;
+}
+
+.left-menu {
+    position: relative;
+    width: 182px;
+    height: 100%;
+    border-right: 1px solid #a2a2a2;
+    float: left;
+}
+
+.left-menu-link {
+    overflow: auto;
+    padding: 13px 0;
+    background: #f0f0f0;
+    height: -moz-calc(100% - 168px);    /* Firefox */
+    height: -webkit-calc(100% - 168px); /* Chrome, Safari */
+    height: calc(100% - 168px);         /* IE9+ and future browsers */
+}
+
+/* 왼쪽 영영 - 타이틀 */
+.left-menu-title {
+    border-bottom: 1px solid #c6c6c6;
+    padding: 15px;
+}
+
+.left-menu-title span {
+    color: #4f81bd;
+    font-size: 15px;
+    font-family: "12롯데마트드림Medium";
+}
+
+.layout-body .layout-content {
+    z-index: 2;
+    position: absolute;
+    top: 0px;
+    left: 184px;
+    border: 0px;
+    height: 100% !important;
+    width: -moz-calc(100% - 184px);     /* Firefox */
+    width: -webkit-calc(100% - 184px);  /* Chrome, Safari */
+    width: calc(100% - 184px);          /* IE9+ and future browsers */
+/*
+    z-index: 2;
+    position: absolute;
+    top: 0px;
+    left: 184px;
+    border: 0px;
+    height: 100% !important;
+*/
+}
+
+/**
+ * --------------------------------------------------
+ * easyui.css tabs main
+ * --------------------------------------------------
+ */
+.main-tabs {
+    /*width: -moz-calc(100% - 184px);     /* Firefox */
+    /*width: -webkit-calc(100% - 184px);  /* Chrome, Safari */
+    /*width: calc(100% - 184px);          /* IE9+ and future browsers */
+}
+
+/*
+.main-tabs .tabs-header {
+    background-color: #f8f8f8;
+    z-index: 2;
+    position: absolute;
+    top: -30px;
+    left: 184px;
+    border: 0px;
+    border-top: 1px solid #a3a3a3;
+    border-bottom: 1px solid #a3a3a3;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    height: 28px !important;
+    width: 100%;
+}
+
+.main-tabs .tabs-header ul {
+    height: 29px !important;
+    border: 0px;
+    margin: 0px;
+    padding: 0px;
+    margin-top: -1px;
+}
+
+.main-tabs .tabs-header ul li {
+    font-size: 12px;
+    font-family: dotum;
+    margin: 0px;
+    position: relative;
+    border: 1px solid #a3a3a3;
+    margin-left: -1px !important;
+    min-width: 135px;
+}
+
+.main-tabs .tabs-panels {
+    z-index: 2;
+    position: absolute;
+    top: 0px;
+    left: 184px;
+    border: 0px;
+    height: 100% !important;
+}
+
+.main-tabs .layout-left-close {
+    width: 100% !important;
+    left: 0px !important;
+}
+
+.main-tabs li.tabs-selected a.tabs-close {
+    background: url('../../image/ksid/tabs_icons1.png') no-repeat center;
+}
+
+.main-tabs li a.tabs-inner {
+    min-width:135px;
+    color: #0E2D5F;
+    background-color: #f8f8f8;
+    border-width: 0px;
+    border-radius: 0px;
+    background: none;
+    background-repeat: none;
+}
+
+.main-tabs li.tabs-selected a.tabs-inner {
+    outline: none;
+    background: #4f81bd !important;
+    color: #FFF !important;
+    height: 28px !important;
+    border: none !important;
+    min-width: 135px;
+}
+
+.main-tabs .tabs-scroller-left {
+    background: #E0ECFF url('../../image/easyui/tabs_icons.png') no-repeat 1px center;
+}
+
+.main-tabs .tabs-scroller-right {
+    background: #E0ECFF url('../../image/easyui/tabs_icons.png') no-repeat -15px center;
+}
+*/
+
+/**
+ * --------------------------------------------------
+ * status bar main
+ * --------------------------------------------------
+ */
+.layout-status {
+    position: fixed;
+    left: 184px;
+    bottom: 2px;
+    font-size: 12px;
+    padding: 0px 10px 0px 17px;
+    z-index: 2;
+    width: -moz-calc(100% - 210px);     /* Firefox */
+    width: -webkit-calc(100% - 210px);  /* Chrome, Safari */
+    width: calc(100% - 210px);          /* IE9+ and future browsers */
+    height: 32px;
+}
+
+.layout-status dl {
+    position: relative;
+    background: #eeeeee;
+    border: 1px solid #c6c6c6;
+}
+
+.layout-status dt {
+    font-family: "12롯데마트드림Medium", "Dotum", "Gulim";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 107px;
+    padding: 10px 0 0 25px;
+    height: 22px;
+    background: url(../../image/ksid/bg_statusResult.png) 0 0 no-repeat;
+    color: #FFF;
+}
+
+.layout-status dd {
+    font-family: "12롯데마트드림Medium", "Dotum", "Gulim";
+    width: 100%;
+    padding: 11px 0 0 120px;
+    height: 21px;
+    color: #212121;
+}
+
+
+.layout-body > .layout-left-close {
+    width: -moz-calc(100% - 26px);     /* Firefox */
+    width: -webkit-calc(100% - 26px);  /* Chrome, Safari */
+    width: calc(100% - 26px);          /* IE9+ and future browsers */
+    left: 0px !important;
+}
+
+/**
+ * --------------------------------------------------
+ * BootSideMenu.css sidebar main
+ * --------------------------------------------------
+ */
+body .sidebar {
+    border: 1px solid #ccc;
+}
+
+body .sidebar > .row > .col-xs-12, .sidebar > .row > .col-sm-12, .sidebar > .row > .col-md-12, .sidebar > .row > .col-lg-12 {
+    overflow: hidden;
+    width:100%;
+}
+
+body .toggler {
+    border: 1px solid rgba(0, 0, 0, .15);
+    top: 40%;
+    height: 40px;
+    width: 14px;
+}
+
+body .sidebar .list-group-item {
+    border: 1px solid #DDD;
+}
+
+body .sidebar > .row {
+}
+
+body .sidebar-left > .toggler {
+    /*right: -21px;*/
+    left: 183px;
+}
+
+body .sidebar-left > .toggler > span {
+    margin: 6px -2px;
+}
+
+/*body .sidebar-left > .toggler > .glyphicon-chevron-right {
+      display:none;
+}
+
+body .sidebar-right > .toggler > .glyphicon-chevron-left {
+      display:none;
+}*/
+
+body .sidebar .submenu {
+      display: none;
+      position: fixed;
+}
+
+body @media (min-width: 400px) {
+}
+
+body .glyphicon {
+    position: relative;
+    top: 1px;
+    display: inline-block;
+    font-family: 'Glyphicons Halflings';
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body .glyphicon-chevron-right {
+    background:url(../../image/ksid/glyphicon-chevron-right.png) no-repeat; padding:7px;
+}
+
+body .glyphicon-chevron-left {
+    background:url(../../image/ksid/glyphicon-chevron-left.png) no-repeat; padding:7px;
+}
+
+/**
+ * --------------------------------------------------
+ * jquery.treeview.css main
+ * --------------------------------------------------
+ */
+
+body .treeview, .treeview ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    font-family: dotum;
+    font-size: 12px;
+}
+
+body .treeview ul {
+    background-color: white;
+    margin-top: 4px;
+}
+
+body .treeview li {
+    height: 18px;
+}
+
+body .treeview li a {
+    color: #232323;
+}
+
+body .treeview li a:hover {
+    color: #4f81bd;
+}
+
+body .treeview li a.clickedMenu {
+    color: #232323;
+    font-weight: bold;
+}
+
+body .treeview li a.clickedMenu:hover {
+    color: #232323;
+    font-weight: bold;
+    cursor: default;
+}

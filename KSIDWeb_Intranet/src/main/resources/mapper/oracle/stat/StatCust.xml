@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_StatCust">
+
+    <!-- 고객사 목록 조회 -->
+    <select id="selStatCustList" parameterType="Map" resultType="CamelMap">
+        /* NS_StatCust.selStatCustList */
+        SELECT A.CUST_NM
+             , B.SP_NM
+             , F_GET_CD_NM(#{language}, 'CUST_TP', A.CUST_TP) AS CUST_TP_NM
+             , F_GET_CD_NM(#{language}, 'CUST_ST', A.CUST_ST) AS CUST_ST_NM
+             , A.BIZ_NO
+             , A.TRADE_NM
+             , A.CEO_NM
+             , A.TEL_NO
+             , A.ADDR
+             , A.BIZ_COND
+             , A.BIZ_ITEM
+             , A.REMARK
+             , A.SP_CD
+             , A.CUST_ID
+             , A.CUST_TP
+             , A.CUST_ST
+          FROM TCM_CUST A
+               LEFT OUTER JOIN TCM_SP B
+                            ON B.SP_CD = A.SP_CD
+         WHERE (#{spCd} IS NULL OR A.SP_CD = #{spCd})
+           AND (#{custNm} IS NULL OR A.CUST_NM LIKE '%' || #{custNm} || '%')
+        ORDER BY B.SP_NM, A.CUST_NM
+    </select>
+
+    <!-- 고객사별 서비스 목록 조회 -->
+    <select id="selFixServByCustList" parameterType="Map" resultType="CamelMap">
+        /* NS_StatCust.selFixServByCustList */
+        SELECT B.SERV_NM
+             , C.PROD_MCLS_NM
+             , F_GET_CD_NM(#{language}, 'CHARGE_FG', B.CHARGE_FG) AS CHARGE_FG_NM
+             , F_GET_CD_NM(#{language}, 'BILL_TAR_TP', B.BILL_TAR_TP) AS BILL_TAR_TP_NM
+             , F_GET_CD_NM(#{language}, 'PAY_FG', B.PAY_FG) AS PAY_FG_NM
+             , F_GET_CD_NM(#{language}, 'BILL_FG', B.BILL_FG) AS BILL_FG_NM
+             , F_GET_CD_NM(#{language}, 'BILL_CALC_TP', B.BILL_CALC_TP) AS BILL_CALC_TP_NM
+             , F_GET_CD_NM(#{language}, 'BILL_STATE', B.BILL_STATE) AS BILL_STATE_NM
+             , CASE WHEN B.BILL_FG = '01' THEN
+                         -9999
+                    ELSE B.BILL_PRICE
+               END BILL_PRICE
+             , B.BILL_PRICE AS BILL_PRICE_ORG
+             , B.SP_CD
+             , B.CUST_ID
+             , B.SERV_ID
+             , B.PROD_MCLS_CD
+             , B.PROD_CHOICE_CD
+             , B.CHARGE_FG
+             , B.BILL_TAR_TP
+             , B.PAY_FG
+             , B.BILL_FG
+             , B.BILL_CALC_TP
+             , B.BILL_STATE
+             , B.REG_DTM
+          FROM TCM_CUST A
+               JOIN TSL_CUST_FIX_BILL B
+                 ON B.SP_CD = A.SP_CD
+                AND B.CUST_ID = A.CUST_ID
+               LEFT OUTER JOIN TSM_PROD_MCLS C
+                            ON C.PROD_MCLS_CD = B.PROD_MCLS_CD
+         WHERE A.SP_CD =  #{spCd}
+           AND A.CUST_ID =  #{custId}
+         ORDER BY B.SERV_NM
+    </select>
+
+    <!-- 고객사별 건별 서비스 목록 조회 -->
+    <select id="selCaseServByCustList" parameterType="Map" resultType="CamelMap">
+        /* NS_StatCust.selCaseServByCustList */
+        SELECT B.SERV_NM
+             , B.BILL_FG
+             , C.REG_DTM
+             , D.PROD_MCLS_NM
+             , E.PROD_NM
+             , CASE WHEN B.BILL_FG != '01' THEN
+                         -9999
+                    ELSE C.BILL_PRICE
+               END BILL_PRICE
+             , C.BILL_PRICE AS BILL_PRICE_ORG
+             , C.REMARK
+             , C.SP_CD
+             , C.CUST_ID
+             , C.PROD_MCLS_CD
+             , C.PROD_CHOICE_CD
+             , C.PROD_CD
+          FROM TCM_CUST A
+               JOIN TSL_CUST_FIX_BILL B
+                 ON B.SP_CD = A.SP_CD
+                AND B.CUST_ID = A.CUST_ID
+                AND B.SERV_ID = #{servId}
+                AND B.PROD_MCLS_CD = #{prodMclsCd}
+               JOIN TSL_CUST_CASE_BILL C
+                 ON C.SP_CD = B.SP_CD
+                AND C.CUST_ID = B.CUST_ID
+                AND C.SERV_ID = B.SERV_ID
+                AND C.PROD_MCLS_CD = B.PROD_MCLS_CD
+               LEFT OUTER JOIN TSM_PROD_MCLS D
+                            ON D.PROD_MCLS_CD = C.PROD_MCLS_CD
+               LEFT OUTER JOIN TSM_PROD E
+                            ON E.PROD_CD = C.PROD_CD
+         WHERE A.SP_CD =  #{spCd}
+           AND A.CUST_ID =  #{custId}
+         ORDER BY B.SERV_NM
+    </select>
+
+
+    <!-- 고객사별 기준할인 목록 조회 -->
+    <select id="selBasicDiscountByCustList" parameterType="Map" resultType="CamelMap">
+        /* NS_StatCust.selBasicDiscountByCustList */
+
+        SELECT A.PB_ID
+             , B.PB_NM
+             , F_GET_CD_NM(#{language}, 'PB_TARGET_FG', B.PB_TARGET_FG) AS PB_TARGET_FG_NM
+             , F_GET_CD_NM(#{language}, 'PB_TARGET_TP', B.PB_TARGET_TP) AS PB_TARGET_TP_NM
+             , F_GET_CD_NM(#{language}, 'PB_PRICE_TP', B.PB_PRICE_TP) AS PB_PRICE_TP_NM
+             , B.PB_TARGET_FG
+             , B.PB_TARGET_TP
+             , B.PB_TARGET_CNT
+             , B.PB_PRICE_TP
+             , B.SALE_RATE
+             , B.SALE_PRICE
+             , A.ST_DTM
+             , A.ED_DTM
+         FROM TST_CUST_BASIC_DISCOUNT A
+               LEFT OUTER JOIN TSM_BASIC_DISCOUNT B
+                          ON B.PB_ID = A.PB_ID
+         WHERE A.SP_CD =  #{spCd}
+           AND A.CUST_ID =  #{custId}
+         ORDER BY B.PB_NM
+
+    </select>
+
+
+    <!-- 고객사별 행사할인 목록 조회 -->
+    <select id="selPromoDiscountByCustList" parameterType="Map" resultType="CamelMap">
+        /* NS_StatCust.selPromoDiscountByCustList */
+
+        SELECT A.PROMO_ID
+             , B.PROMO_NM
+             , F_GET_CD_NM(#{language}, 'PROMO_FG', B.PROMO_FG) AS PROMO_FG_NM
+             , F_GET_CD_NM(#{language}, 'PB_PRICE_TP', B.PROMO_PRICE_TP) AS PROMO_PRICE_TP_NM
+             , B.PROMO_FG
+             , B.PROMO_PRICE_TP
+             , B.SALE_RATE
+             , B.SALE_PRICE
+             , A.ST_DTM
+             , A.ED_DTM
+         FROM TST_CUST_PROMO_DISCOUNT A
+               LEFT OUTER JOIN TSM_PROMO_DISCOUNT B
+                          ON B.PROMO_ID = A.PROMO_ID
+         WHERE A.SP_CD =  #{spCd}
+           AND A.CUST_ID =  #{custId}
+         ORDER BY B.PROMO_NM
+
+    </select>
+
+</mapper>

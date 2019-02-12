@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_Sp">
+
+    <!-- Select Sp List -->
+    <select id="selSpList" parameterType="Map" resultType="CamelMap">
+        /* NS_Sp.selSpList */
+        SELECT F_GET_CD_NM(#{language}, 'SP_TP', A.SP_TP) AS SP_TP_NM    /* 서비스제공자유형 */
+             , A.SP_CD                    /* 서비스제공자코드 */
+             , A.PA_SP_CD                 /* 상위서비스제공자코드 */
+             , A.SP_NM                    /* 서비스제공자명 */
+             , A.SP_TP                    /* 서비스제공자유형[S:서비스제공자, M:마케팅서비스제공자] */
+             , A.BIZ_NO                   /* 사업자번호 */
+             , A.TRADE_NM                 /* 상호 */
+             , A.CEO_NM                   /* 대표자명 */
+             , A.TEL_NO                   /* 전화번호 */
+             , A.ADDR                     /* 주소 */
+             , A.BIZ_COND                 /* 업태 */
+             , A.BIZ_ITEM                 /* 종목 */
+             , A.MNGR_NM                  /* 담당자명 */
+             , A.MNGR_MP_NO               /* 담당자연락처 */
+             , A.MNGR_EMAIL               /* 이메일 */
+             , A.SP_LVL                   /* 서비스제공자레벨 */
+             , A.REMARK                   /* 비고 */
+             , A.REG_DTM                  /* 등록일시 */
+             , A.REG_ID                   /* 등록자 */
+             , A.CHG_DTM                  /* 변경일시 */
+             , A.CHG_ID                   /* 변경자 */
+             , Y.ADMIN_NM AS REG_NM       /* 등록자 */
+             , Z.ADMIN_NM AS CHG_NM       /* 변경자 */
+          FROM TCM_SP  A                /* 서비스제공자 */
+               LEFT OUTER JOIN TYM_ADMIN Y
+                            ON Y.ADMIN_ID = A.REG_ID    /* 등록자 */
+               LEFT OUTER JOIN TYM_ADMIN Z
+                            ON Z.ADMIN_ID = A.REG_ID    /* 변경자 */
+         WHERE (#{spCd} IS NULL OR A.SP_CD LIKE '%' || #{spCd} || '%'         /* 서비스제공자아이디 */
+                                   OR A.SP_NM LIKE '%' || #{spCd} || '%')     /* 서비스제공자명 */
+        ORDER BY A.SP_TP DESC
+               , A.SP_NM ASC
+    </select>
+
+    <!-- Select Sp -->
+    <select id="selSp" parameterType="Map" resultType="CamelMap">
+        /* NS_Sp.selSp */
+        SELECT SP_CD                    /* 서비스제공자코드 */
+             , PA_SP_CD                 /* 상위서비스제공자코드 */
+             , SP_NM                    /* 서비스제공자명 */
+             , SP_TP                    /* 서비스제공자유형[S:서비스제공자, M:마케팅서비스제공자] */
+             , BIZ_NO                   /* 사업자번호 */
+             , TRADE_NM                 /* 상호 */
+             , CEO_NM                   /* 대표자명 */
+             , TEL_NO                   /* 전화번호 */
+             , ADDR                     /* 주소 */
+             , BIZ_COND                 /* 업태 */
+             , BIZ_ITEM                 /* 종목 */
+             , MNGR_NM                  /* 담당자명 */
+             , MNGR_MP_NO               /* 담당자연락처 */
+             , MNGR_EMAIL               /* 이메일 */
+             , SP_LVL                   /* 서비스제공자레벨 */
+             , REMARK                   /* 비고 */
+             , REG_DTM                  /* 등록일시 */
+             , REG_ID                   /* 등록자 */
+             , CHG_DTM                  /* 변경일시 */
+             , CHG_ID                   /* 변경자 */
+          FROM TCM_SP                   /* 서비스제공자 */
+         WHERE BIZ_NO = #{bizNo}
+    </select>
+
+    <!-- Insert Sp List -->
+    <insert id="insSp" parameterType="Map">
+        /* NS_Sp.insSp */
+        INSERT INTO TCM_SP (           /* 서비스제공자 */
+              SP_CD                    /* 서비스제공자코드 */
+            , PA_SP_CD                 /* 상위서비스제공자코드 */
+            , SP_NM                    /* 서비스제공자명 */
+            , SP_TP                    /* 서비스제공자유형[S:서비스제공자, M:마케팅서비스제공자] */
+            , BIZ_NO                   /* 사업자번호 */
+            , TRADE_NM                 /* 상호 */
+            , CEO_NM                   /* 대표자명 */
+            , TEL_NO                   /* 전화번호 */
+            , ADDR                     /* 주소 */
+            , BIZ_COND                 /* 업태 */
+            , BIZ_ITEM                 /* 종목 */
+            , MNGR_NM                  /* 담당자명 */
+            , MNGR_MP_NO               /* 담당자연락처 */
+            , MNGR_EMAIL               /* 이메일 */
+            , SP_LVL                   /* 서비스제공자레벨 */
+            , REMARK                   /* 비고 */
+            , REG_DTM                  /* 등록일시 */
+            , REG_ID                   /* 등록자 */
+            , CHG_DTM                  /* 변경일시 */
+            , CHG_ID                   /* 변경자 */
+        ) VALUES (
+              F_GET_ID('SP_CD')        /* 서비스제공자코드 */
+            , #{paSpCd}                /* 상위서비스제공자코드 */
+            , #{spNm}                  /* 서비스제공자명 */
+            , #{spTp}                  /* 서비스제공자유형[S:서비스제공자, M:마케팅서비스제공자] */
+            , #{bizNo}                 /* 사업자번호 */
+            , #{tradeNm}               /* 상호 */
+            , #{ceoNm}                 /* 대표자명 */
+            , #{telNo}                 /* 전화번호 */
+            , #{addr}                  /* 주소 */
+            , #{bizCond}               /* 업태 */
+            , #{bizItem}               /* 종목 */
+            , #{mngrNm}                /* 담당자명 */
+            , #{mngrMpNo}              /* 담당자연락처 */
+            , #{mngrEmail}             /* 이메일 */
+            , #{spLvl}                 /* 서비스제공자레벨 */
+            , #{remark}                /* 비고 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')   /* 등록일시 */
+            , #{regId}                 /* 등록자 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')   /* 변경일시 */
+            , #{chgId}                 /* 변경자 */
+        )
+    </insert>
+
+    <!-- Update Sp List -->
+    <update id="updSp" parameterType="Map">
+        /* NS_Sp.updSp */
+        UPDATE TCM_SP                   /* 서비스제공자 */
+           SET SP_CD                  = #{spCd}                    /* 서비스제공자코드 */
+             , PA_SP_CD               = #{paSpCd}                  /* 상위서비스제공자코드 */
+             , SP_NM                  = #{spNm}                    /* 서비스제공자명 */
+             , SP_TP                  = #{spTp}                    /* 서비스제공자유형[S:서비스제공자, M:마케팅서비스제공자] */
+             , BIZ_NO                 = #{bizNo}                   /* 사업자번호 */
+             , TRADE_NM               = #{tradeNm}                 /* 상호 */
+             , CEO_NM                 = #{ceoNm}                   /* 대표자명 */
+             , TEL_NO                 = #{telNo}                   /* 전화번호 */
+             , ADDR                   = #{addr}                    /* 주소 */
+             , BIZ_COND               = #{bizCond}                 /* 업태 */
+             , BIZ_ITEM               = #{bizItem}                 /* 종목 */
+             , MNGR_NM                = #{mngrNm}                  /* 담당자명 */
+             , MNGR_MP_NO             = #{mngrMpNo}                /* 담당자연락처 */
+             , MNGR_EMAIL             = #{mngrEmail}               /* 이메일 */
+             , SP_LVL                 = #{spLvl}                   /* 서비스제공자레벨 */
+             , REMARK                 = #{remark}                  /* 비고 */
+             , CHG_DTM                = TO_CHAR(SYSDATE, 'yyyymmddhh24miss')   /* 변경일시 */
+             , CHG_ID                 = #{chgId}                   /* 변경자 */
+         WHERE SP_CD = #{spCd}
+    </update>
+
+    <!-- Delete Sp List -->
+    <delete id="delSp" parameterType="Map">
+        /* NS_Sp.delSp */
+        DELETE FROM TCM_SP                   /* 서비스제공자 */
+         WHERE SP_CD = #{spCd}
+    </delete>
+
+</mapper>

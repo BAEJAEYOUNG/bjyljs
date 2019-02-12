@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_BillUserMo">
+
+    <!-- Select BillUser List -->
+    <select id="selBillUserMoList" parameterType="Map" resultType="CamelMap">
+        /* NS_BillUser.selBillUserMoList */
+        SELECT F_GET_CD_NM(#{language}, 'WD_FLAG', A.WD_FLAG) AS WD_FLAG_NM     /* 인출여부 */
+             , F_GET_CD_NM(#{language}, 'RC_FLAG', A.RC_FLAG) AS RC_FLAG_NM     /* 수납여부 */
+             , F_GET_CD_NM(#{language}, 'BILL_FIX_FG', A.BILL_FIX_FG) AS BILL_FIX_FG_NM     /* 고정 정액요금여부(F:고정금액, C:사용자합계) */
+             , A.BILL_MONTH               /* 요금청구월 */
+             , A.SP_CD                    /* 서비스제공자코드 */
+             , A.CUST_ID                  /* 고객사 ID(은행,증권,기타) */
+             , A.SERV_ID                  /* 서비스 ID */
+             , A.TEL_NO                   /* 휴대폰번호 */
+             , A.BILL_FIX_FG              /* 고정 정액요금여부(F:고정금액, C:사용자합계) */
+             , A.ST_DTM                   /* 과금시작일 */
+             , A.ED_DTM                   /* 과금종료일 */
+             , A.TOT_USER_CNT             /* 상품 전체사용자수 */
+             , A.TOT_PROD_FEE             /* 상품 전체사용요금 */
+             , A.TOT_DC_FEE               /* 전체할인요금 */
+             , A.TOT_REAL_FEE             /* 전체청구대상요금(전체사용요금-전체할인요금) */
+             , A.BS_DC_CD1                /* 기본 할인 코드#1 */
+             , A.BS_DC_CD2                /* 기본 할인 코드#2 */
+             , A.BS_DC_CD3                /* 기본 할인 코드#3 */
+             , A.BS_DC_CD4                /* 기본 할인 코드#4 */
+             , A.BS_DC_FEE1               /* 기본 할인 금액#1 */
+             , A.BS_DC_FEE2               /* 기본 할인 금액#2 */
+             , A.BS_DC_FEE3               /* 기본 할인 금액#3 */
+             , A.BS_DC_FEE4               /* 기본 할인 금액#4 */
+             , A.BILL_FEE                 /* 청구요금 */
+             , A.VAT_FEE                  /* 부가세 */
+             , A.WD_FLAG                  /* 인출여부 */
+             , A.RC_FLAG                  /* 수납여부 */
+             , U.USER_NM                  /* 사용자명 */
+             , S.SP_NM                    /* 서비스제공자명 */
+             , T.CUST_NM                  /* 고객사명 */
+             , U.SERV_NM                  /* 서비스명 */
+             , P1.PROMO_NM BS_DC_CD_NM1   /* 프로모션 할인 명칭#1 */
+             , P2.PROMO_NM BS_DC_CD_NM2   /* 프로모션 할인 명칭#2 */
+             , P3.PROMO_NM BS_DC_CD_NM3   /* 프로모션 할인 명칭#3 */
+             , P4.PROMO_NM BS_DC_CD_NM4   /* 프로모션 할인 명칭#4 */
+          FROM TBB_MO_FEE_BILL_USER A                    /* 월정액 청구서(개인) */
+               LEFT OUTER JOIN TCM_SP S                  /* 서비스제공자 */
+                       ON S.SP_CD = A.SP_CD
+               LEFT OUTER JOIN TCM_CUST T                /* 고객사 */
+                       ON T.CUST_ID = A.CUST_ID
+               LEFT OUTER JOIN TSL_CUST_FIX_BILL U       /* 서비스명 */
+                       ON U.SERV_ID = A.SERV_ID
+               INNER JOIN (
+                                SELECT U.USER_NM
+                                     , M.MP_NO
+                                  FROM TCM_USER U
+                                       INNER JOIN TCM_MP M
+                                               ON M.USER_ID = U.USER_ID
+                               GROUP BY U.USER_NM
+                                      , M.MP_NO
+                           ) U /* 개인 */
+                       ON U.MP_NO = A.TEL_NO
+               LEFT OUTER JOIN TSM_PROMO_DISCOUNT P1    /* 프로모션#1 */
+                       ON P1.PROMO_ID = A.BS_DC_CD1
+               LEFT OUTER JOIN TSM_PROMO_DISCOUNT P2    /* 프로모션#2 */
+                       ON P2.PROMO_ID = A.BS_DC_CD2
+               LEFT OUTER JOIN TSM_PROMO_DISCOUNT P3    /* 프로모션#3 */
+                       ON P3.PROMO_ID = A.BS_DC_CD3
+               LEFT OUTER JOIN TSM_PROMO_DISCOUNT P4    /* 프로모션#4 */
+                       ON P4.PROMO_ID = A.BS_DC_CD4
+         WHERE A.BILL_MONTH BETWEEN #{sM} AND #{eM}      /* 요금청구월 */
+           AND A.SP_CD = #{spCd}                                /* 서비스제공자코드 */
+           AND ( #{custId} IS NULL OR A.CUST_ID = #{custId} )   /* 고객사아이디 */
+           AND ( #{userNm} IS NULL OR U.USER_NM = #{userNm} )   /* 사용자명 */
+           AND ( #{mpNo} IS NULL OR A.TEL_NO = #{mpNo} )        /* 휴대폰번호 */
+    </select>
+
+</mapper>

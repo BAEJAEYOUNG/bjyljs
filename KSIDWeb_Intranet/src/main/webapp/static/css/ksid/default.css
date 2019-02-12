@@ -1,0 +1,75 @@
+@charset "utf-8";
+/* 20150717 WebPublisher  P.K.Min */
+
+@font-face {
+    font-family: "12롯데마트드림Medium";
+    font-style: normal;
+    font-weight: 400;
+    src: url("../../font/LotteMartDreamMedium.woff2")
+         format("woff2"),
+         url("../../font/LotteMartDreamMedium.woff")
+         format("woff");
+}
+
+@font-face {
+    font-family: "12롯데마트드림Bold";
+    font-style: normal;
+    font-weight: 700;
+    src: url("../../font/LotteMartDreamBold.woff2")
+         format("woff2"),
+         url("../../font/LotteMartDreamBold.woff")
+         format("woff");
+}
+
+@font-face {
+    font-family: "12롯데마트드림Light";
+    font-style: normal;
+    font-weight: 300;
+    src: url("../../font/LotteMartDreamLight.woff2")
+         format("woff2"),
+         url("../../font/LotteMartDreamLight.woff")
+         format("woff");
+}
+
+/*기본태그 정의*/
+html, body {padding:0;margin:0;width: 100%; height: 100%; }
+body, select, textarea, input {font-size:12px;font-family:"Dotum","Gulim";color:#232323;box-sizing:content-box}
+
+/* 마진과 패딩의 초기화 */
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, p, blockquote, th, td, hr {margin:0;padding:0;}
+
+/* 주석으로 사용 */
+hr,legend,caption {display:none;}
+
+/* 헤더 폰트 사이즈 초기화 */
+h1, h2, h3, h4, h5, h6 {font-size:100%;}
+
+/* 리스트의 스타일 제거 */
+ol, ul {list-style:none;}
+
+/* 테이블 스타일 초기화 */
+table {border-collapse:collapse;border-spacing:0;}
+
+/* 이미지 및 필드셋에서 보더 표시 초기화 */
+fieldset, img, hr {border:0;}
+img{vertical-align:middle;}
+
+/* 캡션 텍스트 정렬 초기화 */
+caption {text-align:left;}
+
+/* 폼태그의 초기화 */
+select {font-size:12px;font-family:"Dotum";color:#232323;vertical-align:middle;}
+input {font-size:12px;font-family:"Dotum";color:#232323;vertical-align:middle;padding:0 2px;}
+textarea {font:12px;font-family:"Dotum";color:#232323;line-height:140%;resize:none;}
+input.radio {vertical-align:middle;margin-bottom:3px;}
+
+a:link    {text-decoration:none;color:#232323;}
+a:active    {text-decoration:none;color:#232323;}
+a:visited    {text-decoration:none;color:#232323;}
+a:hover    {text-decoration:none;color:#232323;}
+
+.hide{display:block;overflow:hidden;position:absolute;left:-9999px;width:1px;height:1px;font-size:0;line-height:0;text-indent:-9999px}
+
+.bold {
+    font-weight: bold;
+}

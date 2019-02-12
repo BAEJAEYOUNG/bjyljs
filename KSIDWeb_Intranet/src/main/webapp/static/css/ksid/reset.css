@@ -1,0 +1,19 @@
+* {
+    margin: 0px;
+    padding: 0px;
+}
+
+body, select, textarea, input {
+    font-size: 12px;
+    font-family: "Dotum", "Gulim";
+    color: #232323;
+}
+
+ol, ul {
+    list-style: none;
+}
+
+table {
+    border-collapse: separate;
+    border-spacing: 0;
+}

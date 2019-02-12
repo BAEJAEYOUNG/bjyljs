@@ -1,0 +1,225 @@
+@charset "utf-8";
+
+/* 로그인페이지 */
+.mainLogin {background:#e7e7e7; margin:0px; height:16px; border-bottom:2px solid #4f81bd; padding:21px 30px; min-width:600px;}
+.mainLogin h1 {color:#222; font-size:16px; font-weight:bold; }
+.mainLogin h1 img {margin-right:15px;}
+.mainLogin h1 img {height: 35px;}
+
+
+.header h1 {
+    color: #222;
+    background: #FFF;
+    font-family: "12롯데마트드림Medium";
+    font-size: 14px;
+    line-height: 20px;
+    padding: 14px 20px 12px 20px;
+    width: 143px;
+    border-right: 1px solid #a3a3a3;
+    height: 45px;
+    float: left;
+    border-bottom: 2px solid #4f81bd;
+    position: fixed;
+}
+
+/* .logindiv {z-index:100; position:absolute; left:0; right:0;} */
+/* .loginDiv {background:url(../../image/bg_login.png); width:1200px; height:440px; position:absolute; top:50%; left:50%; margin-left:-400px; margin-top:-100px;} */
+/* .loginDiv .loginBox {background:#e1edfb; border:1px solid #c2ddfe; margin:10px; padding-top:20px; padding-bottom:20px; padding-left:30px; padding-right:60px;  width:300px;} */
+/* .loginDiv .loginBox {float:left;} */
+/* .loginDiv .loginBox .loginText {font-weight:bold; font-size:21px; color:#333;font-family:"verdana"; margin-bottom:10px;} */
+/* .loginDiv .loginBox .loginInput {width:318px; margin:5px 0;padding-left:10px; height:30px; font-size:15px; border:1px solid #bbbbbb;} */
+/* .loginDiv .loginBox a {background:#4f81bd; color:#FFF;font-family:"dotum", Arial, Helvetica, Tahoma; font-size:14px;text-align:center; width:306px; display:block; padding:10px 11px; border:1px solid #c2ddfe; margin:5px 0;} */
+.loginDiv {background:url(../../image/ksid/bg_login.png) no-repeat left; background-size:800px;width:1270px;position:absolute;top:50%; left:50%;padding-top:250px;margin:-350px 0 0 -650px;height:540px; overflow:hidden;}
+/* .loginDiv .loginBox {width:340px;background:#e1edfb; border:1px solid #c2ddfe; padding:25px 35px;float:left;} */
+.loginDiv .loginBox {width:340px; padding:25px 35px;float:left;}
+.loginDiv .loginBox .loginText {font-weight:bold; font-size:21px; color:#333;font-family:"verdana"}
+.loginDiv .loginBox .loginInput {width:318px; margin:5px 0;padding-left:10px; height:30px; font-size:15px; border:1px solid #bbbbbb;}
+.loginDiv .loginBox a {background:#4f81bd; color:#FFF;font-family:"dotum", Arial, Helvetica, Tahoma; font-size:14px;text-align:center; width:306px; display:block; padding:10px 11px; border:1px solid #c2ddfe; margin:5px 0;}
+.loginDiv .floatLeft{float:right}
+
+/* .loginDiv .loginCardBox {width:340px;background:#e1edfb; border:1px solid #c2ddfe; padding:25px 35px;float:left;} */
+.loginDiv .loginCardBox {width:340px; padding:25px 35px;float:left;}
+.loginDiv .loginCardBox .loginText {font-weight:bold; font-size:21px; color:#333;font-family:"verdana"}
+
+#wrap {
+    position: relative;
+    height: 100%;
+}
+
+/* 상단 영역 - 주메뉴 */
+#gnb {
+    padding: 0 100px 0 184px;
+    min-width: 630px;
+    position: relative;
+}
+
+#gnb li{display:inline-block; background:url(../../image/ksid/line_gnb.png) right center no-repeat;}
+#gnb li:first-child {margin-left:10px;}
+#gnb li:last-child {background:none;}
+#gnb li a {font-size:14px;font-family:"12롯데마트드림Medium"; color:#000; padding:13px 16px; font-weight:bold;display:block;}
+#gnb li a:hover,.nav #gnb li .on {color:#4f81bd;}
+
+/* 구조변경 탭기능 삭제 및 높이 조절*/
+/* .tabs-header, .tabs-tool{display:none;} */
+/* .panel{margin-top:0 !important;} */
+
+/* 상단 영역 - 전체닫기 */
+#gnb .btn_selectALl{position:absolute;top:8px;right:10px;z-index:100;}
+#gnb .btn_selectALl a{font-size:12px; font-family:"12롯데마트드림Medium";width:80px;background:#606060; border:1px solid #383838; border-radius:2px; color:#FFF; padding:6px 2px; display:block; cursor:pointer;text-align:center;}
+#gnb .btn_selectALl a:hover{font-size:12px; font-family:"12롯데마트드림Medium";background:#4f81bd; border:1px solid #383838; border-radius:2px; color:#FFF; padding:6px 2px; display:block; cursor:pointer;text-align:center;}
+#gnb a.btn_selectALl{font-size:12px; font-family:"12롯데마트드림Medium";width:80px;background:#606060; border:1px solid #383838; border-radius:2px; color:#FFF; padding:6px 2px; display:block; cursor:pointer;text-align:center;}
+#gnb a.btn_selectALl:hover{font-size:12px; font-family:"12롯데마트드림Medium";background:#4f81bd; border:1px solid #383838; border-radius:2px; color:#FFF; padding:6px 2px; display:block; cursor:pointer;text-align:center;}
+
+/* 왼쪽영역 - 로그인정보 */
+#lnb .loginInfo {
+    height: 74px;
+    padding-top: 16px;
+    margin-top: 73px;
+    background: #e8e8e8;
+    border-bottom: 1px solid #797979;
+    width: 100%;
+}
+
+#lnb .loginInfo div {display:block;text-align:center;}
+#lnb .loginInfo div strong{background:url(../../image/ksid/icon_profile.gif) no-repeat 0 5px;display:inline-block;padding:5px 0 0 16px;font-family:"12롯데마트드림Medium";}
+#lnb .loginInfo .btnLogout {background:#606060;font-family:"12롯데마트드림Medium"; border:1px solid #383838;width:100px;margin:13px auto 0 auto;text-align:center; border-radius:2px; color:#FFF; padding:6px 2px; display:block;font-size:12px; cursor:pointer;}
+
+#lnb .search{width:90px; height:15px; border-right:none; float:left;}
+#lnb a.lnbBtnImg {background:url(../../image/btn_lnb_close.png) no-repeat; display:block; height:31px; width:13px;}
+#lnb a.lnbBtnImgOff {background:url(../../image/btn_lnb_open.png) no-repeat; display:block; height:31px; width:13px;}
+
+/* 왼쪽영역 - 메뉴정보 */
+#lnb {
+    position: relative;
+    height: 100%;
+    /*margin-top:-75px;
+    padding-top:73px;*/
+    z-index: 9;
+    float: left;
+    font-family: dotum;
+    width: 183px;
+}
+
+#lnb .lnbMenuLink {overflow:auto; padding:13px 0;background:#f0f0f0;}
+#lnb .lnbBtnArea {height:100%; float:left;position:relative;}
+#lnb .lnbBtn {top:50%;position:absolute;}
+#lnb #lnbMenu {position:relative; display:; width:182px; height:100%; border-right:1px solid #a2a2a2; float:left; }
+.col-xs-12{background:#FFF;}
+
+.treeview, .treeview ul {padding:0; margin:0;list-style: none;font-family:dotum; font-size:12px;}
+.treeview ul {background-color: white;margin-top: 4px;}
+.treeview .hitarea {background: url(../../image/treeview/treeview-default.gif) 0px -114px no-repeat;height: 16px;width: 16px;margin-left: -16px; float: left;cursor: pointer;}
+.treeview .lnb_sperator{height:2px;background:url(../../image/lnb_line_bottom.gif) repeat-x 0 0;margin: 5px 4px 0 20px;padding: 0 0 3px 0;}
+
+.treeview li a{color:#232323;}
+.treeview li a:hover{color:#4f81bd;}
+.treeview li a.clickedMenu{color:#232323;font-weight:bold;}
+.treeview li a.clickedMenu:hover{color:#232323; font-weight:bold; cursor:default;}
+
+/* 왼쪽 영영 - 타이틀 */
+.h2Div {border-bottom:1px solid #c6c6c6; padding:15px;}
+.h2Div h2 {color:#4f81bd; font-size:15px;font-family:"12롯데마트드림Medium";}
+
+/* fix for IE6 */
+* html .hitarea {   display: inline;    float:none;}
+.treeview li {  margin: 0;  padding:5px 0pt 6px 16px}
+.treeview li a {margin-left:3px;}
+.treeview a.selected {  background-color: #FFF;}
+#treecontrol { margin: 1em 0; display: none; }
+.treeview .hover { color: #4f81bd; cursor: pointer; }
+.treeview li { background: url(../../image/treeview/treeview-default-line.gif) 0 3px no-repeat; }
+.treeview li.collapsable, .treeview li.expandable { background-position: 0 -50000px; }
+.treeview .expandable-hitarea { background-position: -80px -3px; }
+.treeview li.last { background-position: 0 -1766px }
+.treeview li.lastCollapsable, .treeview li.lastExpandable { background-image: url(../../image/treeview/treeview-default.gif); }
+.treeview li.lastCollapsable { background-position: 0 -111px }
+.treeview li.lastExpandable { background-position: -32px -67px }
+.treeview div.lastCollapsable-hitarea, .treeview div.lastExpandable-hitarea { background-position: 80px 110px; }
+.treeview-red li { background-image: url(../../image/treeview/treeview-red-line.gif); }
+.treeview-red .hitarea, .treeview-red li.lastCollapsable, .treeview-red li.lastExpandable { background-image: url(../../image/treeview/treeview-red.gif); }
+.treeview-black li { background-image: url(../../image/treeview/treeview-black-line.gif); }
+.treeview-black .hitarea, .treeview-black li.lastCollapsable, .treeview-black li.lastExpandable { background-image: url(../../image/treeview/treeview-black.gif); }
+.treeview-gray li { background-image: url(../../image/treeview/treeview-gray-line.gif); }
+.treeview-gray .hitarea, .treeview-gray li.lastCollapsable, .treeview-gray li.lastExpandable { background-image: url(../../image/treeview/treeview-gray.gif); }
+.treeview-famfamfam li { background-image: url(../../image/treeview/treeview-famfamfam-line.gif); }
+.treeview-famfamfam .hitarea, .treeview-famfamfam li.lastCollapsable, .treeview-famfamfam li.lastExpandable { background-image: url(../../image/treeview/treeview-famfamfam.gif); }
+.treeview .placeholder {    background: url(../../image/ajax-loader.gif) 0 0 no-repeat;  height: 16px;   width: 16px;    display: block;}
+#browser li span{font-weight:bold;}
+.filetree li { padding: 3px 0 2px 16px; }
+.filetree span.folder, .filetree span.file { padding: 1px 0 1px 16px; display: block; }
+.filetree span.folder { background: url(../../image/folder.gif) 0 0 no-repeat; }
+.filetree li.expandable span.folder { background: url(../../image/folder-closed.gif) 0 0 no-repeat; }
+.filetree span.file { background: url(../../image/file.gif) 0 0 no-repeat;font-weight:bold; }
+.collapsable > span {font-weight:bold; color:#4f81bd;}
+
+/*컨텐츠영역*/
+.contentDiv {padding-top:43px; margin-left:0px; width:100%; position:relative; font-size:12px; font-family:dotum; overflow:auto; font-family:dotum!important;}
+.content {padding-top:0px; margin-left:0px; width:100%; position:relative; font-size:12px; font-family:dotum; overflow:auto; font-family:dotum!important; min-width:920px;}
+.content .lnbArea,.content .subContentArea{display:relative;}
+.content .lnbArea {float:left; width:190px; }
+.content .contentArea{text-align:left; position:;padding:0px 30px;}
+.content .subContentArea_full{text-align:left; width:100%; height:100%
+    -moz-box-sizing: border-box;  -webkit-box-sizing: border-box;box-sizing: border-box;margin-left:30px; margin-right:0px;
+    }
+
+/*메인 - 게시판 */
+.mainVisual {background: url(../../image/bg_main.png) center 0 no-repeat; width:470px; height:130px; margin:auto; text-align:center; padding-top:40px;}
+.mainContent {min-width:900px; position:relative;overflow:hidden;}
+.main_notice{margin:20px 0 0 30px;min-width:300px; text-align:left;float:left;}
+.main_work{margin:20px 0 0 20px;min-width:300px; text-align:left;float:left;}
+.main_bookmark {background:url(../../image/title_bookmark.png) left top no-repeat; clear:both; margin:20px;}
+
+.main_notice h3,
+.main_work h3 ,
+.main_bookmark h3 {width:100%;margin:15px 0 0 0; height:45px;font-size:18px;color:#2a649e;font-weight:bold;}
+
+.main_notice h3 img,
+.main_work h3 img {margin:7px 3px ;}
+
+.main_notice li,
+.main_work li {display:block; padding:5px 10px;background:url(../../image/dott_main.png) left 12px no-repeat; margin-left:5px;}
+.main_notice li span,
+.main_work li span {float:right; font-size:11px;}
+
+/* 메인 - 게시판 페이징 */
+.paging_wrap01{text-align:center;margin-top:10px;}
+.paging_wrap01 ul {display:inline;}
+.paging_wrap01 ul li{padding:0 6px 0 7px;display:inline-block;line-height:18px;font-size:11px;font-weight:bold;color:#8d8d8d;background:url(../../image/ksid/paging_line.gif) no-repeat 0 5px;}
+.paging_wrap01 ul li:first-child{background:none;}
+.paging_wrap01 ul li a{color:#8d8d8d;font-size:11px;font-weight:normal;text-decoration:none;}
+.paging_wrap01 ul li.bg_none{background:none;}
+
+/* 메인 - 게시판 읽기 */
+.ui-dialog .ui-dialog-titlebar{border-top:2px solid #4f81bd;}
+.dialog_edit-panel{border:1px solid #fff;}
+.noticeView{background:#fff;position:relative;border-top:1px solid #ddd;}
+.ui-dialog .ui-dialog-title{font-family:"12롯데마트드림Medium","Dotum","Gulim";font-size:14px;}
+.dialog-table{width:100%;}
+.dialog-table th{border-bottom:1px solid #ddd;border-right:1px solid #ddd;color:#232323;text-align:left;font-size:12px;padding:8px 0 5px 20px;line-height:18px;vertical-align:top;background:#eee url(../../image/dott_search.png) 13px 15px no-repeat;}
+.dialog-table td input{width:598px;padding-left:10px;border:0;font-weight:bold;}
+.dialog-table td{border-bottom:1px solid #ddd;text-align:left;padding:5px 0 0 10px;font-size:12px;vertical-align:top;}
+.dialog-table td textarea{margin-bottom:10px;line-height:22px;padding:0 10px;width:585px;border:0;resize:none;}
+.dialog-table .edit_amt{vertical-align:middle;padding-top:0;}
+.noticeView .button-bar{position:absolute;top:1px;right:2px;}
+
+/* 메인 - 슬라이드 */
+.carousel-demo1{width:100%;height:84px;}
+
+/* 메인 - Navbar */
+.carousel-demo1 .sliderkit-nav{left:0;bottom:0;width:100%;height:64px;padding:10px;}
+.carousel-demo1 .sliderkit-nav-clip ul li{float:left;margin:0 20px 0 0;}
+.carousel-demo1 .sliderkit-nav-clip ul li a{display:block; height:64px;overflow:hidden;margin:0;opacity:0.8;}
+.carousel-demo1 .sliderkit-nav-clip ul li a:hover{opacity:1;}
+.carousel-demo1 .sliderkit-nav-clip ul li img,.carousel-demo1 .sliderkit-nav-clip ul li.carousel-demo1 .sliderkit-nav-clip ul li a{width:126px;}
+
+/* 메인 - Buttons */
+.carousel-demo1 .sliderkit-nav .sliderkit-nav-btn{position:absolute;top:0;}
+.carousel-demo1 .sliderkit-nav .sliderkit-nav-btn span{display:none;}
+.carousel-demo1 .sliderkit-nav .sliderkit-nav-btn a{display:block;width:15px;height:74px;}
+.carousel-demo1 .sliderkit-nav .sliderkit-nav-prev{left:10px;}
+.carousel-demo1 .sliderkit-nav .sliderkit-nav-next{right:25px;}
+.carousel-demo1 .sliderkit-nav .sliderkit-nav-prev a{background:transparent url("../../image/arrows-h.png") left 16px no-repeat;}
+.carousel-demo1 .sliderkit-nav .sliderkit-nav-next a{background:transparent url("../../image/arrows-h1.png") left 16px no-repeat;}
+
+/* 메인 - Buttons > Disable */
+.carousel-demo1 .sliderkit-btn-disable{opacity:0.3/*can be set to any value until 1*/;cursor:default;}

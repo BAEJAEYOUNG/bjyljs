@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_Cust">
+
+    <!-- Select Cust List -->
+    <select id="selCustList" parameterType="Map" resultType="CamelMap">
+        /* NS_Cust.selCustList */
+        SELECT F_GET_CD_NM(#{language}, 'CUST_TP', A.CUST_TP) AS CUST_TP_NM    /* 고객사유형 */
+             , F_GET_CD_NM(#{language}, 'CUST_ST', A.CUST_ST) AS CUST_ST_NM    /* 상태 */
+             , A.SP_CD                    /* 서비스제공자코드 */
+             , A.CUST_ID                  /* 고객사코드 */
+             , A.PA_CUST_ID               /* 상위고객사코드 */
+             , A.CUST_LVL                 /* 고객사레벨 */
+             , A.CUST_NM                  /* 고객사명 */
+             , A.CUST_TP                  /* 고객사유형[01:은행, 02:증권, 03:관공서, 99:기타] */
+             , A.BIZ_NO                   /* 사업자번호 */
+             , A.TRADE_NM                 /* 상호 */
+             , A.CEO_NM                   /* 대표자명 */
+             , A.TEL_NO                   /* 전화번호 */
+             , A.ADDR                     /* 주소 */
+             , A.BIZ_COND                 /* 업태 */
+             , A.BIZ_ITEM                 /* 종목 */
+             , A.MNGR_NM                  /* 담당자명 */
+             , A.MNGR_MP_NO               /* 담당자연락처 */
+             , A.MNGR_EMAIL1              /* 이메일1 */
+             , A.MNGR_EMAIL2              /* 이메일 */
+             , A.REMARK                   /* 비고 */
+             , A.REG_DTM                  /* 등록일시 */
+             , A.REG_ID                   /* 등록자 */
+             , A.CHG_DTM                  /* 변경일시 */
+             , A.CHG_ID                   /* 변경자 */
+             , A.CANCEL_DTM               /* 해지일시 */
+             , A.CANCEL_RSN               /* 해지사유 */
+             , A.CUST_ST                  /* 상태[0:정상, 9:해지] */
+             , B.SP_NM                    /* 서비스제공자명 */
+             , Y.ADMIN_NM AS REG_NM       /* 등록자 */
+             , Z.ADMIN_NM AS CHG_NM       /* 변경자 */
+          FROM TCM_CUST A                 /* 고객사 */
+               INNER JOIN TCM_SP B                      /* 서비스제공자 */
+                       ON B.SP_CD = A.SP_CD
+               LEFT OUTER JOIN TYM_ADMIN Y
+                            ON Y.ADMIN_ID = A.REG_ID    /* 등록자 */
+               LEFT OUTER JOIN TYM_ADMIN Z
+                            ON Z.ADMIN_ID = A.REG_ID    /* 변경자 */
+         WHERE (#{custId} IS NULL OR A.CUST_ID LIKE '%' || #{custId} || '%'       /* 고객사아이디 */
+                                   OR A.CUST_NM LIKE '%' || #{custId} || '%')     /* 고객사명 */
+        ORDER BY B.SP_NM, A.CUST_NM
+    </select>
+
+    <!-- Select Cust -->
+    <select id="selCust" parameterType="Map" resultType="CamelMap">
+        /* NS_Cust.selCust */
+        SELECT SP_CD                    /* 서비스제공자코드 */
+             , CUST_ID                  /* 고객사코드 */
+             , PA_CUST_ID               /* 상위고객사코드 */
+             , CUST_LVL                 /* 고객사레벨 */
+             , CUST_NM                  /* 고객사명 */
+             , CUST_TP                  /* 고객사유형[01:은행, 02:증권, 03:관공서, 99:기타] */
+             , BIZ_NO                   /* 사업자번호 */
+             , TRADE_NM                 /* 상호 */
+             , CEO_NM                   /* 대표자명 */
+             , TEL_NO                   /* 전화번호 */
+             , ADDR                     /* 주소 */
+             , BIZ_COND                 /* 업태 */
+             , BIZ_ITEM                 /* 종목 */
+             , MNGR_NM                  /* 담당자명 */
+             , MNGR_MP_NO               /* 담당자연락처 */
+             , MNGR_EMAIL1              /* 이메일1 */
+             , MNGR_EMAIL2              /* 이메일 */
+             , REMARK                   /* 비고 */
+             , CUST_ST                  /* 고객사상태[0:정상, 9:해지] */
+             , CANCEL_RSN               /* 해지사유 */
+             , CANCEL_DTM               /* 해지일시 */
+             , REG_DTM                  /* 등록일시 */
+             , REG_ID                   /* 등록자 */
+             , CHG_DTM                  /* 변경일시 */
+             , CHG_ID                   /* 변경자 */
+          FROM TCM_CUST               /* 고객사 */
+         WHERE SP_CD = #{spCd}
+           AND BIZ_NO = #{bizNo}
+         ORDER BY CUST_NM
+    </select>
+
+    <!-- Insert Cust List -->
+    <insert id="insCust" parameterType="Map">
+        /* NS_Cust.insCust */
+        INSERT INTO TCM_CUST (         /* 고객사 */
+              SP_CD                    /* 서비스제공자코드 */
+            , CUST_ID                  /* 고객사코드 */
+            , PA_CUST_ID               /* 상위고객사코드 */
+            , CUST_LVL                 /* 고객사레벨 */
+            , CUST_NM                  /* 고객사명 */
+            , CUST_TP                  /* 고객사유형[01:은행, 02:증권, 03:관공서, 99:기타] */
+            , BIZ_NO                   /* 사업자번호 */
+            , TRADE_NM                 /* 상호 */
+            , CEO_NM                   /* 대표자명 */
+            , TEL_NO                   /* 전화번호 */
+            , ADDR                     /* 주소 */
+            , BIZ_COND                 /* 업태 */
+            , BIZ_ITEM                 /* 종목 */
+            , MNGR_NM                  /* 담당자명 */
+            , MNGR_MP_NO               /* 담당자연락처 */
+            , MNGR_EMAIL1              /* 이메일1 */
+            , MNGR_EMAIL2              /* 이메일 */
+            , REMARK                   /* 비고 */
+            , REG_DTM                  /* 등록일시 */
+            , REG_ID                   /* 등록자 */
+            , CHG_DTM                  /* 변경일시 */
+            , CHG_ID                   /* 변경자 */
+            , CUST_ST                  /* 상태[0:정상, 9:해지] */
+        ) VALUES (
+              #{spCd}                  /* 서비스제공자코드 */
+            , F_GET_ID('CUST_ID')      /* 고객사코드 */
+            , #{paCustId}              /* 상위고객사코드 */
+            , #{custLvl}               /* 고객사레벨 */
+            , #{custNm}                /* 고객사명 */
+            , #{custTp}                /* 고객사유형[01:은행, 02:증권, 03:관공서, 99:기타] */
+            , #{bizNo}                 /* 사업자번호 */
+            , #{tradeNm}               /* 상호 */
+            , #{ceoNm}                 /* 대표자명 */
+            , #{telNo}                 /* 전화번호 */
+            , #{addr}                  /* 주소 */
+            , #{bizCond}               /* 업태 */
+            , #{bizItem}               /* 종목 */
+            , #{mngrNm}                /* 담당자명 */
+            , #{mngrMpNo}              /* 담당자연락처 */
+            , #{mngrEmail1}            /* 이메일1 */
+            , #{mngrEmail2}            /* 이메일 */
+            , #{remark}                /* 비고 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')   /* 등록일시 */
+            , #{regId}                 /* 등록자 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')   /* 변경일시 */
+            , #{chgId}                 /* 변경자 */
+            , '0'                      /* 상태[0:정상, 9:해지] - 최초가입시 정상으로 가입 */
+        )
+    </insert>
+
+    <!-- Update Cust List -->
+    <update id="updCust" parameterType="Map">
+        /* NS_Cust.updCust */
+        UPDATE TCM_CUST                 /* 고객사 */
+           SET SP_CD                  = #{spCd}                    /* 서비스제공자코드 */
+             , PA_CUST_ID             = #{paCustId}                /* 상위고객사코드 */
+             , CUST_LVL               = #{custLvl}                 /* 고객사레벨 */
+             , CUST_NM                = #{custNm}                  /* 고객사명 */
+             , CUST_TP                = #{custTp}                  /* 고객사유형[01:은행, 02:증권, 03:관공서, 99:기타] */
+             , BIZ_NO                 = #{bizNo}                   /* 사업자번호 */
+             , TRADE_NM               = #{tradeNm}                 /* 상호 */
+             , CEO_NM                 = #{ceoNm}                   /* 대표자명 */
+             , TEL_NO                 = #{telNo}                   /* 전화번호 */
+             , ADDR                   = #{addr}                    /* 주소 */
+             , BIZ_COND               = #{bizCond}                 /* 업태 */
+             , BIZ_ITEM               = #{bizItem}                 /* 종목 */
+             , MNGR_NM                = #{mngrNm}                  /* 담당자명 */
+             , MNGR_MP_NO             = #{mngrMpNo}                /* 담당자연락처 */
+             , MNGR_EMAIL1            = #{mngrEmail1}              /* 이메일1 */
+             , MNGR_EMAIL2            = #{mngrEmail2}              /* 이메일 */
+             , REMARK                 = #{remark}                  /* 비고 */
+             , REG_DTM                = #{regDtm}                  /* 등록일시 */
+             , REG_ID                 = #{regId}                   /* 등록자 */
+             , CHG_DTM                = TO_CHAR(SYSDATE, 'yyyymmddhh24miss')   /* 변경일시 */
+             , CHG_ID                 = #{chgId}                   /* 변경자 */
+         WHERE SP_CD = #{spCd}
+           AND CUST_ID = #{custId}
+    </update>
+
+    <!-- Delete Cust List -->
+    <delete id="delCust" parameterType="Map">
+        /* NS_Cust.delCust */
+         UPDATE TCM_CUST                 /* 고객사 */
+           SET CUST_ST                = '9'                        /* 상태[0:정상, 9:해지] */
+             , CANCEL_DTM             = TO_CHAR(SYSDATE, 'yyyymmddhh24miss')   /* 해지일시 */
+             , CANCEL_RSN             = #{cancelRsn}               /* 해지사유 */
+         WHERE CUST_ID = #{custId}
+    </delete>
+
+</mapper>

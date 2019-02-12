@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_Cards">
+
+    <!-- Select Cards List -->
+    <select id="selCardsList" parameterType="Map" resultType="CamelMap">
+
+        /* NS_Cards.selCardsList */
+
+        <include refid="NS_Paging.header"/>
+
+        SELECT SERIAL_NO                /* 시리얼번호 */
+             , CARDS_ST                 /* 카드상태[10:등록대기,20:응답없음,30:등록완료,99:등록실패] */
+             , CARDS_CUST_CD            /* 고객사코드[9902:우리은행] */
+             , CARDS_ISSUE_YEAR         /* 발급년도 */
+             , CARDS_ISSUE_TP           /* 카드유형[01:지문카드] */
+             , SERIAL_DTM               /* 시리얼발급일시 */
+             , REG_DTM                  /* 발급완료일시 */
+             , F_GET_CD_NM(#{language}, 'CARDS_CUST_CD', CARDS_CUST_CD) AS CARDS_CUST_CD_NM    /* 카드상태[10:등록대기,20:응답없음,30:등록완료,99:등록실패] */
+             , F_GET_CD_NM(#{language}, 'CARDS_ST', CARDS_ST) AS CARDS_ST_NM    /* 카드상태[10:등록대기,20:응답없음,30:등록완료,99:등록실패] */
+             , F_GET_CD_NM(#{language}, 'CARDS_ISSUE_TP', CARDS_ISSUE_TP) AS CARDS_ISSUE_TP_NM    /* 카드유형[01:지문카드] */
+          FROM TCM_CARDS              /* 카드 */
+         WHERE ( #{serialNo} IS NULL OR SERIAL_NO = #{serialNo} )                       /* 시리얼번호 */
+           AND ( #{cardsIssueYear} IS NULL OR CARDS_ISSUE_YEAR = #{cardsIssueYear} )    /* 발급년도 */
+           AND ( #{cardsSt} IS NULL OR CARDS_ST = #{cardsSt} )                          /* 카드상태[10:등록대기,20:응답없음,30:등록완료,99:등록실패] */
+           AND ( #{cardsCustCd} IS NULL OR CARDS_CUST_CD = #{cardsCustCd} )             /* 고객사코드[9902:우리은행] */
+           AND ( #{cardsIssueTp} IS NULL OR CARDS_ISSUE_TP = #{cardsIssueTp} )          /* 카드유형[01:지문카드] */
+        ORDER BY SERIAL_DTM DESC
+
+        <include refid="NS_Paging.footer"/>
+
+    </select>
+
+    <select id="selSerialNo" parameterType="Map" resultType="String">
+
+        SELECT F_GET_CARD_SERIAL(#{customer}) FROM DUAL
+
+    </select>
+
+    <!-- Insert Cards List -->
+    <insert id="insCards" parameterType="Map">
+
+        /* NS_Cards.insCards */
+
+        INSERT INTO TCM_CARDS (        /* 카드 */
+              SERIAL_NO                /* 시리얼번호 */
+            , CARDS_ST                 /* 카드상태[10:등록대기,20:응답없음,30:등록완료,99:등록실패] */
+            , CARDS_CUST_CD            /* 고객사코드[9902:우리은행] */
+            , CARDS_ISSUE_YEAR         /* 발급년도 */
+            , CARDS_ISSUE_TP           /* 카드유형[01:지문카드] */
+            , SERIAL_DTM               /* 시리얼발급일시 */
+            , REG_DTM                  /* 발급완료일시 */
+        ) VALUES (
+              #{serialNo}              /* 시리얼번호 */
+            , '20'                     /* 카드상태[10:등록대기,20:응답없음,30:등록완료,99:등록실패] */
+            , #{cardsCustCd}           /* 고객사코드[9902:우리은행] */
+            , #{cardsIssueYear}        /* 발급년도 */
+            , #{cardsIssueTp}          /* 카드유형[01:지문카드] */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')    /* 시리얼발급일시 */
+            , null                     /* 발급완료일시 */
+        )
+
+    </insert>
+
+    <!-- Update Cards List -->
+    <update id="updCards" parameterType="Map">
+
+        /* NS_Cards.updCards */
+
+        UPDATE TCM_CARDS                                                         /* 카드시리얼관리 */
+           SET CARDS_ST               = #{cardsSt}                               /* 카드상태[10:등록대기,20:응답없음,30:등록완료,99:등록실패] */
+             , REG_DTM                = TO_CHAR(SYSDATE, 'yyyymmddhh24miss')     /* 발급완료일시 */
+           WHERE SERIAL_NO = #{serialNo}
+
+    </update>
+
+</mapper>

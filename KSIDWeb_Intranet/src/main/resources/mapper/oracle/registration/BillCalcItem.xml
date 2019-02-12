@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_BillCalcItem">
+
+    <!-- Select TBB_BILL_CALC_ITEM List -->
+    <select id="selBillCalcItemList" parameterType="Map" resultType="CamelMap">
+        /* NS_BillCalcItem.selBillCalcItemList */
+
+        SELECT BS_CALC_CD               /* 기준계산 항목코드 */
+             , BS_CALC_NM               /* 기준계산 항목명칭 */
+             , USE_FLAG                 /* 사용여부(Y:사용,N:미사용) */
+             , ST_DTM                   /* 시작일 */
+             , ED_DTM                   /* 종료일 */
+             , BS_VAT_RT                /* 퍼센티지(부가세) */
+             , BS_CUT_UNIT              /* 단위절산단위(-2:십단위, -1:원단위, 0:소수점 1자리) */
+             , REG_DTM                  /* 등록일시 */
+             , REG_ID                   /* 등록자 */
+             , CHG_DTM                  /* 변경일시 */
+             , CHG_ID                   /* 변경자 */
+             , F_GET_CD_NM(#{language}, 'USE_YN', USE_FLAG) AS USE_FLAG_NM    /* 사용여부(Y:사용,N:미사용) */
+          FROM TBB_BILL_CALC_ITEM     /* 요금청구 기준 계산 항목 */
+         WHERE BS_CALC_CD LIKE '%' || #{"bsCalcCd"} || '%'
+           OR  BS_CALC_NM LIKE '%' || #{"bsCalcCd"} || '%'
+              ORDER BY REG_DTM
+    </select>
+
+    <!-- Select TBB_BILL_CALC_ITEM -->
+    <select id="selBillCalcItem" parameterType="Map" resultType="CamelMap">
+        /* NS_BillCalcItem.selBillCalcItem */
+        SELECT BS_CALC_CD               /* 기준계산 항목코드 */
+             , BS_CALC_NM               /* 기준계산 항목명칭 */
+             , USE_FLAG                 /* 사용여부(Y:사용,N:미사용) */
+             , ST_DTM                   /* 시작일 */
+             , ED_DTM                   /* 종료일 */
+             , BS_VAT_RT                /* 퍼센티지(부가세) */
+             , BS_CUT_UNIT              /* 단위절산단위(-2:십단위, -1:원단위, 0:소수점 1자리) */
+             , REG_DTM                  /* 등록일시 */
+             , REG_ID                   /* 등록자 */
+             , CHG_DTM                  /* 변경일시 */
+             , CHG_ID                   /* 변경자 */
+          FROM TBB_BILL_CALC_ITEM     /* 요금청구 기준 계산 항목 */
+        WHERE BS_CALC_CD = #{bsCalcCd}
+
+    </select>
+
+    <!-- Insert TBB_BILL_CALC_ITEM List -->
+    <insert id="insBillCalcItem" parameterType="Map">
+        /* NS_BillCalcItem.insBillCalcItem */
+
+        INSERT INTO TBB_BILL_CALC_ITEM (/* 요금청구 기준 계산 항목 */
+              BS_CALC_CD               /* 기준계산 항목코드 */
+            , BS_CALC_NM               /* 기준계산 항목명칭 */
+            , USE_FLAG                 /* 사용여부(Y:사용,N:미사용) */
+            , ST_DTM                   /* 시작일 */
+            , ED_DTM                   /* 종료일 */
+            , BS_VAT_RT                /* 퍼센티지(부가세) */
+            , BS_CUT_UNIT              /* 단위절산단위(-2:십단위, -1:원단위, 0:소수점 1자리) */
+            , REG_DTM                  /* 등록일시 */
+            , REG_ID                   /* 등록자 */
+            , CHG_DTM                  /* 변경일시 */
+            , CHG_ID                   /* 변경자 */
+        ) VALUES (
+              #{bsCalcCd}              /* 기준계산 항목코드 */
+            , #{bsCalcNm}              /* 기준계산 항목명칭 */
+            , #{useFlag}               /* 사용여부(Y:사용,N:미사용) */
+            , #{stDtm}                 /* 시작일 */
+            , #{edDtm}                 /* 종료일 */
+            , #{bsVatRt}               /* 퍼센티지(부가세) */
+            , #{bsCutUnit}             /* 단위절산단위(-2:십단위, -1:원단위, 0:소수점 1자리) */
+            , #{regDtm}                /* 등록일시 */
+            , #{regId}                 /* 등록자 */
+            , #{chgDtm}                /* 변경일시 */
+            , #{chgId}                 /* 변경자 */
+        )
+
+    </insert>
+
+    <!-- Update TBB_BILL_CALC_ITEM List -->
+    <update id="updBillCalcItem" parameterType="Map">
+        /* NS_BillCalcItem.updBillCalcItem */
+
+        UPDATE TBB_BILL_CALC_ITEM       /* 요금청구 기준 계산 항목 */
+           SET BS_CALC_NM             = #{bsCalcNm}                /* 기준계산 항목명칭 */
+             , USE_FLAG               = #{useFlag}                 /* 사용여부(Y:사용,N:미사용) */
+             , ST_DTM                 = #{stDtm}                   /* 시작일 */
+             , ED_DTM                 = #{edDtm}                   /* 종료일 */
+             , BS_VAT_RT              = #{bsVatRt}                 /* 퍼센티지(부가세) */
+             , BS_CUT_UNIT            = #{bsCutUnit}               /* 단위절산단위(-2:십단위, -1:원단위, 0:소수점 1자리) */
+             , CHG_DTM                = TO_CHAR(SYSDATE, 'yyyymmddhh24miss')   /* 변경일시 */
+             , CHG_ID                 = #{chgId}                   /* 변경자 */
+        WHERE BS_CALC_CD = #{bsCalcCd}
+
+    </update>
+
+    <!-- Delete TBB_BILL_CALC_ITEM List -->
+    <delete id="delBillCalcItem" parameterType="Map">
+
+        /* NS_BillCalcItem.delBillCalcItem */
+        DELETE FROM TBB_BILL_CALC_ITEM       /* 요금청구 기준 계산 항목 */
+        WHERE BS_CALC_CD = #{bsCalcCd}
+
+    </delete>
+
+</mapper>

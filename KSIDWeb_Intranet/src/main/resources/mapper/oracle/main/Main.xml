@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_Main">
+
+    <!--  -->
+    <select id="selMainMenuList" parameterType="map" resultType="camelMap">
+        /* NS_Home.selMainMenuList */
+        SELECT B.MENU_ID
+             , B.MENU_NM
+             , B.MENU_TYPE
+             , NVL(B.REF_MENU_ID, '0000000000') AS REF_MENU_ID
+             , B.EXEC_CMD
+             , B.AUTH_GROUP_CD
+             , B.MENU_LVL
+             , B.SORT_SEQ
+          FROM TYT_AUTH_GROUP_ADMIN  A
+               INNER JOIN TYT_AUTH_GROUP_MENU B
+                       ON B.AUTH_GROUP_CD = A.AUTH_GROUP_CD
+                      AND B.USE_YN = 'Y'
+         WHERE A.ADMIN_ID = #{adminId}
+         ORDER BY REF_MENU_ID, SORT_SEQ
+    </select>
+
+</mapper>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_CnsPayCancel">
+
+    <!-- Insert TBG_RAW_PG_APPR_GTR_DATA -->
+    <insert id="insCnsPayCancel" parameterType="Map" flushCache="true">
+        INSERT INTO TBG_RAW_PG_CANCEL_GTR_DATA (/* PG 결제 취소 처리 데이터 */
+              UDR_DTM                  /* 결제일시 */
+            , SP_CD                    /* 서비스제공자 */
+            , CUST_ID                  /* 고객사 */
+            , SERV_ID                  /* 서비스아이디 */
+            , TEL_NO                   /* 휴대폰 */
+            , USER_ID                  /* 사용자 */
+            , USER_NM
+            , CUST_USER_NO
+            , PAY_CANCEL_CMD           /* 취소명령(C:전체,P:부분) */
+            , RST_RESULT_CD            /* 결제 결과코드 */
+            , RST_RESULT_MSG           /* 결제 결과메시지 */
+            , RST_ERROR_CD             /* 에러코드 */
+            , RST_ERROR_MSG            /* 에러메시지 */
+            , RST_CANCEL_AMT           /* 취소금액 */
+            , RST_CANCEL_DTM           /* 취소일시 */
+            , RST_CANCEL_METHOD        /* 취소 결제수단 */
+            , RST_CANCEL_MID           /* 가맹점 ID */
+            , RST_CANCEL_TID           /* 거래 ID */
+            , RST_STATE_CD             /* 거래상태코드 */
+            , RST_PARTIAL_FG           /* 부분취소 가능여부 */
+            , RST_CANCEL_NO            /* 취소번호 */
+            , RST_AUTH_DTM             /* 승인날짜 */
+            , RST_PROM_CD              /* 프로모션 코드 */
+            , RST_DISCOUNT_AMT         /* 프로모션 할인금액 */
+            , RST_RECOVER_FG           /* 프로모션혜택복원여부 */
+            , RST_CANCEL_CD            /* 매입취소구분 */
+        ) VALUES (
+              #{udrDtm}                /* 결제일시 */
+            , #{spCd}                  /* 서비스제공자 */
+            , #{custId}                /* 고객사 */
+            , #{servId}                /* 서비스아이디 */
+            , #{telNo}                 /* 휴대폰 */
+            , #{userId}                /* 사용자 */
+            , #{userNm}
+            , #{custUserNo}
+            , #{payCancelCmd}          /* 취소명령(C:전체,P:부분) */
+            , #{rstResultCd}           /* 결제 결과코드 */
+            , #{rstResultMsg}          /* 결제 결과메시지 */
+            , #{rstErrorCd}            /* 에러코드 */
+            , #{rstErrorMsg}           /* 에러메시지 */
+            , #{rstCancelAmt}          /* 취소금액 */
+            , #{rstCancelDtm}          /* 취소일시 */
+            , #{rstCancelMethod}       /* 취소 결제수단 */
+            , #{rstCancelMid}          /* 가맹점 ID */
+            , #{rstCancelTid}          /* 거래 ID */
+            , #{rstStateCd}            /* 거래상태코드 */
+            , #{rstPartialFg}          /* 부분취소 가능여부 */
+            , #{rstCancelNo}           /* 취소번호 */
+            , #{rstAuthDtm}            /* 승인날짜 */
+            , #{rstPromCd}             /* 프로모션 코드 */
+            , #{rstDiscountAmt}        /* 프로모션 할인금액 */
+            , #{rstRecoverFg}          /* 프로모션혜택복원여부 */
+            , #{rstCancelCd}           /* 매입취소구분 */
+        )
+    </insert>
+
+    <!-- Call Procedure Cancel Service -->
+    <update id="cancelServAll" parameterType="Map" statementType="CALLABLE">
+        /* NS_CnsPayCancel.cancelServAll */
+        {
+            CALL P_SERV_CANCEL_ALL (
+                  #{spCd}           /* 서비스제공자 */
+                , #{custId}         /* 고객사아이디 */
+                , #{servId}         /* 서비스아이디 */
+                , #{mpNo}           /* 휴대폰번호 */
+                , #{userId}         /* 사용자아이디 */
+                , #{retMsg, mode=OUT, jdbcType=VARCHAR}       /* 성공시 null, 오류시 오류작업내용 */
+            )
+        }
+    </update>
+
+
+    <select id="getCnspayDir" parameterType="Map" resultType="CamelMap">
+        /* NS_CnsPayCancel.getCnspayDir */
+        SELECT CODE_CD                  /* 공통코드 */
+             , CODE_NM                  /* 코드명 */
+          FROM TYL_CODE                 /* 코드 */
+         WHERE CODE_GROUP_CD = #{codeGroupCd}
+           AND CODE_CD LIKE #{codeCd}
+           AND CODE_TYPE = 'N'      /* 공통코드유형[N:일반,S:시스템] */
+           AND USE_YN = 'Y'         /* 사용여부 */
+         ORDER BY SORT_SEQ ASC
+    </select>
+
+
+</mapper>

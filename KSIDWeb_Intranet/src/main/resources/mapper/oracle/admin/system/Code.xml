@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_Code">
+
+    <!-- Select CodeGroup List -->
+    <select id="selCodeGroupList" parameterType="Map" resultType="CamelMap">
+        /* NS_Code.selCodeGroupList */
+       SELECT F_GET_CD_NM(#{language}, 'CODE_GROUP_TYPE', A.CODE_GROUP_TYPE) AS CODE_GROUP_TYPE_NM    /* 코드그룹유형명 */
+             , F_GET_CD_NM(#{language}, 'USE_YN', A.USE_YN) AS USE_YN_NM    /* 사용여부명 */
+             , A.CODE_GROUP_CD            /* 코드그룹코드 */
+             , A.LANGUAGE                 /* 언어 */
+             , A.CODE_GROUP_NM            /* 코드그룹명 */
+             , A.CODE_GROUP_TYPE          /* 코드그룹유형 */
+             , A.SORT_SEQ                 /* 정렬순번 */
+             , A.REMARK                   /* 비고 */
+             , A.USE_YN                   /* 사용여부 */
+             , A.REG_DTM                  /* 등록일시 */
+             , A.REG_ID                   /* 등록자 */
+             , A.CHG_DTM                  /* 변경일시 */
+             , A.CHG_ID                   /* 변경자 */
+             , Y.ADMIN_NM AS REG_NM       /* 등록자 */
+             , Z.ADMIN_NM AS CHG_NM       /* 변경자 */
+          FROM TYL_CODE_GROUP A           /* 코드그룹 */
+          LEFT OUTER JOIN TYM_ADMIN Y
+                            ON Y.ADMIN_ID = A.REG_ID
+               LEFT OUTER JOIN TYM_ADMIN Z
+                            ON Z.ADMIN_ID = A.REG_ID
+         WHERE A.CODE_GROUP_CD    LIKE '%' || #{codeGroupNm} || '%'
+            OR A.CODE_GROUP_NM    LIKE '%' || #{codeGroupNm} || '%'
+      ORDER BY A.CODE_GROUP_CD ASC
+    </select>
+
+    <!-- Select CodeGroup -->
+    <select id="selCodeGroup" parameterType="Map" resultType="CamelMap">
+        /* NS_Code.selCodeGroup */
+        SELECT CODE_GROUP_CD            /* 코드그룹코드 */
+             , LANGUAGE                 /* 언어 */
+             , CODE_GROUP_NM            /* 코드그룹명 */
+             , CODE_GROUP_TYPE          /* 코드그룹유형 */
+             , SORT_SEQ                 /* 정렬순번 */
+             , REMARK                   /* 비고 */
+             , USE_YN                   /* 사용여부 */
+             , REG_DTM                  /* 등록일시 */
+             , REG_ID                   /* 등록자 */
+             , CHG_DTM                  /* 변경일시 */
+             , CHG_ID                   /* 변경자 */
+          FROM TYL_CODE_GROUP           /* 코드그룹 */
+         WHERE CODE_GROUP_CD = #{codeGroupCd}
+    </select>
+
+    <!-- Insert CodeGroup List -->
+    <insert id="insCodeGroup" parameterType="Map">
+        /* NS_Code.insCodeGroup */
+        INSERT INTO TYL_CODE_GROUP (   /* 코드그룹 */
+              CODE_GROUP_CD            /* 코드그룹코드 */
+            , LANGUAGE                 /* 언어 */
+            , CODE_GROUP_NM            /* 코드그룹명 */
+            , CODE_GROUP_TYPE          /* 코드그룹유형 */
+            , SORT_SEQ                 /* 정렬순번 */
+            , REMARK                   /* 비고 */
+            , USE_YN                   /* 사용여부 */
+            , REG_DTM                  /* 등록일시 */
+            , REG_ID                   /* 등록자 */
+            , CHG_DTM                  /* 변경일시 */
+            , CHG_ID                   /* 변경자 */
+        ) VALUES (
+              #{codeGroupCd}           /* 코드그룹코드 */
+            , #{language}              /* 언어 */
+            , #{codeGroupNm}           /* 코드그룹명 */
+            , #{codeGroupType}         /* 코드그룹유형 */
+            , #{sortSeq}               /* 정렬순번 */
+            , #{remark}                /* 비고 */
+            , #{useYn}                 /* 사용여부 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')     /* 등록일시 */
+            , #{regId}                 /* 등록자 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')     /* 변경일시 */
+            , #{chgId}              /* 변경자 */
+        )
+    </insert>
+
+    <!-- Update CodeGroup List -->
+    <update id="updCodeGroup" parameterType="Map">
+        /* NS_Code.updCodeGroup */
+        UPDATE TYL_CODE_GROUP           /* 코드그룹 */
+           SET CODE_GROUP_CD          = #{codeGroupCd}             /* 코드그룹코드 */
+             , LANGUAGE               = #{language}                /* 언어 */
+             , CODE_GROUP_NM          = #{codeGroupNm}             /* 코드그룹명 */
+             , CODE_GROUP_TYPE        = #{codeGroupType}           /* 코드그룹유형 */
+             , SORT_SEQ               = #{sortSeq}                 /* 정렬순번 */
+             , REMARK                 = #{remark}                  /* 비고 */
+             , USE_YN                 = #{useYn}                   /* 사용여부 */
+             , CHG_DTM                = TO_CHAR(SYSDATE, 'yyyymmddhh24miss')   /* 등록일시 */
+             , CHG_ID                 = #{chgId}                   /* 변경자 */
+         WHERE CODE_GROUP_CD          = #{codeGroupCd}             /* 공통코드그룹코드 */
+    </update>
+
+    <!-- Delete CodeGroup -->
+    <delete id="delCodeGroup" parameterType="Map">
+        /* NS_Code.delCodeGroup */
+        DELETE FROM TYL_CODE_GROUP           /* 공통코드그룹 */
+         WHERE CODE_GROUP_CD          = #{codeGroupCd}             /* 공통코드그룹코드 */
+    </delete>
+
+    <!-- Delete CodeGroup 하위 Code -->
+    <delete id="delCodeInGroup" parameterType="Map">
+        /* NS_Code.delCodeInGroup */
+        DELETE FROM TYL_CODE           /* 공통코드 */
+         WHERE CODE_GROUP_CD = #{codeGroupCd}             /* 공통코드그룹코드 */
+    </delete>
+
+
+
+    <!-- Select Code List -->
+    <select id="selCodeList" parameterType="Map" resultType="CamelMap">
+        /* NS_Code.selCodeList */
+         SELECT F_GET_CD_NM(#{language}, 'CODE_TYPE', A.CODE_TYPE) AS CODE_TYPE_NM    /* 코드유형명 */
+             , F_GET_CD_NM(#{language}, 'USE_YN', A.USE_YN) AS USE_YN_NM    /* 사용여부명 */
+             , A.CODE_GROUP_CD            /* 코드그룹코드 */
+             , A.CODE_CD                  /* 공통코드 */
+             , A.LANGUAGE                 /* 언어 */
+             , A.REF_CODE_CD              /* 상위공통코드 */
+             , A.CODE_NM                  /* 코드명 */
+             , A.CODE_TYPE                /* 코드유형[N:일반,S:시스템] */
+             , A.CODE_LVL                 /* 코드레벨 */
+             , A.SORT_SEQ                 /* 정렬순번 */
+             , A.REMARK                   /* 비고 */
+             , A.USE_YN                   /* 사용여부 */
+             , A.REG_DTM                  /* 등록일시 */
+             , A.REG_ID                   /* 등록자 */
+             , A.CHG_DTM                  /* 변경일시 */
+             , A.CHG_ID                   /* 변경자 */
+             , Y.ADMIN_NM AS REG_NM       /* 등록자 */
+             , Z.ADMIN_NM AS CHG_NM       /* 변경자 */
+          FROM TYL_CODE A                 /* 코드 */
+          LEFT OUTER JOIN TYM_ADMIN Y
+                            ON Y.ADMIN_ID = A.REG_ID
+               LEFT OUTER JOIN TYM_ADMIN Z
+                            ON Z.ADMIN_ID = A.REG_ID
+         WHERE A.CODE_GROUP_CD = #{codeGroupCd}
+      ORDER BY A.SORT_SEQ ASC
+    </select>
+
+    <!-- Select Code -->
+    <select id="selCode" parameterType="Map" resultType="CamelMap">
+        /* NS_Code.selCode */
+        SELECT CODE_GROUP_CD            /* 코드그룹코드 */
+             , CODE_CD                  /* 공통코드 */
+             , LANGUAGE                 /* 언어 */
+             , REF_CODE_CD              /* 상위공통코드 */
+             , CODE_NM                  /* 코드명 */
+             , CODE_TYPE                /* 코드유형[N:일반,S:시스템] */
+             , CODE_LVL                 /* 코드레벨 */
+             , SORT_SEQ                 /* 정렬순번 */
+             , REMARK                   /* 비고 */
+             , USE_YN                   /* 사용여부 */
+             , REG_DTM                  /* 등록일시 */
+             , REG_ID                   /* 등록자 */
+             , CHG_DTM                  /* 변경일시 */
+             , CHG_ID                   /* 변경자 */
+          FROM TYL_CODE                 /* 코드 */
+         WHERE CODE_GROUP_CD = #{codeGroupCd}
+           AND CODE_CD = #{codeCd}
+    </select>
+
+    <!-- Insert Code List -->
+    <insert id="insCode" parameterType="Map">
+        /* NS_Code.insCode */
+        INSERT INTO TYL_CODE (         /* 코드 */
+              CODE_GROUP_CD            /* 코드그룹코드 */
+            , CODE_CD                  /* 공통코드 */
+            , LANGUAGE                 /* 언어 */
+            , REF_CODE_CD              /* 상위공통코드 */
+            , CODE_NM                  /* 코드명 */
+            , CODE_TYPE                /* 코드유형[N:일반,S:시스템] */
+            , CODE_LVL                 /* 코드레벨 */
+            , SORT_SEQ                 /* 정렬순번 */
+            , REMARK                   /* 비고 */
+            , USE_YN                   /* 사용여부 */
+            , REG_DTM                  /* 등록일시 */
+            , REG_ID                   /* 등록자 */
+            , CHG_DTM                  /* 변경일시 */
+            , CHG_ID                   /* 변경자 */
+        ) VALUES (
+              #{codeGroupCd}           /* 코드그룹코드 */
+            , #{codeCd}                /* 공통코드 */
+            , #{language}              /* 언어 */
+            , #{refCodeCd}             /* 상위공통코드 */
+            , #{codeNm}                /* 코드명 */
+            , #{codeType}              /* 코드유형[N:일반,S:시스템] */
+            , #{codeLvl}               /* 코드레벨 */
+            , #{sortSeq}               /* 정렬순번 */
+            , #{remark}                /* 비고 */
+            , #{useYn}                 /* 사용여부 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')    /* 등록일시 */
+            , #{regId}                 /* 등록자 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')    /* 변경일시 */
+            , #{chgId}                 /* 변경자 */
+        )
+    </insert>
+
+    <!-- Update Code List -->
+    <update id="updCode" parameterType="Map">
+        /* NS_Code.updCode */
+        UPDATE TYL_CODE                 /* 코드 */
+           SET CODE_GROUP_CD          = #{codeGroupCd}             /* 코드그룹코드 */
+             , CODE_CD                = #{codeCd}                  /* 공통코드 */
+             , LANGUAGE               = #{language}                /* 언어 */
+             , REF_CODE_CD            = #{refCodeCd}               /* 상위공통코드 */
+             , CODE_NM                = #{codeNm}                  /* 코드명 */
+             , CODE_TYPE              = #{codeType}                /* 코드유형[N:일반,S:시스템] */
+             , CODE_LVL               = #{codeLvl}                 /* 코드레벨 */
+             , SORT_SEQ               = #{sortSeq}                 /* 정렬순번 */
+             , REMARK                 = #{remark}                  /* 비고 */
+             , USE_YN                 = #{useYn}                   /* 사용여부 */
+             , CHG_DTM                = TO_CHAR(SYSDATE, 'yyyymmddhh24miss')    /* 변경일시 */
+             , CHG_ID                 = #{chgId}                   /* 변경자 */
+         WHERE CODE_GROUP_CD = #{codeGroupCd}
+           AND CODE_CD = #{codeCd}
+    </update>
+
+    <!-- Delete Code List -->
+    <delete id="delCode" parameterType="Map">
+        /* NS_Code.delCode */
+        DELETE FROM TYL_CODE                 /* 코드 */
+         WHERE CODE_GROUP_CD = #{codeGroupCd}
+           AND CODE_CD = #{codeCd}
+    </delete>
+
+    <select id="selComboList" parameterType="Map" resultType="CamelMap">
+        /* NS_Code.selComboList */
+        SELECT CODE_CD
+             , CODE_NM
+          FROM VG_CD
+         WHERE ( LANGUAGE = #{language} OR LANGUAGE = 'ALL' )
+           AND CODE_GROUP_CD = #{codeGroupCd}
+        ORDER BY SORT_SEQ
+    </select>
+
+    <select id="selTest" parameterType="Map" resultType="String">
+        SELECT F_GET_ID('SERV_POLICY_ID') FROM DUAL
+    </select>
+
+</mapper>

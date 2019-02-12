@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_PgCancelGtrData">
+
+    <!-- Select 일자별 PG사 결제취소 내역 List -->
+    <select id="selPgCancelGtrDataList" parameterType="Map" resultType="CamelMap">
+        <include refid="NS_Paging.header"/>
+        /* NS_PgCancelGtrData.selPgCancelGtrDataList */
+
+        SELECT A.UDR_DTM                  /* 취소일시 */
+             , A.SP_CD                    /* 서비스제공자 */
+             , A.CUST_ID                  /* 고객사 */
+             , A.SERV_ID                  /* 서비스아이디 */
+             , A.TEL_NO                   /* 휴대폰 */
+             , A.USER_ID                  /* 사용자 */
+             , A.USER_NM
+             , A.CUST_USER_NO
+             , A.PAY_CANCEL_CMD           /* 취소명령 */
+             , A.RST_RESULT_CD            /* 결제 결과코드 */
+             , A.RST_RESULT_MSG           /* 결제 결과메시지 */
+             , A.RST_ERROR_CD             /* 에러코드 */
+             , A.RST_ERROR_MSG            /* 에러메시지 */
+             , A.RST_CANCEL_AMT           /* 취소금액 */
+             , A.RST_CANCEL_DTM           /* 취소일시 */
+             , A.RST_CANCEL_METHOD        /* 취소 결제수단 */
+             , A.RST_CANCEL_MID           /* 가맹점 ID */
+             , A.RST_CANCEL_TID           /* 거래 ID */
+             , A.RST_STATE_CD             /* 거래상태코드 */
+             , A.RST_PARTIAL_FG           /* 부분취소 가능여부 */
+             , A.RST_CANCEL_NO            /* 취소번호 */
+             , A.RST_AUTH_DTM             /* 승인날짜 */
+             , A.RST_PROM_CD              /* 프로모션 코드 */
+             , A.RST_DISCOUNT_AMT         /* 프로모션 할인금액 */
+             , A.RST_RECOVER_FG           /* 프로모션혜택복원여부 */
+             , A.RST_CANCEL_CD            /* 매입취소구분 */
+             , S.SP_NM                    /* 서비스제공자명 */
+             , T.CUST_NM                  /* 고객사명 */
+             , J.SERV_NM                  /* 서비스명 */
+             , F_GET_CD_NM(#{language}, 'PAY_CMD', A.PAY_CANCEL_CMD) AS PAY_CANCEL_CMD_NM    /* 취소명령 */
+             , F_GET_CD_NM(#{language}, 'PAY_METHOD', A.RST_CANCEL_METHOD) AS RST_CANCEL_METHOD_NM    /* 결제수단 */
+             , F_GET_CD_NM(#{language}, 'PAY_STATUS', A.RST_STATE_CD) AS RST_STATE_CD_NM    /* 거래상태코드 */
+             , F_GET_CD_NM(#{language}, 'PAY_PARTIAL', A.RST_PARTIAL_FG) AS RST_PARTIAL_FG_NM    /* 부분취소 */
+             , F_GET_CD_NM(#{language}, 'PAY_RECOVER', A.RST_RECOVER_FG) AS RST_RECOVER_FG_NM    /* 프로모션혜택복원여부 */
+             , F_GET_CD_NM(#{language}, 'PAY_CANCEL_CD', A.RST_CANCEL_CD) AS RST_CANCEL_CD_NM    /* 매입취소구분 */
+        FROM TBG_RAW_PG_CANCEL_GTR_DATA A  /* PG 결제 취소 처리 데이터 */
+               LEFT OUTER JOIN TCM_SP S                  /* 서비스제공자 */
+                       ON S.SP_CD = A.SP_CD
+               LEFT OUTER JOIN TCM_CUST T                /* 고객사 */
+                       ON T.SP_CD = A.SP_CD
+                      AND T.CUST_ID = A.CUST_ID
+               LEFT OUTER JOIN TCM_USER U                /* 사용자 */
+                       ON U.USER_ID = A.USER_ID
+               LEFT OUTER JOIN TCM_MP P                  /* 휴대폰 */
+                       ON P.USER_ID = U.USER_ID
+               LEFT OUTER JOIN TSL_CUST_FIX_BILL J       /* 서비스명 */
+                       ON J.SERV_ID = A.SERV_ID
+         WHERE A.UDR_DTM BETWEEN #{sDt}||'000000' AND #{eDt}||'235959'
+           AND ( #{spCd} IS NULL OR A.SP_CD = #{spCd} )                     /* 서비스제공자코드 */
+           AND ( #{custId} IS NULL OR A.CUST_ID = #{custId} )               /* 고객사아이디 */
+           AND ( #{servId} IS NULL OR A.SERV_ID = #{servId} )               /* 서비스아이디 */
+           AND ( #{payMethod} IS NULL OR A.RST_CANCEL_METHOD = #{payMethod} )
+           AND ( #{mpNo} IS NULL OR P.MP_NO LIKE '%' || #{mpNo} || '%'  )
+           AND ( #{userNm} IS NULL OR A.USER_NM LIKE '%' || #{userNm} || '%'  )
+           AND ( #{custUserNo} IS NULL OR A.CUST_USER_NO LIKE '%' || #{custUserNo} || '%'  )
+           <if test="rstResultCd != null and rstResultCd.equalsIgnoreCase('SUCC')">
+           AND ( #{rstResultCd} IS NULL OR A.RST_RESULT_CD IN ('2001', '2002', '2211') )
+           </if>
+           <if test="rstResultCd != null and rstResultCd.equalsIgnoreCase('FAIL')">
+           AND ( #{rstResultCd} IS NULL OR A.RST_RESULT_CD NOT IN ('2001', '2002', '2211') )
+           </if>
+          ORDER BY A.UDR_DTM desc, A.RST_CANCEL_TID desc
+
+        <include refid="NS_Paging.footer"/>
+
+    </select>
+
+
+</mapper>

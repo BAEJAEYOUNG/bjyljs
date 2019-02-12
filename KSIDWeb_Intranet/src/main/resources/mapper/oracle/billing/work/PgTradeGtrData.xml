@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_PgTradeGtrData">
+
+    <!-- Select 일자별 PG사 거래대사 내역 List -->
+    <select id="selPgTradeGtrDataList" parameterType="Map" resultType="CamelMap">
+        <include refid="NS_Paging.header"/>
+        /* NS_PgTradeGtrData.selPgTradeGtrDataList */
+
+        SELECT PAY_DTM                  /* 거래일자 */
+             , PAY_TID                  /* 거래 ID */
+             , PAY_MID                  /* 가맹점 ID */
+             , PAY_CMD                  /* 거래명령(승인:A, 취소:C, 부분취소:P) */
+             , PAY_METHOD               /* 결제수단(카드:CARD,계좌이체:BANK,가상계좌:VBNK,휴대폰:MOBILE) */
+             , PAY_OID                  /* 주문번호 */
+             , AUTH_NO                  /* 승인번호 */
+             , PAY_AMT                  /* 결제금액 */
+             , FREE_FG                  /* 무이자구분 */
+             , CANCEL_NO                /* 취소번호 */
+             , REG_DTM                  /* 수집일시 */
+             , F_GET_CD_NM(#{language}, 'PAY_CMD', PAY_CMD) AS PAY_CMD_NM    /* 거래명령 */
+             , F_GET_CD_NM(#{language}, 'PAY_METHOD', PAY_METHOD) AS PAY_METHOD_NM    /* 결제수단 */
+             , F_GET_CD_NM(#{language}, 'FREE_FG', FREE_FG) AS FREE_FG_NM    /* 무이자구분 */
+          FROM TBG_PG_TRADE_GTR_DATA  /* 일자별 PG사 거래대사 수집 내역 */
+         WHERE PAY_DTM BETWEEN #{sDt} AND #{eDt}
+           AND ( #{payCmd} IS NULL OR PAY_CMD = #{payCmd} )
+           AND ( #{payMethod} IS NULL OR PAY_METHOD = #{payMethod} )
+          ORDER BY PAY_DTM desc, PAY_TID desc
+        <include refid="NS_Paging.footer"/>
+
+    </select>
+
+
+</mapper>

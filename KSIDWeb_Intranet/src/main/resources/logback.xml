@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+
+    <property resource="property/logback.properties"/>
+
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+        <resetJUL>true</resetJUL>
+    </contextListener>
+
+    <!-- To enable JMX Management -->
+    <jmxConfigurator/>
+
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${logger.pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="org.apache" additivity="false">
+        <level value="${${server.type:-ope}-logger.level.org.apache:-ERROR}"/>
+        <appender-ref ref="console"/>
+    </logger>
+
+    <logger name="org.springframework" additivity="false">
+        <level value="${${server.type:-ope}-logger.level.org.springframework:-ERROR}"/>
+        <appender-ref ref="console" />
+    </logger>
+
+    <logger name="org.springframework.security" additivity="false">
+        <level value="${${server.type:-ope}-logger.level.org.springframework.security:-ERROR}"/>
+        <appender-ref ref="console" />
+    </logger>
+
+    <logger name="org.apache.ibatis" additivity="false">
+        <level value="${${server.type:-ope}-logger.level.org.apache.ibatis:-ERROR}"/>
+        <appender-ref ref="console" />
+    </logger>
+
+    <logger name="org.mybatis" additivity="false">
+        <level value="${${server.type:-ope}-logger.level.org.mybatis:-ERROR}"/>
+        <appender-ref ref="console" />
+    </logger>
+
+    <logger name="ksid" additivity="false">
+        <level value="${${server.type:-ope}-logger.level.ksid:-ERROR}"/>
+        <appender-ref ref="console"/>
+    </logger>
+
+    <root level="${${server.type:-ope}-logger.level.root:-ERROR}">
+        <appender-ref ref="console"/>
+    </root>
+
+    <include resource="logback/file-appender.xml" />
+
+</configuration>

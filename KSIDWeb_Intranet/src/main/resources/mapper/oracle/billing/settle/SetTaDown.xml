@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_SetTaDown">
+
+    <!-- Select SetTaDown List -->
+    <select id="selSetTaDownList" parameterType="Map" resultType="CamelMap">
+        /* NS_SetTaDown.selSetTaDownList */
+        SELECT A.BILL_DATE                /* 정산일자 */
+             , A.KSID_TA_INS_USER_CNT     /* KSID TA Download 신규설치 사용자수 */
+             , A.KSID_TA_INS_UDR_CNT      /* KSID TA Download 신규설치 건수 */
+             , A.KSID_TA_INS_FEE          /* KSID TA Download 신규설치 요금 */
+             , A.KSID_TA_UPD_USER_CNT     /* KSID TA Download 업데이트 사용자수 */
+             , A.KSID_TA_UPD_UDR_CNT      /* KSID TA Download 업데이트 건수 */
+             , A.KSID_TA_UPD_FEE          /* KSID TA Download 업데이트 요금 */
+             , A.TAM_TA_INS_USER_CNT      /* TAM TA Download 신규설치 사용자수 */
+             , A.TAM_TA_INS_UDR_CNT       /* TAM TA Download 신규설치 건수 */
+             , A.TAM_TA_INS_FEE           /* TAM TA Download 신규설치 요금 */
+             , A.TAM_TA_UPD_USER_CNT      /* TAM TA Download 업데이트 사용자수 */
+             , A.TAM_TA_UPD_UDR_CNT       /* TAM TA Download 업데이트 건수 */
+             , A.TAM_TA_UPD_FEE           /* TAM TA Download 업데이트 요금 */
+             , F_GET_CD_NM(#{language}, 'CHK_TP', A.INS_USER_CNT_CHK) INS_USER_CNT_CHK_NM  /* 신규설치 사용자수 체크(Y:M일치, N:불일치) */
+             , F_GET_CD_NM(#{language}, 'CHK_TP', A.INS_UDR_CNT_CHK)  INS_UDR_CNT_CHK_NM   /* 신규설치 건수 체크(Y:M일치, N:불일치) */
+             , F_GET_CD_NM(#{language}, 'CHK_TP', A.UPD_USER_CNT_CHK) UPD_USER_CNT_CHK_NM  /* 업데이트 사용자수 체크(Y:M일치, N:불일치) */
+             , F_GET_CD_NM(#{language}, 'CHK_TP', A.UPD_UDR_CNT_CHK)  UPD_UDR_CNT_CHK_NM   /* 업데이트 건수 체크(Y:M일치, N:불일치) */
+          FROM TBS_TA_DOWN_SETTLE_ACCT A            /* 과금 마스터 UDR(공인인증/FIDO) */
+         WHERE A.BILL_DATE BETWEEN #{sDt} AND #{eDt}
+           ORDER BY A.BILL_DATE
+    </select>
+
+</mapper>

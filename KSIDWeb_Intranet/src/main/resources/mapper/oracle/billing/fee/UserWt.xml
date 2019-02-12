@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_UserWt">
+
+    <!-- Select UserWt List -->
+    <select id="selUserWtList" parameterType="Map" resultType="CamelMap">
+        <include refid="NS_Paging.header"/>
+        /* NS_UserWt.selUserWtList */
+        SELECT F_GET_CD_NM(#{language}, 'BILL_FLAG', A.BILL_FLAG) AS BILL_FLAG_NM           /* 과금여부 */
+             , F_GET_CD_NM(#{language}, 'ERR_FLAG', A.ERR_FLAG) AS ERR_FLAG_NM              /* 에러여부 */
+             , F_GET_CD_NM(#{language}, 'PAY_FLAG', A.PAY_FLAG) AS PAY_FLAG_NM              /* 청구여부 */
+             , F_GET_CD_NM(#{language}, 'BILL_TAR_TP', A.BILL_TAR_TP) AS BILL_TAR_TP_NM     /* 과금대상유형 */
+             , F_GET_CD_NM(#{language}, 'PROD_TP', A.PROD_TP) AS PROD_TP_NM                 /* 과금분류명 */
+             , F_GET_CD_NM(#{language}, 'AUTH_METHOD', A.AUTH_METHOD) AS AUTH_METHOD_NM     /* 인증수단 */
+             , A.TEL_NO                   /* 스마트폰 */
+             , A.UDR_DTM                  /* 과금생성시각 */
+             , A.T_ID                     /* 트랜잭션 ID */
+             , A.ST_DTM                   /* 트랜잭션 시작시각 */
+             , A.ED_DTM                   /* 트랜잭션 종료시각 */
+             , A.SP_CD                    /* 서비스제공자코드 */
+             , A.CUST_ID                  /* 고객사 ID(은행,증권,기타) */
+             , A.USER_ID                  /* 사용자 ID */
+             , A.PROD_TP                  /* 서비스 중분류 */
+             , A.PROD_CD                  /* 서비스 소분류 */
+             , A.AUTH_METHOD              /* 인증수단 */
+             , A.PROD_MCLS_CD             /* 상품코드 */
+             , A.BILL_TAR_TP              /* 과금대상유형[C:고객사, U:사용자] */
+             , A.BILL_FLAG                /* 과금여부(유료,무료) */
+             , A.ERR_FLAG                 /* 에러여부(정상,에러) */
+             , A.CALC_FEE                 /* 사용요금 */
+             , A.PAY_FLAG                 /* 청구여부(완료,미완료) */
+             , S.SP_NM                    /* 서비스제공자명 */
+             , T.CUST_NM                  /* 고객사명 */
+             , U.USER_NM                  /* 사용자명 */
+             , M.PROD_MCLS_NM             /* 상품명 */
+             , P.PROD_NM                  /* 과금대상명 */
+             , J.SERV_NM                  /* 서비스명 */
+          FROM TBR_USER_WT_FEE_DATA A                    /* 사용자별 종량요금 데이터 */
+               LEFT OUTER JOIN TCM_SP S                  /* 서비스제공자 */
+                       ON S.SP_CD = A.SP_CD
+               LEFT OUTER JOIN TCM_CUST T                /* 고객사 */
+                       ON T.SP_CD = A.SP_CD
+                      AND T.CUST_ID = A.CUST_ID
+               LEFT OUTER JOIN TCM_USER U                /* 사용자 */
+                       ON U.USER_ID = A.USER_ID
+               LEFT OUTER JOIN TCM_MP P                  /* 휴대폰 */
+                       ON P.USER_ID = U.USER_ID
+               LEFT OUTER JOIN TSM_PROD_MCLS M           /* 상품 */
+                       ON M.PROD_MCLS_CD = A.PROD_MCLS_CD
+               LEFT OUTER JOIN TSM_PROD P                /* 과금대상 */
+                       ON P.PROD_CD = A.PROD_CD
+               LEFT OUTER JOIN TSL_CUST_FIX_BILL J       /* 서비스명 */
+                       ON J.SERV_ID = A.SERV_ID
+         WHERE A.UDR_DTM BETWEEN #{sDt} || '000000' AND #{eDt} || '999999'          /* 과금생성시각 */
+           AND A.SP_CD = #{spCd}                                                    /* 서비스제공자코드 */
+           AND ( #{custId} IS NULL OR A.CUST_ID = #{custId} )     /* 고객사아이디 */
+           AND ( #{mpNo} IS NULL OR P.MP_NO LIKE '%' || #{mpNo} || '%'  )
+           AND ( #{userNm} IS NULL OR U.USER_NM LIKE '%' || #{userNm} || '%'  )
+         ORDER BY A.UDR_DTM, A.TEL_NO
+        <include refid="NS_Paging.footer"/>
+    </select>
+
+</mapper>

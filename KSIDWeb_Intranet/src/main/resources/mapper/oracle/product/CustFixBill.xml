@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_CustFixBill">
+
+    <!-- Select CustFixBill List -->
+    <select id="selCustFixBillList" parameterType="Map" resultType="CamelMap">
+        /* NS_CustFixBill.selCustFixBillList */
+        SELECT F_GET_CD_NM(#{language}, 'CHARGE_FG', A.CHARGE_FG) AS CHARGE_FG_NM           /* 유무상 */
+             , F_GET_CD_NM(#{language}, 'BILL_TAR_TP', A.BILL_TAR_TP) AS BILL_TAR_TP_NM     /* 과금대상유형 */
+             , F_GET_CD_NM(#{language}, 'PAY_FG', A.PAY_FG) AS PAY_FG_NM                    /* 지불유형 */
+             , F_GET_CD_NM(#{language}, 'BILL_FG', A.BILL_FG) AS BILL_FG_NM                 /* 과금유형 */
+             , F_GET_CD_NM(#{language}, 'BILL_CALC_TP', A.BILL_CALC_TP) AS BILL_CALC_TP_NM  /* 과금계산유형 */
+             , F_GET_CD_NM(#{language}, 'BILL_STATE', A.BILL_STATE) AS BILL_STATE_NM        /* 과금상태 */
+             , A.SP_CD                    /* 서비스제공자코드 */
+             , A.CUST_ID                  /* 고객사코드 */
+             , A.SERV_ID                  /* 서비스아이디 */
+             , A.PROD_MCLS_CD             /* 상품코드 */
+             , A.PROD_CHOICE_CD           /* 과금대상선택코드 */
+             , A.SERV_NM                  /* 서비스명[FIDO 전용 서비스 FODO+공인인증서 결합 서비스] */
+             , A.CHARGE_FG                /* 유무상[F:무상, P:유상] */
+             , A.BILL_TAR_TP              /* 과금대상유형[C:고객사, U:사용자] */
+             , A.PAY_FG                   /* 지불유형[P:선불, A:후불] */
+             , A.BILL_FG                  /* 과금유형[01:건별, 02: 월정액, 03: 1년정액, 04:3년정액] */
+             , A.BILL_PRICE               /* 과금액 */
+             , A.BILL_CALC_TP             /* 과금계산유형[C:고객사 통합과금액, U:사용자 합계과금액] */
+             , A.BILL_STATE               /* 과금상태[0:정상, 1:미납부, 2:연체, 9:해지] */
+             , A.PG_CD                    /* PG사 코드 */
+             , A.PAY_MID                  /* 가맹점 ID */
+             , A.REMARK                   /* 비고 */
+             , A.REG_DTM                  /* 등록일시 */
+             , A.REG_ID                   /* 등록자 */
+             , A.CHG_DTM                  /* 변경일시 */
+             , A.CHG_ID                   /* 변경자 */
+             , S.SP_NM                    /* 서비스제공자명 */
+             , C.CUST_NM                  /* 고객사명 */
+             , M.PROD_MCLS_NM             /* 상품명 */
+             , Y.ADMIN_NM AS REG_NM       /* 등록자 */
+             , Z.ADMIN_NM AS CHG_NM       /* 변경자 */
+             , J.PG_NM                    /* PG사명 */
+             , N.MID_KOR_NM               /* 가맹점명 */
+          FROM TSL_CUST_FIX_BILL A        /* 고객사_정액_서비스 */
+               LEFT OUTER JOIN TCM_SP S                     /* 서비스제공자 */
+                            ON S.SP_CD = A.SP_CD
+               LEFT OUTER JOIN TCM_CUST C                   /* 고객사 */
+                            ON C.SP_CD = A.SP_CD
+                           AND C.CUST_ID = A.CUST_ID
+               LEFT OUTER JOIN TSM_PROD_MCLS M              /* 상품 */
+                            ON M.PROD_MCLS_CD = A.PROD_MCLS_CD
+               LEFT OUTER JOIN TYM_ADMIN Y
+                            ON Y.ADMIN_ID = A.REG_ID    /* 등록자 */
+               LEFT OUTER JOIN TYM_ADMIN Z
+                            ON Z.ADMIN_ID = A.REG_ID    /* 변경자 */
+               LEFT OUTER JOIN TSM_PG J
+                            ON J.PG_CD = A.PG_CD        /* PG사코드 */
+               LEFT OUTER JOIN TSM_PG_PAY_MID N
+                            ON N.PG_CD = A.PG_CD        /* PGPG사 가맹점 정보 */
+                           AND N.PAY_MID = A.PAY_MID
+         WHERE (#{spCd} IS NULL OR A.SP_CD = #{spCd})                   /* 서비스제공자코드 */
+           AND (#{custId} IS NULL OR A.CUST_ID = #{custId})           /* 고객사아이디 */
+           AND (#{servId} IS NULL OR A.SERV_ID = #{servId})           /* 서비스아이디 */
+           AND (#{servNm} IS NULL OR A.SERV_NM = #{servNm})           /* 서비스명 */
+           AND (#{chargeFg} IS NULL OR A.CHARGE_FG = #{chargeFg})       /* 유무상 */
+           AND (#{billTarTp} IS NULL OR A.BILL_TAR_TP = #{billTarTp})   /* 과금대상유형 */
+           AND (#{payFg} IS NULL OR A.PAY_FG = #{payFg})                /* 지불유형 */
+           AND (#{billFg} IS NULL OR A.BILL_FG = #{billFg})             /* 과금유형 */
+           AND (#{billCalcTp} IS NULL OR A.BILL_CALC_TP = #{billCalcTp})/* 과금계산유형 */
+           AND (#{billState} IS NULL OR A.BILL_STATE = #{billState})    /* 과금상태 */
+         ORDER BY S.SP_NM
+                , C.CUST_NM
+                , M.PROD_MCLS_NM
+                , A.SERV_ID
+    </select>
+
+    <select id="selCustFixBill" parameterType="Map" resultType="CamelMap">
+        SELECT SP_CD                    /* 서비스제공자코드 */
+             , CUST_ID                  /* 고객사코드 */
+             , SERV_ID                  /* 서비스아이디 */
+             , PROD_MCLS_CD             /* 상품코드 */
+             , PROD_CHOICE_CD           /* 과금대상선택코드 */
+             , SERV_NM                  /* 서비스명[FIDO 전용 서비스 FODO+공인인증서 결합 서비스] */
+             , CHARGE_FG                /* 유무상[F:무상, P:유상] */
+             , BILL_TAR_TP              /* 과금대상유형[C:고객사, U:사용자] */
+             , PAY_FG                   /* 지불유형[P:선불, A:후불] */
+             , BILL_FG                  /* 과금유형[01:건별, 02: 월정액, 03: 1년정액, 04:3년정액] */
+             , BILL_PRICE               /* 과금액 */
+             , BILL_CALC_TP             /* 과금계산유형[C:고객사 통합과금액, U:사용자 합계과금액] */
+             , BILL_STATE               /* 과금상태[0:정상, 1:미납부, 2:연체, 9:해지] */
+             , PG_CD                    /* PG사 코드 */
+             , PAY_MID                  /* 가맹점 ID */
+             , REMARK                   /* 비고 */
+             , REG_DTM                  /* 등록일시 */
+             , REG_ID                   /* 등록자 */
+             , CHG_DTM                  /* 변경일시 */
+             , CHG_ID                   /* 변경자 */
+          FROM TSL_CUST_FIX_BILL      /* 고객사_정액_서비스 */
+         WHERE SERV_ID = #{servId}
+    </select>
+
+    <select id="selServId" parameterType="Map" resultType="String">
+        SELECT F_GET_ID('SERV_ID') FROM DUAL
+    </select>
+
+    <!-- Insert CustFixBill List -->
+    <insert id="insCustFixBill" parameterType="Map">
+        /* NS_CustFixBill.insCustFixBill */
+        INSERT INTO TSL_CUST_FIX_BILL (/* 고객사_정액_서비스 */
+              SP_CD                    /* 서비스제공자코드 */
+            , CUST_ID                  /* 고객사코드 */
+            , SERV_ID                  /* 서비스아이디 */
+            , PROD_MCLS_CD             /* 상품코드 */
+            , PROD_CHOICE_CD           /* 과금대상선택코드 */
+            , SERV_NM                  /* 서비스명[FIDO 전용 서비스 FODO+공인인증서 결합 서비스] */
+            , CHARGE_FG                /* 유무상[F:무상, P:유상] */
+            , BILL_TAR_TP              /* 과금대상유형[C:고객사, U:사용자] */
+            , PAY_FG                   /* 지불유형[P:선불, A:후불] */
+            , BILL_FG                  /* 과금유형[01:건별, 02: 월정액, 03: 1년정액, 04:3년정액] */
+            , BILL_PRICE               /* 과금액 */
+            , BILL_CALC_TP             /* 과금계산유형[C:고객사 통합과금액, U:사용자 합계과금액] */
+            , BILL_STATE               /* 과금상태[0:정상, 1:미납부, 2:연체, 9:해지] */
+            , PG_CD                    /* PG사 코드 */
+            , PAY_MID                  /* 가맹점 ID */
+            , REMARK                   /* 비고 */
+            , REG_DTM                  /* 등록일시 */
+            , REG_ID                   /* 등록자 */
+            , CHG_DTM                  /* 변경일시 */
+            , CHG_ID                   /* 변경자 */
+        ) VALUES (
+              #{spCd}                  /* 서비스제공자코드 */
+            , #{custId}                /* 고객사코드 */
+            , #{servId}                /* 서비스아이디 */
+            , #{prodMclsCd}            /* 상품코드 */
+            , #{prodChoiceCd}          /* 과금대상선택코드 */
+            , #{servNm}                /* 서비스명[FIDO 전용 서비스 FODO+공인인증서 결합 서비스] */
+            , #{chargeFg}              /* 유무상[F:무상, P:유상] */
+            , #{billTarTp}             /* 과금대상유형[C:고객사, U:사용자] */
+            , #{payFg}                 /* 지불유형[P:선불, A:후불] */
+            , #{billFg}                /* 과금유형[01:건별, 02: 월정액, 03: 1년정액, 04:3년정액] */
+            , #{billPrice}             /* 과금액 */
+            , #{billCalcTp}            /* 과금계산유형[C:고객사 통합과금액, U:사용자 합계과금액] */
+            , #{billState}             /* 과금상태[0:정상, 1:미납부, 2:연체, 9:해지] */
+            , #{pgCd}                  /* PG사 코드 */
+            , #{payMid}                /* 가맹점 ID */
+            , #{remark}                /* 비고 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')   /* 등록일시 */
+            , 'admin'                  /* 등록자 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')   /* 변경일시 */
+            , 'admin'                  /* 변경자 */
+        )
+    </insert>
+
+    <!-- Update CustFixBill List -->
+    <update id="updCustFixBill" parameterType="Map">
+        /* NS_CustFixBill.updCustFixBill */
+        UPDATE TSL_CUST_FIX_BILL        /* 고객사_정액_서비스 */
+           SET SERV_NM                = #{servNm}                  /* 서비스명[FIDO 전용 서비스 FODO+공인인증서 결합 서비스] */
+             , PROD_CHOICE_CD         = #{prodChoiceCd}            /* 과금대상선택코드 */
+             , CHARGE_FG              = #{chargeFg}                /* 유무상[F:무상, P:유상] */
+             , BILL_TAR_TP            = #{billTarTp}               /* 과금대상유형[C:고객사, U:사용자] */
+             , PAY_FG                 = #{payFg}                   /* 지불유형[P:선불, A:후불] */
+             , BILL_FG                = #{billFg}                  /* 과금유형[01:건별, 02: 월정액, 03: 1년정액, 04:3년정액] */
+             , BILL_PRICE             = #{billPrice}               /* 과금액 */
+             , BILL_CALC_TP           = #{billCalcTp}              /* 과금계산유형[C:고객사 통합과금액, U:사용자 합계과금액] */
+             , BILL_STATE             = #{billState}               /* 과금상태[0:정상, 1:미납부, 2:연체, 9:해지] */
+             , PG_CD                  = #{pgCd}                    /* PG사 코드 */
+             , PAY_MID                = #{payMid}                  /* 가맹점 ID */
+             , REMARK                 = #{remark}                  /* 비고 */
+             , CHG_DTM                = TO_CHAR(SYSDATE, 'yyyymmddhh24miss')     /* 변경일시 */
+             , CHG_ID                 = 'admin'                    /* 변경자 */
+         WHERE SP_CD                  = #{spCd}                    /* 서비스제공자코드 */
+           AND CUST_ID                = #{custId}                  /* 고객사코드 */
+           AND SERV_ID                = #{servId}                  /* 서비스아이디 */
+           AND PROD_MCLS_CD           = #{prodMclsCd}              /* 상품코드 */
+
+    </update>
+
+    <!-- Delete CustFixBill List -->
+    <delete id="delCustFixBill" parameterType="Map">
+        /* NS_CustFixBill.delCustFixBill */
+         DELETE FROM TSL_CUST_FIX_BILL        /* 고객사_정액_서비스 */
+          WHERE SP_CD                  = #{spCd}                    /* 서비스제공자코드 */
+            AND CUST_ID                = #{custId}                  /* 고객사코드 */
+            AND SERV_ID                = #{servId}                  /* 서비스아이디 */
+            AND PROD_MCLS_CD           = #{prodMclsCd}              /* 상품코드 */
+    </delete>
+
+    <!-- Select CustCaseBill List -->
+    <select id="selCustCaseBillList" parameterType="Map" resultType="CamelMap">
+        /* NS_CustCaseBill.selCustCaseBillList */
+        SELECT PROD_CD                  /* 과금대상코드 */
+             , BILL_PRICE               /* 과금액 */
+          FROM TSL_CUST_CASE_BILL       /* 고객사_건별_서비스 */
+         WHERE SP_CD = #{spCd}          /* 서비스제공자코드 */
+           AND CUST_ID = #{custId}      /* 고객사아이디 */
+           AND SERV_ID = #{servId}      /* 서비스아이디 */
+           AND PROD_MCLS_CD = #{prodMclsCd}  /* 상품코드 */
+    </select>
+
+
+    <!-- Insert CustCaseBill List -->
+    <insert id="insCustCaseBill_Old" parameterType="Map">
+        /* NS_CustCaseBill.insCustCaseBill_Old */
+        INSERT INTO TSL_CUST_CASE_BILL (/* 고객사_건별_서비스 */
+              SP_CD                    /* 서비스제공자코드 */
+            , CUST_ID                  /* 고객사코드 */
+            , SERV_ID                  /* 서비스아이디 */
+            , PROD_MCLS_CD             /* 상품코드 */
+            , PROD_CD                  /* 과금대상코드 */
+            , PROD_CHOICE_CD           /* 과금대상선택코드 */
+            , BILL_PRICE               /* 과금액 */
+            , BILL_STATE               /* 과금상태[0:정상, 1:미납부, 2:연체, 9:해지] */
+            , REG_DTM                  /* 등록일시 */
+            , REG_ID                   /* 등록자 */
+            , CHG_DTM                  /* 변경일시 */
+            , CHG_ID                   /* 변경자 */
+        ) VALUES (
+              #{spCd}                  /* 서비스제공자코드 */
+            , #{custId}                /* 고객사코드 */
+            , #{servId}                /* 서비스아이디 */
+            , #{prodMclsCd}            /* 상품코드 */
+            , #{prodCd}                /* 과금대상코드 */
+            , #{prodChoiceCd}          /* 과금대상선택코드 */
+            , #{billPrice}             /* 과금액 */
+            , '0'                      /* 과금상태[0:정상, 1:미납부, 2:연체, 9:해지] */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')   /* 등록일시 */
+            , 'admin'                  /* 등록자 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')   /* 변경일시 */
+            , 'admin'                  /* 변경자 */
+        )
+    </insert>
+
+    <!-- Insert CustCaseBill List -->
+    <insert id="insCustCaseBill" parameterType="Map">
+        /* NS_CustCaseBill.insCustCaseBill */
+        INSERT INTO TSL_CUST_CASE_BILL (/* 고객사_건별_서비스 */
+              SP_CD                    /* 서비스제공자코드 */
+            , CUST_ID                  /* 고객사코드 */
+            , SERV_ID                  /* 서비스아이디 */
+            , PROD_MCLS_CD             /* 상품코드 */
+            , PROD_CD                  /* 과금대상코드 */
+            , PROD_CHOICE_CD           /* 과금대상선택코드 */
+            , CHARGE_FG                /* 유무상[F:무상, P:유상] */
+            , BILL_TAR_TP              /* 과금대상유형[C:고객사, U:사용자] */
+            , PAY_FG                   /* 지불유형[P:선불, A:후불] */
+            , BILL_FG                  /* 과금유형[01:건별, 02: 월정액, 03: 1년정액, 04:3년정액] */
+            , BILL_PRICE               /* 과금액 */
+            , BILL_STATE               /* 과금상태[0:정상, 1:미납부, 2:연체, 9:해지] */
+            , REMARK                   /* 비고 */
+            , REG_DTM                  /* 등록일시 */
+            , REG_ID                   /* 등록자 */
+            , CHG_DTM                  /* 변경일시 */
+            , CHG_ID                   /* 변경자 */
+        ) VALUES (
+              #{spCd}                  /* 서비스제공자코드 */
+            , #{custId}                /* 고객사코드 */
+            , #{servId}                /* 서비스아이디 */
+            , #{prodMclsCd}            /* 상품코드 */
+            , #{prodCd}                /* 과금대상코드 */
+            , #{prodChoiceCd}          /* 과금대상선택코드 */
+            , #{chargeFg}              /* 유무상[F:무상, P:유상] */
+            , #{billTarTp}             /* 과금대상유형[C:고객사, U:사용자] */
+            , #{payFg}                 /* 지불유형[P:선불, A:후불] */
+            , #{billFg}                /* 과금유형[01:건별, 02: 월정액, 03: 1년정액, 04:3년정액] */
+            , #{billPrice}             /* 과금액 */
+            , '0'                      /* 과금상태[0:정상, 1:미납부, 2:연체, 9:해지] */
+            , #{remark}                /* 비고 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')   /* 등록일시 */
+            , 'admin'                  /* 등록자 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')   /* 변경일시 */
+            , 'admin'                  /* 변경자 */
+        )
+    </insert>
+
+    <!-- Delete CustCaseBill List -->
+    <delete id="delCustCaseBill" parameterType="Map">
+         /* NS_CustCaseBill.delCustCaseBill */
+         DELETE FROM TSL_CUST_CASE_BILL       /* 고객사_건별_서비스 */
+          WHERE SP_CD = #{spCd}          /* 서비스제공자코드 */
+            AND CUST_ID = #{custId}      /* 고객사아이디 */
+            AND SERV_ID = #{servId}      /* 서비스아이디 */
+            AND PROD_MCLS_CD = #{prodMclsCd}  /* 상품코드 */
+    </delete>
+
+    <select id="selSpServPolicy" parameterType="Map" resultType="CamelMap">
+        SELECT PROD_MCLS_CD             /* 상품코드 */
+             , PROD_CHOICE_CD           /* 과금대상선택코드 */
+             , CHARGE_FG                /* 유무상[F:무상, P:유상] */
+             , BILL_TAR_TP              /* 과금대상유형[C:고객사, U:사용자] */
+             , PAY_FG                   /* 지불유형[P:선불, A:후불] */
+             , BILL_FG                  /* 과금유형[01:건별, 02: 월정액, 03: 1년정액, 04:3년정액] */
+             , BILL_PRICE               /* 과금액 */
+             , BILL_CALC_TP             /* 과금계산유형[C:고객사 통합과금액, U:사용자 합계과금액] */
+          FROM TSL_SP_SERV_FIX_POLICY /* 서비스제공자서비스정책정액 */
+         WHERE SERV_POLICY_ID = #{servPolicyId}
+    </select>
+
+</mapper>

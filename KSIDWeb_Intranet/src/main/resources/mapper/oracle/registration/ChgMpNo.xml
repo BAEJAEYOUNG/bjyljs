@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_ChgMpNo">
+
+    <!-- Select User List -->
+    <select id="selUserTelnoList" parameterType="Map" resultType="CamelMap">
+        <include refid="NS_Paging.header"/>
+        /* NS_ChgMpNo.selUserTelnoList */
+
+        SELECT F_GET_CD_NM(#{language}, 'SEX', A.SEX) AS SEX_NM    /* 성별 */
+             , F_GET_CD_NM(#{language}, 'JOIN_TP', A.JOIN_TP) AS JOIN_TP_NM    /* 가입유형 */
+             , F_GET_CD_NM(#{language}, 'USER_ST', A.USER_ST) AS USER_ST_NM    /* 사용자상태 */
+             , A.USER_ID                  /* 사용자아이디 */
+             , A.USER_TP                  /* 사용자유형 */
+             , A.USER_NM                  /* 사용자명 */
+             , A.BIRTH_DAY                /* 생년월일 */
+             , A.MP_NO                    /* 휴대폰번호 */
+             , A.SEX                      /* 성별[M:남자(MALE),F:여자(FEMALE)] */
+             , A.NATION                   /* 국적 */
+             , A.JOIN_TP                  /* 가입유형[등록유형[A:앱가입,W:웹가입,S:시스템등록,C:클라이언트등록]] */
+             , A.JOIN_DTM                 /* 가입일시 */
+             , A.CANCEL_DTM               /* 해지일시 */
+             , A.CANCEL_RSN               /* 해지사유 */
+             , A.USER_ST                  /* 상태[0:정상, 9:해지] */
+             , A.REG_DTM                  /* 등록일시 */
+             , A.REG_ID                   /* 등록자 */
+             , A.CHG_DTM                  /* 변경일시 */
+             , A.CHG_ID                   /* 변경자 */
+             , A.Y.ADMIN_NM AS REG_NM     /* 등록자 */
+             , A.Z.ADMIN_NM AS CHG_NM     /* 변경자 */
+             , B.SP_CD                    /* 서비스제공자코드 */
+             , B.CUST_ID                  /* 고객사아이디 */
+             , B.CUST_USER_NO             /* 사번[학번,사번] */
+             , C.SP_NM                    /* 서비스제공자명 */
+             , D.CUST_NM                  /* 고객사명 */
+          FROM TCM_USER A                 /* 사용자 */
+               INNER JOIN TCT_CUST_USER B
+                       ON B.USER_ID = A.USER_ID
+               INNER JOIN TCM_SP C
+                       ON C.SP_CD = B.SP_CD
+               INNER JOIN TCM_CUST D
+                       ON D.SP_CD = B.SP_CD
+                      AND D.CUST_ID = B.CUST_ID
+               LEFT OUTER JOIN TYM_ADMIN Y
+                            ON Y.ADMIN_ID = A.REG_ID
+               LEFT OUTER JOIN TYM_ADMIN Z
+                            ON Z.ADMIN_ID = A.REG_ID
+         WHERE (#{spCd} IS NULL OR B.SP_CD = #{spCd})                               /* 서비스제공자코드 */
+           AND (#{custId} IS NULL OR B.CUST_ID = #{custId})                         /* 고객사아이디 */
+           AND (#{userNm} IS NULL OR A.USER_NM LIKE '%' || #{userNm} || '%')        /* 사용자명 */
+           AND (#{mpNo} IS NULL OR A.MP_NO LIKE '%' || #{mpNo} || '%')              /* 휴대폰번호 */
+           AND (#{custUserNo} IS NULL OR B.CUST_USER_NO LIKE '%' || #{custUserNo} || '%'  )
+        ORDER BY A.USER_NM
+
+        <include refid="NS_Paging.footer"/>
+
+    </select>
+
+
+    <!-- Select ChgMpNo List -->
+    <select id="selChgMpNoHisList" parameterType="Map" resultType="CamelMap">
+        <include refid="NS_Paging.header"/>
+
+        /* NS_ChgMpNo.selChgMpNoHisList */
+        SELECT A.USER_ID                  /* 사용자아이디 */
+             , A.OLD_MP_NO                /* 기존 휴대폰번호 */
+             , A.NEW_MP_NO                /* 신규 휴대폰번호 */
+             , A.CHG_DTM                  /* 변경일시 */
+             , A.CHG_ID                   /* 변경자 */
+             , B.ADMIN_NM AS CHG_NM       /* 변경자 */
+             , C.USER_NM                  /* 사용자명 */
+          FROM TCL_USER_MPNO_CHG_HIS  A  /* 번호이동 이력 */
+               LEFT OUTER JOIN TYM_ADMIN  B
+                       ON B.ADMIN_ID = A.CHG_ID    /* 변경자 */
+               JOIN TCM_USER  C
+                       ON C.USER_ID = A.USER_ID    /* 사용자아이디 */
+                      AND (#{mpNo} IS NULL OR C.MP_NO LIKE '%' || #{mpNo} || '%')              /* 휴대폰번호 */
+                      AND (#{userNm} IS NULL OR C.USER_NM LIKE '%' || #{userNm} || '%')        /* 사용자명 */
+         WHERE A.CHG_DTM BETWEEN #{sDt}||'000000' AND #{eDt}||'235959'
+         ORDER BY A.CHG_DTM desc, A.USER_ID
+
+        <include refid="NS_Paging.footer"/>
+
+    </select>
+
+    <!-- Call Procedure ChgMpNo -->
+    <update id="chgMpNoReq" parameterType="Map" statementType="CALLABLE">
+        /* NS_ChgMpNo.chgMpNoReq */
+        {
+            CALL P_USER_CHG_MPNO (
+                  #{userId}          /* 사용자아이디 */
+                , #{oldMpNo}         /* 기존 휴대폰번호 */
+                , #{newMpNo}         /* 신규 휴대폰번호 */
+                , #{retMsg, mode=OUT, jdbcType=VARCHAR}       /* 성공시 null, 오류시 오류작업내용 */
+            )
+        }
+    </update>
+
+</mapper>

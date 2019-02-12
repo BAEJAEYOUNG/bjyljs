@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_SvcPvdSaleStatMonth">
+
+    <!-- Select SaleStatMonth List -->
+    <select id="selSaleStatMonthList" parameterType="Map" resultType="CamelMap">
+        /* NS_SvcPvdSaleStatMonth.selSaleStatMonthList */
+        SELECT T.STAT_MONTH               /* 통계월(YYYYMM) */
+             <if test="chkSp != null and chkSp.equalsIgnoreCase('Y')">
+             , T.SP_CD                    /* 서비스제공자 */
+             , MAX(T.SP_NM) SP_NM         /* 서비스제공자명 */
+             </if>
+             <if test="chkCust != null and chkCust.equalsIgnoreCase('Y')">
+             , T.CUST_ID                  /* 고객사 */
+             , MAX(T.CUST_NM) AS CUST_NM  /* 고객사명 */
+             </if>
+             <if test="chkServ != null and chkServ.equalsIgnoreCase('Y')">
+             , T.SERV_ID                  /* 서비스아이디 */
+             , MAX(T.SERV_NM) AS SERV_NM  /* 서비스명 */
+             </if>
+             <if test="chkProd != null and chkProd.equalsIgnoreCase('Y')">
+             , T.PROD_MCLS_CD                       /* 상품코드 */
+             , MAX(T.PROD_MCLS_NM) AS PROD_MCLS_NM  /* 상품명 */
+             </if>
+
+             , SUM(T.APPR_CNT_P)    AS APPR_CNT_P      /* 승인건수 - 선불 */
+             , SUM(T.APPR_AMT_P)    AS APPR_AMT_P      /* 승인요금 - 선불 */
+             , SUM(T.CANCEL_CNT_P)  AS CANCEL_CNT_P    /* 취소건수 - 선불 */
+             , SUM(T.CANCEL_AMT_P)  AS CANCEL_AMT_P    /* 취소요금 - 선불 */
+             , SUM(T.USER_CNT_P)    USER_CNT_P      /* 사용자수 - 선불 */
+             , SUM(T.BILL_CNT_P)    BILL_CNT_P      /* 요금건수 - 선불 */
+             , SUM(T.BILL_FEE_P)    BILL_FEE_P      /* 사용요금 - 선불 */
+             , SUM(T.USER_CNT_A)    USER_CNT_A      /* 사용자수 - 후불 */
+             , SUM(T.BILL_CNT_A)    BILL_CNT_A      /* 요금건수 - 후불 */
+             , SUM(T.BILL_FEE_A)    BILL_FEE_A      /* 사용요금 - 후불 */
+             , SUM(T.USER_CNT_P + T.USER_CNT_A)    USER_CNT_T      /* 사용자수 - 합계 */
+             , SUM(T.BILL_CNT_P + T.BILL_CNT_A)    BILL_CNT_T      /* 요금건수 - 합계 */
+             , SUM(T.BILL_FEE_P + T.BILL_FEE_A)    BILL_FEE_T      /* 사용요금 - 합계 */
+          FROM (
+
+                SELECT SUBSTR(A.STAT_DTM, 1, 6) AS STAT_MONTH      /* 통계월(YYYYMM) */
+                     <if test="chkSp != null and chkSp.equalsIgnoreCase('Y')">
+                     , A.SP_CD                    /* 서비스제공자 */
+                     , A.SP_NM                    /* 서비스제공자명 */
+                     </if>
+                     <if test="chkCust != null and chkCust.equalsIgnoreCase('Y')">
+                     , A.CUST_ID                  /* 고객사 */
+                     , A.CUST_NM                  /* 고객사명 */
+                     </if>
+                     <if test="chkServ != null and chkServ.equalsIgnoreCase('Y')">
+                     , A.SERV_ID                  /* 서비스아이디 */
+                     , A.SERV_NM                  /* 서비스명 */
+                     </if>
+                     <if test="chkProd != null and chkProd.equalsIgnoreCase('Y')">
+                     , A.PROD_MCLS_CD             /* 상품코드 */
+                     , A.PROD_MCLS_NM             /* 상품명 */
+                     </if>
+                     , CASE WHEN A.PAY_FG = 'P' THEN A.APPR_CNT   ELSE 0 END APPR_CNT_P     /* 승인건수 - 선불*/
+                     , CASE WHEN A.PAY_FG = 'P' THEN A.CANCEL_CNT ELSE 0 END CANCEL_CNT_P   /* 취소건수 - 선불*/
+                     , CASE WHEN A.PAY_FG = 'P' THEN A.APPR_AMT   ELSE 0 END APPR_AMT_P     /* 승인요금 - 선불*/
+                     , CASE WHEN A.PAY_FG = 'P' THEN A.CANCEL_AMT ELSE 0 END CANCEL_AMT_P   /* 취소요금 - 선불*/
+                     , CASE WHEN A.PAY_FG = 'P' THEN A.USER_CNT ELSE 0 END USER_CNT_P  /* 사용자수 - 선불 */
+                     , CASE WHEN A.PAY_FG = 'P' THEN A.BILL_CNT ELSE 0 END BILL_CNT_P  /* 요금건수 - 선불 */
+                     , CASE WHEN A.PAY_FG = 'P' THEN A.BILL_FEE ELSE 0 END BILL_FEE_P  /* 사용요금 - 선불 */
+                     , CASE WHEN A.PAY_FG = 'A' THEN A.USER_CNT ELSE 0 END USER_CNT_A  /* 사용자수 - 후불 */
+                     , CASE WHEN A.PAY_FG = 'A' THEN A.BILL_CNT ELSE 0 END BILL_CNT_A  /* 요금건수 - 후불 */
+                     , CASE WHEN A.PAY_FG = 'A' THEN A.BILL_FEE ELSE 0 END BILL_FEE_A  /* 사용요금 - 후불 */
+
+                  FROM TBD_SALES_SERV_STATS A   /* 서비스 매출 현황 통계 */
+                 WHERE A.STAT_DTM BETWEEN #{sM}||'01' AND #{eM}||'31'               /* 조회시작일, 종료일 */
+                   AND ( #{spCd} IS NULL OR A.SP_CD = #{spCd} )                     /* 서비스제공자코드 */
+                   AND ( #{custId} IS NULL OR A.CUST_ID = #{custId} )               /* 고객사아이디 */
+                   AND ( #{servId} IS NULL OR A.SERV_ID = #{servId} )               /* 서비스아이디 */
+                   AND ( #{prodMclsCd} IS NULL OR A.PROD_MCLS_CD = #{prodMclsCd} )  /* 상품코드 */
+                   AND A.SP_NM IS NOT NULL
+                   AND A.CUST_NM IS NOT NULL
+                   AND A.PROD_MCLS_NM IS NOT NULL
+              ) T
+      GROUP BY T.STAT_MONTH      /* 매출월 */
+             <if test="chkSp != null and chkSp.equalsIgnoreCase('Y')">
+             , T.SP_CD                    /* 서비스제공자 */
+             </if>
+             <if test="chkCust != null and chkCust.equalsIgnoreCase('Y')">
+             , T.CUST_ID                  /* 고객사 */
+             </if>
+             <if test="chkServ != null and chkServ.equalsIgnoreCase('Y')">
+             , T.SERV_ID                  /* 서비스아이디 */
+             </if>
+             <if test="chkProd != null and chkProd.equalsIgnoreCase('Y')">
+             , T.PROD_MCLS_CD             /* 상품코드 */
+             </if>
+      ORDER BY T.STAT_MONTH
+            <if test="chkSp != null and chkSp.equalsIgnoreCase('Y')">
+             , T.SP_CD                    /* 서비스제공자 */
+             </if>
+             <if test="chkCust != null and chkCust.equalsIgnoreCase('Y')">
+             , T.CUST_ID                  /* 고객사 */
+             </if>
+             <if test="chkServ != null and chkServ.equalsIgnoreCase('Y')">
+             , T.SERV_ID                  /* 서비스아이디 */
+             </if>
+             <if test="chkProd != null and chkProd.equalsIgnoreCase('Y')">
+             , T.PROD_MCLS_CD             /* 상품코드 */
+             </if>
+
+    </select>
+
+</mapper>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_PgApprGtrData">
+
+    <!-- Select 일자별 PG사 결제승인 내역 List -->
+    <select id="selPgApprGtrDataList" parameterType="Map" resultType="CamelMap">
+        <include refid="NS_Paging.header"/>
+        /* NS_PgApprGtrData.selPgApprGtrDataList */
+
+        SELECT A.UDR_DTM                  /* 결제일시 */
+             , A.SP_CD                    /* 서비스제공자 */
+             , A.CUST_ID                  /* 고객사 */
+             , A.SERV_ID                  /* 서비스아이디 */
+             , A.TEL_NO                   /* 스마트폰 */
+             , A.USER_ID                  /* 사용자 */
+             , A.USER_NM
+             , A.CUST_USER_NO
+             , A.RST_RESULT_CD            /* 결제 결과코드 */
+             , A.RST_RESULT_MSG           /* 결제 결과메시지 */
+             , A.RST_PAY_TID              /* 거래번호 */
+             , A.RST_PAY_OID              /* 가맹점 주문번호 */
+             , A.RST_PAY_MID              /* 가맹점 ID */
+             , A.RST_PAY_METHOD           /* 결제 수단 코드 */
+             , A.RST_PAY_AMT              /* 결제상품금액 */
+             , A.RST_AUTH_DTM             /* 승인날자 */
+             , A.RST_AUTH_CD              /* 승인코드 */
+             , A.RST_CARD_CD              /* 결제카드사코드 */
+             , A.RST_CARD_NM              /* 결제카드사명 */
+             , A.RST_CARD_QUOTA           /* 할부개월 */
+             , A.RST_CARD_BIN             /* 카드BIN 정보 */
+             , A.RST_VAN_CD               /* 승인VAN 코드 */
+             , A.RST_CARD_PT              /* 카드사포인트 */
+             , A.RST_BANK_CD              /* 은행코드 */
+             , A.RST_BANK_NM              /* 은행명 */
+             , A.RST_RCPT_TP              /* 현금영수증 타입 */
+             , A.RST_RCPT_AUTH_CD         /* 현금영수증 승인번호 */
+             , A.RST_RCPT_TID             /* 현금영수증 TID */
+             , A.RST_VBANK_CD             /* 결제은행코드 */
+             , A.RST_VBANK_NM             /* 결제은행명 */
+             , A.RST_VBANK_NO             /* 가상계좌번호 */
+             , A.RST_VBANK_EXP_DTM        /* 입금만료예정일시 */
+             , A.RST_CARRIER              /* 이통사구분 */
+             , A.RST_DST_ADDR             /* 휴대폰번호 */
+             , S.SP_NM                    /* 서비스제공자명 */
+             , T.CUST_NM                  /* 고객사명 */
+             , J.SERV_NM                  /* 서비스명 */
+             , F_GET_CD_NM(#{language}, 'PAY_METHOD', A.RST_PAY_METHOD) AS RST_PAY_METHOD_NM    /* 결제수단 */
+          FROM TBG_RAW_PG_APPR_GTR_DATA A /* PG 결제 승인 처리 데이터 */
+               LEFT OUTER JOIN TCM_SP S                  /* 서비스제공자 */
+                       ON S.SP_CD = A.SP_CD
+               LEFT OUTER JOIN TCM_CUST T                /* 고객사 */
+                       ON T.SP_CD = A.SP_CD
+                      AND T.CUST_ID = A.CUST_ID
+               LEFT OUTER JOIN TCM_USER U                /* 사용자 */
+                       ON U.USER_ID = A.USER_ID
+               LEFT OUTER JOIN TCM_MP P                  /* 휴대폰 */
+                       ON P.USER_ID = U.USER_ID
+               LEFT OUTER JOIN TSL_CUST_FIX_BILL J       /* 서비스명 */
+                       ON J.SERV_ID = A.SERV_ID
+         WHERE A.UDR_DTM BETWEEN #{sDt}||'000000' AND #{eDt}||'235959'
+           AND ( #{spCd} IS NULL OR A.SP_CD = #{spCd} )                     /* 서비스제공자코드 */
+           AND ( #{custId} IS NULL OR A.CUST_ID = #{custId} )               /* 고객사아이디 */
+           AND ( #{servId} IS NULL OR A.SERV_ID = #{servId} )               /* 서비스아이디 */
+           AND ( #{payMethod} IS NULL OR A.RST_PAY_METHOD = #{payMethod} )
+           AND ( #{mpNo} IS NULL OR P.MP_NO LIKE '%' || #{mpNo} || '%'  )
+           AND ( #{userNm} IS NULL OR A.USER_NM LIKE '%' || #{userNm} || '%'  )
+           AND ( #{custUserNo} IS NULL OR A.CUST_USER_NO LIKE '%' || #{custUserNo} || '%'  )
+           <if test="rstResultCd != null and rstResultCd.equalsIgnoreCase('SUCC')">
+           AND ( #{rstResultCd} IS NULL OR A.RST_RESULT_CD IN ('3001', '4000', '4100') )
+           </if>
+           <if test="rstResultCd != null and rstResultCd.equalsIgnoreCase('FAIL')">
+           AND ( #{rstResultCd} IS NULL OR A.RST_RESULT_CD NOT IN ('3001', '4000', '4100') )
+           </if>
+          ORDER BY A.UDR_DTM desc, A.RST_PAY_TID desc
+
+        <include refid="NS_Paging.footer"/>
+
+    </select>
+
+
+</mapper>

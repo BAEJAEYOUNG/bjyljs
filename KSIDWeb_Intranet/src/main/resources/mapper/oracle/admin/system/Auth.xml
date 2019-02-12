@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_Auth">
+
+    <!-- Auth Select -->
+    <select id="selAuthList" parameterType="Map" resultType="CamelMap">
+        /* NS_Auth.selAuthList */
+        SELECT AUTH_GROUP_CD            /* 권한그룹코드 */
+             , AUTH_GROUP_NM            /* 권한그룹명 */
+             , SORT_SEQ                 /* 정렬순번 */
+             , USE_YN                   /* 사용여부 */
+             , REMARK                   /* 비고 */
+          FROM TYM_AUTH_GROUP         /* 권한그룹 */
+        ORDER BY SORT_SEQ
+    </select>
+
+    <!-- Select Auth -->
+    <select id="selAuth" parameterType="Map" resultType="CamelMap">
+        /* NS_Auth.selAuth */
+        SELECT AUTH_GROUP_CD            /* 권한그룹코드 */
+             , AUTH_GROUP_NM            /* 권한그룹명 */
+             , SORT_SEQ                 /* 정렬순번 */
+             , USE_YN                   /* 사용여부 */
+             , REMARK                   /* 비고 */
+             , REG_DTM                  /* 등록일시 */
+             , REG_ID                   /* 등록자 */
+             , CHG_DTM                  /* 변경일시 */
+             , CHG_ID                   /* 변경자 */
+          FROM TYM_AUTH_GROUP           /* 권한그룹 */
+         WHERE AUTH_GROUP_CD = #{authGroupCd}
+    </select>
+
+    <!-- Insert Auth List -->
+    <insert id="insAuth" parameterType="Map">
+        /* NS_Auth.insAuth */
+        INSERT INTO TYM_AUTH_GROUP (   /* 권한그룹 */
+              AUTH_GROUP_CD            /* 권한그룹코드 */
+            , AUTH_GROUP_NM            /* 권한그룹명 */
+            , SORT_SEQ                 /* 정렬순번 */
+            , USE_YN                   /* 사용여부 */
+            , REMARK                   /* 비고 */
+            , REG_DTM                  /* 등록일시 */
+            , REG_ID                   /* 등록자 */
+            , CHG_DTM                  /* 변경일시 */
+            , CHG_ID                   /* 변경자 */
+        ) VALUES (
+              #{authGroupCd}           /* 권한그룹코드 */
+            , #{authGroupNm}           /* 권한그룹명 */
+            , #{sortSeq}               /* 정렬순번 */
+            , #{useYn}                 /* 사용여부 */
+            , #{remark}                /* 비고 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')    /* 등록일시 */
+            , #{regId}                 /* 등록자 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')    /* 변경일시 */
+            , #{chgId}                 /* 변경자 */
+        )
+    </insert>
+
+    <!-- Update Auth -->
+    <update id="updAuth" parameterType="Map">
+        /* NS_Auth.updAuth */
+        UPDATE TYM_AUTH_GROUP           /* 권한그룹 */
+           SET AUTH_GROUP_CD          = #{authGroupCd}             /* 권한그룹코드 */
+             , AUTH_GROUP_NM          = #{authGroupNm}             /* 권한그룹명 */
+             , SORT_SEQ               = #{sortSeq}                 /* 정렬순번 */
+             , USE_YN                 = #{useYn}                   /* 사용여부 */
+             , REMARK                 = #{remark}                  /* 비고 */
+             , CHG_DTM                = TO_CHAR(SYSDATE, 'yyyymmddhh24miss')    /* 변경일시 */
+             , CHG_ID                 = #{chgId}                   /* 변경자 */
+         WHERE AUTH_GROUP_CD = #{authGroupCd}
+    </update>
+
+    <!-- Delete Auth -->
+    <delete id="delAuth" parameterType="Map">
+        /* NS_Auth.delAuth */
+        DELETE FROM TYM_AUTH_GROUP           /* 권한그룹 */
+         WHERE AUTH_GROUP_CD = #{authGroupCd}
+    </delete>
+
+    <!-- Admin Select -->
+    <select id="selAdminList" parameterType="Map" resultType="CamelMap">
+        /* NS_Auth.selAdminList */
+        SELECT A.AUTH_GROUP_CD            /* 권한그룹코드 */
+             , A.ADMIN_ID                 /* 관리자아이디 */
+             , A.REG_DTM                  /* 등록일시 */
+             , A.REG_ID                   /* 등록자 */
+             , B.ADMIN_NM                 /* 관리자명 */
+             , B.HP_NO                    /* 휴대폰번호 */
+             , B.ADMIN_TP                 /* 관리자유형[T:전체관리자, S:서비스제공자관리자, C:고객사관리자, E:기타관리자] */
+             , B.SP_CD                    /* 서비스제공자코드 */
+             , B.CUST_ID                  /* 고객사코드 */
+             , F_GET_CD_NM(#{language}, 'ADMIN_TP', B.ADMIN_TP) AS ADMIN_TP_NM    /* 관리자유형[T:전체관리자, S:서비스제공자관리자, C:고객사관리자, E:기타관리자] */
+             , Y.ADMIN_NM AS REG_NM       /* 등록자 */
+             , Z.ADMIN_NM AS CHG_NM       /* 변경자 */
+             , S.SP_NM                    /* 서비스제공자명 */
+             , C.CUST_NM                  /* 고객사명 */
+          FROM TYT_AUTH_GROUP_ADMIN A     /* 권한그룹_관리자 */
+               INNER JOIN TYM_ADMIN B     /* 관리자 */
+                          ON B.ADMIN_ID = A.ADMIN_ID
+               LEFT OUTER JOIN TCM_SP S
+                            ON S.SP_CD = B.SP_CD
+               LEFT OUTER JOIN TCM_CUST C
+                            ON C.SP_CD = B.SP_CD
+                           AND C.CUST_ID = B.CUST_ID
+               LEFT OUTER JOIN TYM_ADMIN Y
+                            ON Y.ADMIN_ID = A.REG_ID
+               LEFT OUTER JOIN TYM_ADMIN Z
+                            ON Z.ADMIN_ID = A.REG_ID
+         WHERE A.AUTH_GROUP_CD = #{authGroupCd}
+      ORDER BY ADMIN_NM
+    </select>
+
+    <!-- Popup Admin Select -->
+    <select id="selPopupAdminList" parameterType="Map" resultType="CamelMap">
+        /* NS_Auth.selAdminList */
+        SELECT A.ADMIN_ID                 /* 관리자아이디 */
+             , A.ADMIN_PW                 /* 관리자비밀번호 */
+             , A.ADMIN_NM                 /* 관리자명 */
+             , A.HP_NO                    /* 휴대폰번호 */
+             , A.ADMIN_TP                 /* 관리자유형[T:전체관리자, S:서비스제공자관리자, C:고객사관리자, E:기타관리자] */
+             , A.SP_CD                    /* 서비스제공자코드 */
+             , A.CUST_ID                  /* 고객사코드 */
+             , F_GET_CD_NM(#{language}, 'ADMIN_TP', A.ADMIN_TP) AS ADMIN_TP_NM    /* 관리자유형[T:전체관리자, S:서비스제공자관리자, C:고객사관리자, E:기타관리자] */
+             , S.SP_NM                    /* 서비스제공자명 */
+             , C.CUST_NM                  /* 고객사명 */
+          FROM TYM_ADMIN A                /* 관리자 */
+               LEFT OUTER JOIN TYT_AUTH_GROUP_ADMIN B
+                            ON B.ADMIN_ID = A.ADMIN_ID
+               LEFT OUTER JOIN TCM_SP S
+                            ON S.SP_CD = A.SP_CD
+               LEFT OUTER JOIN TCM_CUST C
+                            ON C.SP_CD = A.SP_CD
+                           AND C.CUST_ID = A.CUST_ID
+         WHERE B.ADMIN_ID IS NULL
+      ORDER BY ADMIN_NM
+    </select>
+
+    <!-- Insert Admin List -->
+    <insert id="insAdminList" parameterType="Map">
+        /* NS_Auth.insAdminList */
+        INSERT INTO TYT_AUTH_GROUP_ADMIN (/* 권한그룹_관리자 */
+              AUTH_GROUP_CD            /* 권한그룹코드 */
+            , ADMIN_ID                 /* 관리자아이디 */
+            , REG_DTM                  /* 등록일시 */
+            , REG_ID                   /* 등록자 */
+        ) VALUES (
+              #{authGroupCd}           /* 권한그룹코드 */
+            , #{adminId}               /* 관리자아이디 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')    /* 등록일시 */
+            , #{regId}                 /* 등록자 */
+        )
+    </insert>
+
+    <!-- Delete AdminList -->
+    <delete id="delAdminList" parameterType="Map">
+        /* NS_Auth.delAdminList */
+        DELETE FROM TYT_AUTH_GROUP_ADMIN           /* 권한그룹_관리자 */
+         WHERE AUTH_GROUP_CD = #{authGroupCd}
+           AND ADMIN_ID = #{adminId}
+    </delete>
+
+    <!-- Menu Select -->
+    <select id="selMenuList" parameterType="Map" resultType="CamelMap">
+
+        /* NS_Auth.selMenuList */
+        SELECT *
+        FROM (
+            SELECT F_GET_CD_NM(#{language}, 'MENU_TYPE', A.MENU_TYPE) AS MENU_TYPE_NM    /* 메뉴유형 */
+                 , F_GET_CD_NM(#{language}, 'USE_YN', A.USE_YN) AS USE_YN_NM             /* 사용여부 */
+                 , A.AUTH_GROUP_CD            /* 권한그룹코드 */
+                 , A.MENU_ID                  /* 메뉴아이디 */
+                 , A.REF_MENU_ID              /* 상위메뉴아이디 */
+                 , C.MENU_NM AS REF_MENU_NM   /* 상위메뉴명 */
+                 , A.MENU_NM                  /* 메뉴명 */
+                 , A.MENU_TYPE                /* 메뉴유형[M:메뉴, S:구분선] */
+                 , A.EXEC_CMD                 /* 실행명령 */
+                 , A.MENU_LVL                 /* 메뉴레벨 */
+                 , A.SORT_SEQ                 /* 정렬순번 */
+                 , A.AUTH_R                   /* 읽기권한 */
+                 , A.AUTH_W                   /* 변경권한 */
+                 , A.AUTH_D                   /* 삭제원한 */
+                 , A.AUTH_P                   /* 인쇄권한 */
+                 , A.USE_YN                   /* 사용여부 */
+                 , A.REG_DTM                  /* 등록일시 */
+                 , A.REG_ID                   /* 등록자 */
+                 , A.CHG_DTM                  /* 변경일시 */
+                 , A.CHG_ID                   /* 변경자 */
+              FROM TYT_AUTH_GROUP_MENU A        /* 권한그룹_메뉴 */
+                   INNER JOIN TYM_AUTH_GROUP B  /* 권한그룹 */
+                           ON B.AUTH_GROUP_CD = A.AUTH_GROUP_CD
+                   LEFT OUTER JOIN TYT_AUTH_GROUP_MENU C
+                               ON C.REF_MENU_ID IS NULL
+                              AND C.AUTH_GROUP_CD = A.AUTH_GROUP_CD
+                              AND C.MENU_ID = A.REF_MENU_ID         /* 상위메뉴 */
+             WHERE A.AUTH_GROUP_CD = #{authGroupCd}
+      )
+      START WITH MENU_LVL = 1
+      CONNECT BY PRIOR MENU_ID = REF_MENU_ID
+      ORDER SIBLINGS BY SORT_SEQ
+    </select>
+
+    <!-- Popup Menu Select -->
+    <select id="selPopupMenuList" parameterType="Map" resultType="CamelMap">
+        /* NS_Auth.selPopupMenuList */
+        SELECT *
+        FROM (
+            SELECT F_GET_CD_NM(#{language}, 'MENU_TYPE', A.MENU_TYPE) AS MENU_TYPE_NM    /* 메뉴유형 */
+                 , F_GET_CD_NM(#{language}, 'USE_YN', A.USE_YN) AS USE_YN_NM             /* 사용여부 */
+                 , A.MENU_ID                  /* 메뉴아이디 */
+                 , A.REF_MENU_ID              /* 상위메뉴아이디 */
+                 , C.MENU_NM AS REF_MENU_NM   /* 상위메뉴명 */
+                 , A.MENU_NM                  /* 메뉴명 */
+                 , A.MENU_TYPE                /* 메뉴유형[M:메뉴, S:구분선] */
+                 , A.EXEC_CMD                 /* 실행명령 */
+                 , A.MENU_LVL                 /* 메뉴레벨 */
+                 , A.SORT_SEQ                 /* 정렬순번 */
+                 , A.USE_YN                   /* 사용여부 */
+              FROM TYL_MENU A                               /* 메뉴 */
+                   LEFT OUTER JOIN TYT_AUTH_GROUP_MENU B    /* 권한그룹_메뉴 */
+                                ON B.AUTH_GROUP_CD = #{authGroupCd}
+                               AND B.MENU_ID = A.MENU_ID
+                   LEFT OUTER JOIN TYL_MENU C               /* 상위메뉴 */
+                               ON C.REF_MENU_ID IS NULL
+                              AND C.MENU_ID = A.REF_MENU_ID
+             WHERE A.REF_MENU_ID IS NULL
+                OR ( A.REF_MENU_ID IS NOT NULL AND B.MENU_ID IS NULL )
+      )
+      START WITH MENU_LVL = 1
+      CONNECT BY PRIOR MENU_ID = REF_MENU_ID
+      ORDER SIBLINGS BY SORT_SEQ
+    </select>
+
+    <!-- Insert Menu List -->
+    <insert id="insMenuList" parameterType="Map">
+        /* NS_Auth.insMenuList */
+        INSERT INTO TYT_AUTH_GROUP_MENU (/* 권한그룹_메뉴 */
+              AUTH_GROUP_CD            /* 권한그룹코드 */
+            , MENU_ID                  /* 메뉴아이디 */
+            , REF_MENU_ID              /* 상위메뉴아이디 */
+            , MENU_NM                  /* 메뉴명 */
+            , MENU_TYPE                /* 메뉴유형[M:메뉴, S:구분선] */
+            , EXEC_CMD                 /* 실행명령 */
+            , MENU_LVL                 /* 메뉴레벨 */
+            , SORT_SEQ                 /* 정렬순번 */
+            , AUTH_R                   /* 읽기권한 */
+            , AUTH_W                   /* 변경권한 */
+            , AUTH_D                   /* 삭제원한 */
+            , AUTH_P                   /* 인쇄권한 */
+            , USE_YN                   /* 사용여부 */
+            , REG_DTM                  /* 등록일시 */
+            , REG_ID                   /* 등록자 */
+            , CHG_DTM                  /* 변경일시 */
+            , CHG_ID                   /* 변경자 */
+        )
+        SELECT A.AUTH_GROUP_CD            /* 권한그룹코드 */
+             , A.MENU_ID                  /* 메뉴아이디 */
+             , A.REF_MENU_ID              /* 상위메뉴아이디 */
+             , A.MENU_NM                  /* 메뉴명 */
+             , A.MENU_TYPE                /* 메뉴유형[M:메뉴, S:구분선] */
+             , A.EXEC_CMD                 /* 실행명령 */
+             , A.MENU_LVL                 /* 메뉴레벨 */
+             , A.SORT_SEQ                 /* 정렬순번 */
+             , A.AUTH_R                   /* 읽기권한 */
+             , A.AUTH_W                   /* 변경권한 */
+             , A.AUTH_D                   /* 삭제원한 */
+             , A.AUTH_P                   /* 인쇄권한 */
+             , A.USE_YN                   /* 사용여부 */
+             , A.REG_DTM                  /* 등록일시 */
+             , A.REG_ID                   /* 등록자 */
+             , A.CHG_DTM                  /* 변경일시 */
+             , A.CHG_ID                   /* 변경자 */
+          FROM (
+
+            SELECT #{authGroupCd} AS AUTH_GROUP_CD      /* 관리그룹코드 */
+                 , MENU_ID                  /* 메뉴아이디 */
+                 , REF_MENU_ID              /* 상위메뉴아이디 */
+                 , MENU_NM                  /* 메뉴명 */
+                 , MENU_TYPE                /* 메뉴유형[M:메뉴, S:구분선] */
+                 , EXEC_CMD                 /* 실행명령 */
+                 , MENU_LVL                 /* 메뉴레벨 */
+                 , SORT_SEQ                 /* 정렬순번 */
+                 , 'Y'       AS AUTH_R      /* 읽기권한 */
+                 , 'Y'       AS AUTH_W      /* 저장권한 */
+                 , 'Y'       AS AUTH_D      /* 삭제권한 */
+                 , 'Y'       AS AUTH_P      /* 출력권한 */
+                 , USE_YN                   /* 사용여부 */
+                 , TO_CHAR(SYSDATE, 'yyyymmddhh24miss') AS REG_DTM    /* 등록일시 */
+                 , #{regId} AS REG_ID                                 /* 등록자 */
+                 , TO_CHAR(SYSDATE, 'yyyymmddhh24miss') AS CHG_DTM    /* 변경일시 */
+                 , #{chgId} AS CHG_ID                                 /* 변경자 */
+              FROM TYL_MENU               /* 메뉴 */
+             WHERE MENU_ID = #{menuId}
+
+          ) A
+             LEFT OUTER JOIN TYT_AUTH_GROUP_MENU B
+                          ON B.AUTH_GROUP_CD = A.AUTH_GROUP_CD
+                         AND B.MENU_ID = A.MENU_ID
+             WHERE B.AUTH_GROUP_CD IS NULL
+    </insert>
+
+    <!-- update Menu List -->
+    <insert id="updMenuList" parameterType="Map">
+        /* NS_Auth.updMenuList */
+        UPDATE TYT_AUTH_GROUP_MENU      /* 권한그룹_메뉴 */
+           SET AUTH_GROUP_CD          = #{authGroupCd}             /* 권한그룹코드 */
+             , MENU_ID                = #{menuId}                  /* 메뉴아이디 */
+             , REF_MENU_ID            = #{refMenuId}               /* 상위메뉴아이디 */
+             , MENU_NM                = #{menuNm}                  /* 메뉴명 */
+             , MENU_TYPE              = #{menuType}                /* 메뉴유형[M:메뉴, S:구분선] */
+             , EXEC_CMD               = #{execCmd}                 /* 실행명령 */
+             , MENU_LVL               = #{menuLvl}                 /* 메뉴레벨 */
+             , SORT_SEQ               = #{sortSeq}                 /* 정렬순번 */
+             , AUTH_R                 = #{authR}                   /* 읽기권한 */
+             , AUTH_W                 = #{authW}                   /* 변경권한 */
+             , AUTH_D                 = #{authD}                   /* 삭제원한 */
+             , AUTH_P                 = #{authP}                   /* 인쇄권한 */
+             , USE_YN                 = #{useYn}                   /* 사용여부 */
+             , CHG_DTM                = TO_CHAR(SYSDATE, 'yyyymmddhh24miss')    /* 변경일시 */
+             , CHG_ID                 = #{chgId}                   /* 변경자 */
+         WHERE AUTH_GROUP_CD = #{authGroupCd}
+           AND MENU_ID = #{menuId}
+    </insert>
+
+    <!-- Delete MenuList -->
+    <delete id="delMenuList" parameterType="Map">
+        /* NS_Auth.delMenuList */
+        DELETE FROM TYT_AUTH_GROUP_MENU           /* 권한그룹_관리자 */
+         WHERE AUTH_GROUP_CD = #{authGroupCd}
+           AND MENU_ID = #{menuId}
+    </delete>
+
+</mapper>

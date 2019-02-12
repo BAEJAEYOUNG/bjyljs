@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_StatUserRegDay">
+
+    <!-- Select StatUserRegDay List -->
+    <select id="selStatUserRegDayList" parameterType="Map" resultType="CamelMap">
+        /* NS_StatUserRegDay.selStatUserRegDayList */
+        SELECT STAT_DTM                 /* 통계일자(YYYYMMDD) */
+             , TOTAL_JOIN_CNT           /* 전체 가입자 수 */
+             , TOTAL_CANCEL_CNT         /* 전체 해지자 수 */
+             , REMAIN_JOIN_CNT          /* 유효 가입자 수 */
+             , JOIN_CNT                 /* 당일 가입자 수 */
+             , CANCEL_CNT               /* 당일 해지자 수 */
+          FROM TBD_USER_JOIN_STATS      /* 사용자 가입/해지 현황 통계 */
+         WHERE STAT_DTM BETWEEN #{sDt} AND #{eDt}   /* 조회시작일, 종료일 */
+      ORDER BY STAT_DTM
+    </select>
+
+</mapper>

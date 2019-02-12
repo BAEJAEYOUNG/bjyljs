@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_EventPromo">
+
+    <!-- Select EventPromo List -->
+    <select id="selEventPromoList" parameterType="Map" resultType="CamelMap">
+        /* NS_EventPromo.selEventPromoList */
+        SELECT A.PROMO_ID                 /* 행사아이디 */
+             , A.PROMO_FG                 /* 행사구분[공통코드-PROMO_FG에 등록하여 사용.] */
+             , A.PROMO_PRICE_TP           /* 할인금액유형[R:율, P:금액, A:모두] */
+             , A.PROMO_NM                 /* 행사명 */
+             , A.SALE_RATE                /* 할인율 */
+             , A.SALE_PRICE               /* 할인금액 */
+             , A.ST_DTM                   /* 시작일시 */
+             , A.ED_DTM                   /* 종료일시 */
+             , A.REMARK                   /* 비고 */
+             , A.REG_DTM                  /* 등록일시 */
+             , A.REG_ID                   /* 등록자 */
+             , A.CHG_DTM                  /* 변경일시 */
+             , A.CHG_ID                   /* 변경자 */
+             , F_GET_CD_NM(#{language}, 'PROMO_FG', A.PROMO_FG) AS PROMO_FG_NM    /* 행사구분[공통코드-PROMO_FG에 등록하여 사용.] */
+             , F_GET_CD_NM(#{language}, 'PROMO_PRICE_TP', A.PROMO_PRICE_TP) AS PROMO_PRICE_TP_NM    /* 할인금액유형[R:율, P:금액, A:모두] */
+             , Y.ADMIN_NM AS REG_NM       /* 등록자 */
+             , Z.ADMIN_NM AS CHG_NM       /* 변경자 */
+          FROM TSM_PROMO_DISCOUNT A       /* 행사할인 */
+               LEFT OUTER JOIN TYM_ADMIN Y
+                            ON Y.ADMIN_ID = A.REG_ID    /* 등록자 */
+               LEFT OUTER JOIN TYM_ADMIN Z
+                            ON Z.ADMIN_ID = A.REG_ID    /* 변경자 */
+      ORDER BY A.PROMO_ID ASC
+    </select>
+
+    <!-- Select EventPromo -->
+    <select id="selEventPromo" parameterType="Map" resultType="CamelMap">
+        /* NS_EventPromo.selEventPromo */
+        SELECT PROMO_ID                 /* 행사아이디 */
+             , PROMO_FG                 /* 행사구분[공통코드-PROMO_FG에 등록하여 사용.] */
+             , PROMO_PRICE_TP           /* 할인금액유형[R:율, P:금액, A:모두] */
+             , PROMO_NM                 /* 행사명 */
+             , SALE_RATE                /* 할인율 */
+             , SALE_PRICE               /* 할인금액 */
+             , ST_DTM                   /* 시작일시 */
+             , ED_DTM                   /* 종료일시 */
+             , REMARK                   /* 비고 */
+             , REG_DTM                  /* 등록일시 */
+             , REG_ID                   /* 등록자 */
+             , CHG_DTM                  /* 변경일시 */
+             , CHG_ID                   /* 변경자 */
+          FROM TSM_PROMO_DISCOUNT      /* 행사할인 */
+         WHERE PROMO_ID = #{promoId}
+    </select>
+
+    <!-- Insert EventPromo -->
+    <insert id="insEventPromo" parameterType="Map">
+        /* NS_EventPromo.insEventPromo */
+        INSERT INTO TSM_PROMO_DISCOUNT (/* 행사할인 */
+              PROMO_ID                 /* 행사아이디 */
+            , PROMO_FG                 /* 행사구분[공통코드-PROMO_FG에 등록하여 사용.] */
+            , PROMO_PRICE_TP           /* 할인금액유형[R:율, P:금액, A:모두] */
+            , PROMO_NM                 /* 행사명 */
+            , SALE_RATE                /* 할인율 */
+            , SALE_PRICE               /* 할인금액 */
+            , ST_DTM                   /* 시작일시 */
+            , ED_DTM                   /* 종료일시 */
+            , REMARK                   /* 비고 */
+            , REG_DTM                  /* 등록일시 */
+            , REG_ID                   /* 등록자 */
+            , CHG_DTM                  /* 변경일시 */
+            , CHG_ID                   /* 변경자 */
+        ) VALUES (
+              F_GET_ID('PROMO_ID')     /* 행사할인아이디 */
+            , #{promoFg}               /* 행사구분[공통코드-PROMO_FG에 등록하여 사용.] */
+            , #{promoPriceTp}          /* 할인금액유형[R:율, P:금액, A:모두] */
+            , #{promoNm}               /* 행사명 */
+            , #{saleRate}              /* 할인율 */
+            , #{salePrice}             /* 할인금액 */
+            , #{stDtm}                 /* 시작일시 */
+            , #{edDtm}                 /* 종료일시 */
+            , #{remark}                /* 비고 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')   /* 등록일시 */
+            , #{regId}                 /* 등록자 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')   /* 변경일시 */
+            , #{chgId}                 /* 변경자 */
+        )
+    </insert>
+
+    <!-- Update EventPromo -->
+    <update id="updEventPromo" parameterType="Map">
+        /* NS_EventPromo.updEventPromo */
+        UPDATE TSM_PROMO_DISCOUNT       /* 행사할인 */
+           SET PROMO_FG               = #{promoFg}                 /* 행사구분[공통코드-PROMO_FG에 등록하여 사용.] */
+             , PROMO_PRICE_TP         = #{promoPriceTp}            /* 할인금액유형[R:율, P:금액, A:모두] */
+             , PROMO_NM               = #{promoNm}                 /* 행사명 */
+             , SALE_RATE              = #{saleRate}                /* 할인율 */
+             , SALE_PRICE             = #{salePrice}               /* 할인금액 */
+             , ST_DTM                 = #{stDtm}                   /* 시작일시 */
+             , ED_DTM                 = #{edDtm}                   /* 종료일시 */
+             , REMARK                 = #{remark}                  /* 비고 */
+             , CHG_DTM                = TO_CHAR(SYSDATE, 'yyyymmddhh24miss')     /* 변경일시 */
+             , CHG_ID                 = #{chgId}                 /* 변경자 */
+         WHERE PROMO_ID = #{promoId}
+    </update>
+
+    <!-- Delete EventPromo -->
+    <delete id="delEventPromo" parameterType="Map">
+        /* NS_EventPromo.delEventPromo */
+        DELETE FROM TSM_PROMO_DISCOUNT       /* 행사할인 */
+        WHERE PROMO_ID = #{promoId}
+    </delete>
+
+
+    <!-- Select EventPromo List -->
+    <select id="selCustEventDiscountList" parameterType="Map" resultType="CamelMap">
+        /* NS_EventPromo.selCustEventDiscountList */
+        SELECT A.SP_CD                    /* 서비스제공자코드 */
+             , A.CUST_ID                  /* 고객사코드 */
+             , A.PROMO_ID                 /* 행사아이디 */
+             , A.ST_DTM                   /* 시작일시 */
+             , A.ED_DTM                   /* 종료일시 */
+             , A.REMARK                   /* 비고 */
+             , A.REG_DTM                  /* 등록일시 */
+             , A.REG_ID                   /* 등록자 */
+             , A.CHG_DTM                  /* 변경일시 */
+             , A.CHG_ID                   /* 변경자 */
+             , P.SP_NM                    /* 서비스제공자명 */
+             , C.BIZ_NO                   /* 사업자번호 */
+             , C.CUST_NM                  /* 고객사명 */
+             , F_GET_CD_NM(#{language}, 'CUST_TP', C.CUST_TP) AS CUST_TP_NM    /* 고객사유형[01:은행, 02:증권, 03:관공서, 99:기타] */
+             , Y.ADMIN_NM AS REG_NM       /* 등록자 */
+             , Z.ADMIN_NM AS CHG_NM       /* 변경자 */
+          FROM TST_CUST_PROMO_DISCOUNT  A       /* 고객사별_행사할인 */
+               INNER JOIN TCM_SP        P       /* 서비스제공자 */
+                    ON P.SP_CD = A.SP_CD
+               INNER JOIN TCM_CUST      C       /* 고객사 */
+                    ON C.SP_CD = A.SP_CD
+                   AND C.CUST_ID = A.CUST_ID
+               LEFT OUTER JOIN TYM_ADMIN Y
+                            ON Y.ADMIN_ID = A.REG_ID    /* 등록자 */
+               LEFT OUTER JOIN TYM_ADMIN Z
+                            ON Z.ADMIN_ID = A.REG_ID    /* 변경자 */
+         WHERE A.PROMO_ID = #{promoId}
+         ORDER BY A.SP_CD
+                , C.CUST_NM
+    </select>
+
+    <!-- Select EventPromo selCustList -->
+    <select id="selCustList" parameterType="Map" resultType="CamelMap">
+        <include refid="NS_Paging.header"/>
+        /* NS_EventPromo.selCustList */
+        SELECT A.SP_CD                    /* 서비스제공자코드 */
+             , A.CUST_ID                  /* 고객사코드 */
+             , A.CUST_NM                  /* 고객사명 */
+             , A.BIZ_NO                   /* 사업자번호 */
+             , F_GET_CD_NM(#{language}, 'CUST_TP', A.CUST_TP) AS CUST_TP_NM    /* 고객사유형[01:은행, 02:증권, 03:관공서, 99:기타] */
+             , S.SP_NM                    /* 서비스제공자명 */
+          FROM TCM_CUST A                 /* 고객사 */
+               INNER JOIN TCM_SP S
+                  ON S.SP_CD = A.SP_CD
+               LEFT OUTER JOIN TST_CUST_PROMO_DISCOUNT B /* 고객사별_행사할인 */
+                  ON B.SP_CD = A.SP_CD
+                 AND B.CUST_ID = A.CUST_ID
+                 AND B.PROMO_ID = #{promoId}
+         WHERE A.CUST_ST = '0'
+           AND B.CUST_ID IS NULL
+           AND A.CUST_NM LIKE '%' || #{custNm} || '%'
+           AND A.BIZ_NO LIKE '%' || #{bizNo} || '%'
+        ORDER BY A.SP_CD
+               , A.CUST_NM
+        <include refid="NS_Paging.footer"/>
+    </select>
+
+    <!-- Insert TST_CUST_BASIC_DISCOUNT List -->
+    <insert id="insCustList" parameterType="Map">
+        /* NS_EventPromo.insCustList */
+        INSERT INTO TST_CUST_PROMO_DISCOUNT (/* 고객사별_행사할인 */
+              SP_CD                    /* 서비스제공자코드 */
+            , CUST_ID                  /* 고객사코드 */
+            , PROMO_ID                 /* 행사아이디 */
+            , ST_DTM                   /* 시작일시 */
+            , ED_DTM                   /* 종료일시 */
+            , REG_DTM                  /* 등록일시 */
+            , REG_ID                   /* 등록자 */
+            , CHG_DTM                  /* 변경일시 */
+            , CHG_ID                   /* 변경자 */
+        )
+        SELECT A.SP_CD                    /* 서비스제공자코드 */
+             , A.CUST_ID                  /* 고객사코드 */
+             , A.PROMO_ID                 /* 행사아이디 */
+             , A.ST_DTM                   /* 시작일시 */
+             , A.ED_DTM                   /* 종료일시 */
+             , A.REG_DTM                  /* 등록일시 */
+             , A.REG_ID                   /* 등록자 */
+             , A.CHG_DTM                  /* 변경일시 */
+             , A.CHG_ID                   /* 변경자 */
+
+        FROM (
+            SELECT #{spCd}    AS SP_CD                  /* 서비스제공자코드 */
+                 , #{custId}  AS CUST_ID                /* 고객사코드 */
+                 , PROMO_ID                 /* 행사아이디 */
+                 , ST_DTM                   /* 시작일시 */
+                 , ED_DTM                   /* 종료일시 */
+                 , TO_CHAR(SYSDATE, 'yyyymmddhh24miss') AS REG_DTM    /* 등록일시 */
+                 , 'admin' AS REG_ID                                  /* 등록자 */
+                 , TO_CHAR(SYSDATE, 'yyyymmddhh24miss') AS CHG_DTM    /* 변경일시 */
+                 , 'admin' AS CHG_ID                                  /* 변경자 */
+              FROM TSM_PROMO_DISCOUNT /* 행사할인 */
+             WHERE PROMO_ID = #{promoId}
+        ) A
+        LEFT OUTER JOIN TST_CUST_PROMO_DISCOUNT B
+                     ON B.SP_CD = A.SP_CD
+                    AND B.CUST_ID = A.CUST_ID
+                    AND B.PROMO_ID = A.PROMO_ID
+        WHERE B.CUST_ID IS NULL
+    </insert>
+
+    <!-- Update TST_CUST_BASIC_DISCOUNT List -->
+    <update id="updCustList" parameterType="Map">
+        /* NS_EventPromo.updCustList */
+        UPDATE TST_CUST_PROMO_DISCOUNT  /* 고객사별_행사할인 */
+           SET ST_DTM                 = #{stDtm}                   /* 시작일시 */
+             , ED_DTM                 = #{edDtm}                   /* 종료일시 */
+             , REMARK                 = #{remark}                  /* 비고 */
+             , CHG_DTM                = TO_CHAR(SYSDATE, 'yyyymmddhh24miss')     /* 변경일시 */
+             , CHG_ID                 = 'admin'                    /* 변경자 */
+         WHERE SP_CD = #{spCd}
+           AND CUST_ID = #{custId}
+           AND PROMO_ID = #{promoId}
+    </update>
+
+    <!-- delete TST_CUST_BASIC_DISCOUNT List -->
+    <delete id="delCustList" parameterType="Map">
+        /* NS_EventPromo.delCustList */
+        DELETE FROM TST_CUST_PROMO_DISCOUNT  /* 고객사별_행사할인 */
+         WHERE SP_CD = #{spCd}
+           AND CUST_ID = #{custId}
+           AND PROMO_ID = #{promoId}
+    </delete>
+
+</mapper>

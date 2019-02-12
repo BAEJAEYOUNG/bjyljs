@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_Tmpl001">
+
+    <!-- 템플릿 코드그룹 정보 조회 -->
+    <select id="selTmpl001" parameterType="map" resultType="camelMap">
+        /* NS_Tmpl001.selTmpl001 */
+        SELECT CODE_GROUP_CD
+             , CODE_GROUP_NM
+             , CODE_GROUP_TYPE
+             , USE_YN
+             , SORT_SEQ
+             , REMARK
+             , REG_DTM
+             , REG_ID
+             , CHG_DTM
+             , CHG_ID
+          FROM TBL_CODE_GROUP
+         WHERE LANGUAGE = ''
+           AND CODE_GROUP_CD = ''
+    </select>
+
+    <!-- 템플릿 코드그룹 정보 조회 -->
+    <select id="selTmpl001TempList" parameterType="map" resultType="camelMap">
+        /* NS_Tmpl001.selTmpl001 */
+        SELECT CODE_GROUP_CD
+             , CODE_GROUP_NM
+             , CODE_GROUP_TYPE
+             , USE_YN
+             , SORT_SEQ
+             , REMARK
+             , REG_DTM
+             , REG_ID
+             , CHG_DTM
+             , CHG_ID
+          FROM TBL_CODE_GROUP
+         WHERE LANGUAGE = ''
+           AND CODE_GROUP_CD = ''
+    </select>
+
+</mapper>

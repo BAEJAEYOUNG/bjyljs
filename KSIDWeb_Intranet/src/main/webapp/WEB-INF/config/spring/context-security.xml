@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+    xmlns:beans="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:jee="http://www.springframework.org/schema/jee"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/jee
+                        http://www.springframework.org/schema/jee/spring-jee-4.3.xsd
+                        http://www.springframework.org/schema/security
+                        http://www.springframework.org/schema/security/spring-security-4.2.xsd
+                        http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
+
+    <http pattern="/favicon.ico" security="none" />
+    <http pattern="/fidoservice/**" security="none"/>
+    <http pattern="/fidoserv20181116/**" security="none"/>
+    <http pattern="/ksid/**" security="none"/>
+    <http pattern="/sdu/**" security="none"/>
+    <http pattern="/ocucons/**" security="none"/>
+    <http pattern="/cnspaycancel/**" security="none"/>
+    <http pattern="/devauth/**" security="none"/>
+    <http pattern="/userreg/**" security="none"/>
+    <http pattern="/userregmb/**" security="none"/>
+    <http pattern="/registration/**" security="none"/>
+    <http pattern="/billing/**" security="none"/>
+    <http pattern="/static/**" security="none"/>
+    <http pattern="/error/**" security="none"/>
+    <!-- <http pattern="/login" security="none"/> -->
+    <http pattern="/template/**" security="none"/>
+    <http pattern="/cnspay/**" security="none"/>
+    <http pattern="/product/cards/**" security="none"/>
+    <http pattern="/user/**" security="none"/>
+    <http pattern="/ocuuser/**" security="none"/>
+    <!-- <http pattern="/j_spring_security_check" security="none"/> -->
+    <http pattern="/admin/system/code/comboList/**" security="none"/>
+    <http pattern="/ocucons/fidoservice/mobileKeySample" security="none"/>
+    <http pattern="/sdu/fidoservice/mobileKeySample" security="none"/>
+
+    <!-- <http auto-config="true" disable-url-rewriting="true"> -->
+    <!-- <http auto-config="true" entry-point-ref="authenticationEntryPoint"> -->
+    <http auto-config="true" use-expressions="true">
+        <headers>
+            <frame-options policy="SAMEORIGIN" />
+        </headers>
+        <csrf disabled="true"/>
+        <!-- <intercept-url pattern="/j_spring_security_check" access="IS_AUTHENTICATED_ANONYMOUSLY"/> -->
+        <intercept-url pattern="/logout" access="permitAll"/>
+        <intercept-url pattern="/login*" access="permitAll"/>
+        <intercept-url pattern="/" access="permitAll"/>
+        <intercept-url pattern="/admin/**" access="hasRole('ROLE_agc000')"/>
+        <!-- <intercept-url pattern="/**/**" access="hasAnyRole('ROLE_agc000', 'ROLE_agc001', 'ROLE_agc002', 'ROLE_agc777')"/> -->
+        <intercept-url pattern="/**" access="hasAnyRole('ROLE_agc000', 'ROLE_agc001', 'ROLE_agc002', 'ROLE_agc003', 'ROLE_agc777')"/>
+        <!-- <intercept-url pattern="/**" access="permitAll" requires-channel="https"/> -->
+        <!-- <port-mappings>
+            <port-mapping http="13869" https="443"/>
+            <port-mapping http="18443" https="443"/>
+            <port-mapping http="12943" https="443"/>
+        </port-mappings> -->
+
+        <form-login username-parameter="adminId"
+                    password-parameter="adminPw"
+                    login-page="/login"
+                    login-processing-url="/j_spring_security_check"
+                    authentication-success-handler-ref="loginSuccessHandler"
+                    authentication-failure-handler-ref="loginFailureHandler"/>
+
+        <logout invalidate-session="true" success-handler-ref="logoutSuccessHandler" logout-url="/logout"/>
+
+        <session-management invalid-session-url="/login" session-fixation-protection="migrateSession">
+            <concurrency-control max-sessions="1" error-if-maximum-exceeded="false"/>
+        </session-management>
+
+        <!-- <access-denied-handler ref="acessDeniedHandler" /> -->
+    </http>
+
+    <!-- <beans:bean id="acessDeniedHandler" class="ksid.biz.login.security.LoginAccessDeniedHandler">
+        <beans:property name="redirect" value="false" />
+        <beans:property name="errorPage" value="/login" />
+    </beans:bean> -->
+
+    <beans:bean id="authenticationEntryPoint" class="ksid.biz.login.security.LoginAuthenticationEntryPoint">
+        <beans:property name="redirect" value="false" />
+        <beans:property name="targetUrl" value="/login" />
+    </beans:bean>
+
+    <beans:bean id="loginSuccessHandler" class="ksid.biz.login.security.LoginSuccessHandler">
+        <beans:property name="defaultTargetUrl" value="/" />
+    </beans:bean>
+    <beans:bean id="loginFailureHandler" class="ksid.biz.login.security.LoginFailureHandler">
+        <!-- <beans:property name="useForward" value="true" /> -->
+        <beans:property name="defaultFailureUrl" value="/login?fail=true" />
+    </beans:bean>
+    <beans:bean id="logoutSuccessHandler" class="ksid.biz.login.security.LogoutSuccessHandler">
+        <beans:property name="defaultTargetUrl" value="/login" />
+    </beans:bean>
+
+    <beans:bean id="encoder" class="org.springframework.security.crypto.password.StandardPasswordEncoder"/>
+
+    <authentication-manager>
+        <authentication-provider user-service-ref="loginService">
+            <!--
+            <password-encoder ref="encoder" />
+             -->
+        </authentication-provider>
+    </authentication-manager>
+
+    <beans:bean id="sessionRegistry" class="org.springframework.security.core.session.SessionRegistryImpl" />
+
+</beans:beans>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_Taver">
+
+    <!-- Select Taver List -->
+    <select id="selTaverList" parameterType="Map" resultType="CamelMap">
+        /* NS_Taver.selTaverList */
+        SELECT TA_VER                   /* TA버전 */
+             , REMARK                   /* 비고 */
+             , REG_DTM                  /* 등록일시 */
+             , REG_ID                   /* 등록자 */
+             , CHG_DTM                  /* 변경일시 */
+             , CHG_ID                   /* 변경자 */
+        FROM TCM_TA_VER                 /* TA버전 */
+         WHERE TA_VER LIKE '%' || #{taVer} || '%'      /* TA버전 */
+              ORDER BY REG_DTM
+    </select>
+
+    <!-- Select Taver -->
+    <select id="selTaver" parameterType="Map" resultType="CamelMap">
+        /* NS_Taver.selTaver */
+        SELECT TA_VER                   /* TA버전 */
+             , REMARK                   /* 비고 */
+             , REG_DTM                  /* 등록일시 */
+             , REG_ID                   /* 등록자 */
+             , CHG_DTM                  /* 변경일시 */
+             , CHG_ID                   /* 변경자 */
+        FROM TCM_TA_VER             /* TA버전 */
+        WHERE TCM_TA_VER = #{taVer}
+
+    </select>
+
+    <!-- Insert Taver List -->
+    <insert id="insTaver" parameterType="Map">
+        /* NS_Taver.insTaver */
+        INSERT INTO TCM_TA_VER (       /* TA버전 */
+              TA_VER                   /* TA버전 */
+            , REMARK                   /* 비고 */
+            , REG_DTM                  /* 등록일시 */
+            , REG_ID                   /* 등록자 */
+            , CHG_DTM                  /* 변경일시 */
+            , CHG_ID                   /* 변경자 */
+        ) VALUES (
+              #{taVer}                 /* TA버전 */
+            , #{remark}                /* 비고 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')     /* 등록일시 */
+            , #{regId}                 /* 등록자 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')     /* 변경일시 */
+            , #{chgId}                 /* 변경자 */
+        )
+
+    </insert>
+
+    <!-- Update Taver List -->
+    <update id="updTaver" parameterType="Map">
+        /* NS_Taver.updTaver */
+        UPDATE TCM_TA_VER               /* TA버전 */
+           SET TA_VER                 = #{taVer}                   /* TA버전 */
+             , REMARK                 = #{remark}                  /* 비고 */
+             , CHG_DTM                = TO_CHAR(SYSDATE, 'yyyymmddhh24miss')   /* 변경일시 */
+             , CHG_ID                 = #{chgId}                   /* 변경자 */
+        WHERE TA_VER = #{taVer}
+
+    </update>
+
+    <!-- Delete Taver List -->
+    <delete id="delTaver" parameterType="Map">
+        /* NS_Taver.delTaver */
+        DELETE FROM TCM_TA_VER               /* TA버전 */
+         WHERE TA_VER = #{taVer}
+
+    </delete>
+
+</mapper>

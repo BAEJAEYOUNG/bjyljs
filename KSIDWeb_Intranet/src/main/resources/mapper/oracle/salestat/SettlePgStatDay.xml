@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_SettlePgStatDay">
+
+    <!-- Select SettlePgStatDay List -->
+    <select id="selSettlePgStatDayList" parameterType="Map" resultType="CamelMap">
+        /* NS_SettlePgStatDay.selSettlePgStatDayList */
+        SELECT T.PAY_DAY                  /* 지급일자(YYYYMMDD) */
+             <if test="chkSp != null and chkSp.equalsIgnoreCase('Y')">
+             , T.SP_CD                    /* 서비스제공자 */
+             , MAX(T.SP_NM) SP_NM         /* 서비스제공자명 */
+             </if>
+             <if test="chkCust != null and chkCust.equalsIgnoreCase('Y')">
+             , T.CUST_ID                  /* 고객사 */
+             , MAX(T.CUST_NM) AS CUST_NM  /* 고객사명 */
+             </if>
+             <if test="chkServ != null and chkServ.equalsIgnoreCase('Y')">
+             , T.SERV_ID                  /* 서비스아이디 */
+             , MAX(T.SERV_NM) AS SERV_NM  /* 서비스명 */
+             </if>
+             <if test="chkProd != null and chkProd.equalsIgnoreCase('Y')">
+             , T.PROD_MCLS_CD                       /* 상품코드 */
+             , MAX(T.PROD_MCLS_NM) AS PROD_MCLS_NM  /* 상품명 */
+             </if>
+             , T.PAY_METHOD                             /* 지불수단 */
+             , SUM(T.USER_CNT     ) USER_CNT        /* 사용자 건수 */
+             , SUM(T.APPR_CNT     ) APPR_CNT        /* 결제요청 건수 */
+             , SUM(T.APPR_AMT     ) APPR_AMT        /* 결제요청 금액 */
+             , SUM(T.APPR_CHARGE  ) APPR_CHARGE     /* 결제요청 수수료 */
+             , SUM(T.APPR_VAT     ) APPR_VAT        /* 결제요청 부가세 */
+             , SUM(T.CANCEL_CNT   ) CANCEL_CNT      /* 결제취소 건수 */
+             , SUM(T.CANCEL_AMT   ) CANCEL_AMT      /* 결제취소 금액 */
+             , SUM(T.CANCEL_CHARGE) CANCEL_CHARGE   /* 결제취소 수수료 */
+             , SUM(T.CANCEL_VAT   ) CANCEL_VAT      /* 결제취소 부가세 */
+             , SUM(T.APPR_CNT    + T.CANCEL_CNT   ) TOTAL_CNT      /* 전체 결제 건수 */
+             , SUM(T.APPR_AMT    - T.CANCEL_AMT   ) TOTAL_AMT      /* 전체 결제 금액 */
+             , SUM(T.APPR_CHARGE + T.CANCEL_CHARGE) TOTAL_CHARGE   /* 전체 결제 수수료 */
+             , SUM(T.APPR_VAT    + T.CANCEL_VAT   ) TOTAL_VAT      /* 전체 결제 부가세 */
+             , SUM(T.APPR_AMT    - T.CANCEL_AMT - T.APPR_CHARGE - T.CANCEL_CHARGE ) SETTLE_AMT     /* 전체 정산 금액 */
+          FROM (
+
+                SELECT A.PAY_DAY                  /* 지급일자(YYYYMMDD) */
+                     <if test="chkSp != null and chkSp.equalsIgnoreCase('Y')">
+                     , A.SP_CD                    /* 서비스제공자 */
+                     , A.SP_NM                    /* 서비스제공자명 */
+                     </if>
+                     <if test="chkCust != null and chkCust.equalsIgnoreCase('Y')">
+                     , A.CUST_ID                  /* 고객사 */
+                     , A.CUST_NM                  /* 고객사명 */
+                     </if>
+                     <if test="chkServ != null and chkServ.equalsIgnoreCase('Y')">
+                     , A.SERV_ID                  /* 서비스아이디 */
+                     , A.SERV_NM                  /* 서비스명 */
+                     </if>
+                     <if test="chkProd != null and chkProd.equalsIgnoreCase('Y')">
+                     , A.PROD_MCLS_CD             /* 상품코드 */
+                     , A.PROD_MCLS_NM             /* 상품명 */
+                     </if>
+                     , A.PAY_METHOD        /* 지불수단 */
+                     , A.USER_CNT          /* 사용자 건수 */
+                     , A.APPR_CNT          /* 결제요청 건수 */
+                     , A.APPR_AMT          /* 결제요청 금액 */
+                     , A.APPR_CHARGE       /* 결제요청 수수료 */
+                     , A.APPR_VAT          /* 결제요청 부가세 */
+                     , A.CANCEL_CNT        /* 결제취소 건수 */
+                     , A.CANCEL_AMT        /* 결제취소 금액 */
+                     , A.CANCEL_CHARGE     /* 결제취소 수수료 */
+                     , A.CANCEL_VAT        /* 결제취소 부가세 */
+                  FROM TBD_SETTLE_PG_STATS A   /* 서비스 매출 정산 통계 */
+                 WHERE A.PAY_DAY BETWEEN #{sDt} AND #{eDt}                          /* 조회시작일, 종료일 */
+                   AND ( #{spCd} IS NULL OR A.SP_CD = #{spCd} )                     /* 서비스제공자코드 */
+                   AND ( #{custId} IS NULL OR A.CUST_ID = #{custId} )               /* 고객사아이디 */
+                   AND ( #{servId} IS NULL OR A.SERV_ID = #{servId} )               /* 서비스아이디 */
+                   AND ( #{prodMclsCd} IS NULL OR A.PROD_MCLS_CD = #{prodMclsCd} )  /* 상품코드 */
+              ) T
+      GROUP BY T.PAY_DAY                  /* 지급일자 */
+             <if test="chkSp != null and chkSp.equalsIgnoreCase('Y')">
+             , T.SP_CD                    /* 서비스제공자 */
+             </if>
+             <if test="chkCust != null and chkCust.equalsIgnoreCase('Y')">
+             , T.CUST_ID                  /* 고객사 */
+             </if>
+             <if test="chkServ != null and chkServ.equalsIgnoreCase('Y')">
+             , T.SERV_ID                  /* 서비스아이디 */
+             </if>
+             <if test="chkProd != null and chkProd.equalsIgnoreCase('Y')">
+             , T.PROD_MCLS_CD             /* 상품코드 */
+             </if>
+             , T.PAY_METHOD               /* 지불수단 */
+      ORDER BY T.PAY_DAY
+            <if test="chkSp != null and chkSp.equalsIgnoreCase('Y')">
+             , T.SP_CD                    /* 서비스제공자 */
+             </if>
+             <if test="chkCust != null and chkCust.equalsIgnoreCase('Y')">
+             , T.CUST_ID                  /* 고객사 */
+             </if>
+             <if test="chkServ != null and chkServ.equalsIgnoreCase('Y')">
+             , T.SERV_ID                  /* 서비스아이디 */
+             </if>
+             <if test="chkProd != null and chkProd.equalsIgnoreCase('Y')">
+             , T.PROD_MCLS_CD             /* 상품코드 */
+             </if>
+             , T.PAY_METHOD               /* 지불수단 */
+
+    </select>
+
+</mapper>

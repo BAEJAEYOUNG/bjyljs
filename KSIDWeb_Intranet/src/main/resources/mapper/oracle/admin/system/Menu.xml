@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_Menu">
+
+    <!--  -->
+    <select id="selMenuList" parameterType="Map" resultType="CamelMap">
+        /* NS_Menu.selMenuList */
+       SELECT F_GET_CD_NM(#{language}
+                             , 'MENU_TYPE'
+                             , A.MENU_TYPE) AS MENU_TYPE_NM     /* 메뉴유형 */
+            , F_GET_CD_NM(#{language}
+                             , 'USE_YN'
+                             , A.USE_YN) AS USE_YN_NM           /* 사용여부 */
+            , F_GET_CD_NM(#{language}
+                             , 'MENU_LVL'
+                             , A.MENU_LVL) AS MENU_LVL_NM       /* 사용여부 */
+            , A.REF_MENU_ID                                     /* 상위메뉴아이디 */
+            , B.MENU_NM AS REF_MENU_NM                          /* 상위메뉴명 */
+            , A.MENU_ID                                         /* 메뉴아이디 */
+            , A.MENU_NM                                         /* 메뉴명 */
+            , A.MENU_TYPE                                       /* 메뉴유형[M:메뉴, S:구분선] */
+            , A.EXEC_CMD                                        /* 실행명령 */
+            , A.MENU_LVL                                        /* 메뉴레벨 */
+            , A.SORT_SEQ                                        /* 정렬순번 */
+            , A.USE_YN                                          /* 사용여부 */
+            , A.REG_DTM                                         /* 등록일시 */
+            , A.REG_ID                                          /* 등록자 */
+            , A.CHG_DTM                                         /* 변경일시 */
+            , A.CHG_ID                                          /* 변경자 */
+            , Y.ADMIN_NM AS REG_NM                              /* 등록자 */
+            , Z.ADMIN_NM AS CHG_NM                              /* 수정자 */
+         FROM TYL_MENU A                                        /* 메뉴 */
+              LEFT OUTER JOIN TYL_MENU B
+                           ON B.REF_MENU_ID IS NULL
+                          AND B.MENU_ID = A.REF_MENU_ID         /* 상위메뉴 */
+              LEFT OUTER JOIN TYM_ADMIN Y
+                           ON Y.ADMIN_ID = A.REG_ID             /* 등록관리자 */
+              LEFT OUTER JOIN TYM_ADMIN Z
+                           ON Z.ADMIN_ID = A.CHG_ID             /* 변경관리자 */
+        WHERE (#{menuId} IS NULL OR A.MENU_ID LIKE '%' || #{menuId} || '%'  /* 메뉴아이디 */
+                                 OR A.MENU_NM LIKE '%' || #{menuId} || '%') /* 메뉴명 */
+        START WITH A.REF_MENU_ID IS NULL
+              CONNECT BY A.REF_MENU_ID = PRIOR A.MENU_ID
+        ORDER SIBLINGS BY A.SORT_SEQ
+    </select>
+
+    <!-- Insert Menu List -->
+    <insert id="insMenu" parameterType="Map">
+        /* NS_Menu.insMenu */
+        INSERT INTO TYL_MENU (         /* 메뉴 */
+              MENU_ID                  /* 메뉴아이디 */
+            , REF_MENU_ID              /* 상위메뉴아이디 */
+            , MENU_NM                  /* 메뉴명 */
+            , MENU_TYPE                /* 메뉴유형[M:메뉴, S:구분선] */
+            , EXEC_CMD                 /* 실행명령 */
+            , MENU_LVL                 /* 메뉴레벨 */
+            , SORT_SEQ                 /* 정렬순번 */
+            , USE_YN                   /* 사용여부 */
+            , REG_DTM                  /* 등록일시 */
+            , REG_ID                   /* 등록자 */
+            , CHG_DTM                  /* 변경일시 */
+            , CHG_ID                   /* 변경자 */
+        ) VALUES (
+              F_GET_ID('MENU_ID')      /* 메뉴아이디 */
+            , #{refMenuId}             /* 상위메뉴아이디 */
+            , #{menuNm}                /* 메뉴명 */
+            , #{menuType}              /* 메뉴유형[M:메뉴, S:구분선] */
+            , #{execCmd}               /* 실행명령 */
+            , #{menuLvl}               /* 메뉴레벨 */
+            , #{sortSeq}               /* 정렬순번 */
+            , #{useYn}                 /* 사용여부 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')    /* 등록일시 */
+            , #{regId}                 /* 등록자 */
+            , TO_CHAR(SYSDATE, 'yyyymmddhh24miss')    /* 변경일시 */
+            , #{chgId}                 /* 변경자 */
+        )
+    </insert>
+
+    <!-- Update Menu List -->
+    <update id="updMenu" parameterType="Map">
+        /* NS_Menu.updMenu */
+        UPDATE TYL_MENU                 /* 메뉴 */
+           SET REF_MENU_ID            = #{refMenuId}               /* 상위메뉴아이디 */
+             , MENU_NM                = #{menuNm}                  /* 메뉴명 */
+             , MENU_TYPE              = #{menuType}                /* 메뉴유형[M:메뉴, S:구분선] */
+             , EXEC_CMD               = #{execCmd}                 /* 실행명령 */
+             , MENU_LVL               = #{menuLvl}                 /* 메뉴레벨 */
+             , SORT_SEQ               = #{sortSeq}                 /* 정렬순번 */
+             , USE_YN                 = #{useYn}                   /* 사용여부 */
+             , CHG_DTM                = TO_CHAR(SYSDATE, 'yyyymmddhh24miss')    /* 변경일시 */
+             , CHG_ID                 = #{chgId}                   /* 변경자 */
+         WHERE MENU_ID                = #{menuId}                  /* 메뉴아이디 */
+    </update>
+
+    <!-- Delete Menu List -->
+    <delete id="delMenu" parameterType="Map">
+        /* NS_Menu.delMenu */
+        DELETE FROM TYL_MENU                 /* 메뉴 */
+         WHERE MENU_ID = #{menuId}           /* 메뉴아이디 */
+    </delete>
+
+</mapper>

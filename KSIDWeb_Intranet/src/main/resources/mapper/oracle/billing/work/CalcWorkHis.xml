@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NS_CalcWorkHis">
+
+
+    <!-- Select 과금작업 이력 List -->
+    <select id="selCalcWorkHisList" parameterType="Map" resultType="CamelMap">
+        <include refid="NS_Paging.header"/>
+        /* NS_CalcWorkHis.selCalcWorkHisList */
+
+        SELECT JOB_SEQ                  /* 작업 순번-YYYYMMDDHH+SEQ(12) */
+             , JOB_TYPE                 /* 작업 구분(과금변환/요금계산/청구/정산) */
+             , JOB_CD                   /* 작업 코드(작업구분별 코드) */
+             , JOB_NM                   /* 작업 명칭 */
+             , ST_DTM                   /* 작업 자료 시작일 */
+             , ED_DTM                   /* 작업 자료 종료일 */
+             , REQ_PARAM                /* 요청 파라미터 */
+             , REQ_DTM                  /* 배치 시작시간(NULL:즉시) */
+             , STATUS                   /* 작업진행상태(R:요청 P:진행중 S/F:성공 실패 C:진행취소 E:진행취소완료) */
+             , PROGRESS                 /* 진행율 */
+             , JOB_MSG                  /* 상태메시지 */
+             , REQ_ID                   /* 작업자 */
+             , CHG_DTM                  /* 변경시간 */
+             , F_GET_CD_NM(#{language}, 'JOB_TYPE', JOB_TYPE) AS JOB_TYPE_NM
+             , F_GET_CD_NM(#{language}, 'JOB_CD', JOB_CD) AS JOB_CD_NM
+             , F_GET_CD_NM(#{language}, 'STATUS', STATUS) AS STATUS_NM
+          FROM TBT_FEE_CALC_WORK_HIS  /* 요금 계산 작업 이력 */
+         WHERE REQ_DTM BETWEEN #{sDt} || '000000' AND #{eDt} || '999999'
+           AND ( #{jobType} IS NULL OR JOB_TYPE = #{jobType} )
+           AND ( #{jobCd} IS NULL OR JOB_CD = #{jobCd} )
+           AND ( #{status} IS NULL OR STATUS = #{status} )
+          ORDER BY REQ_DTM desc
+        <include refid="NS_Paging.footer"/>
+
+    </select>
+
+
+    <select id="codeComboList" parameterType="Map" resultType="CamelMap">
+        /* NS_CalcWorkHis.codeComboList */
+
+        SELECT CODE_GROUP_CD            /* 코드그룹코드 */
+             , CODE_CD                  /* 공통코드 */
+             , CODE_NM                  /* 코드명 */
+             , SORT_SEQ                 /* 정렬순번 */
+          FROM TYL_CODE                 /* 코드 */
+         WHERE CODE_GROUP_CD = #{codeGroupCd}
+           AND CODE_CD LIKE #{codeCd}||'%'
+           AND CODE_TYPE = 'N'      /* 공통코드유형[N:일반,S:시스템] */
+           AND USE_YN = 'Y'         /* 사용여부 */
+         ORDER BY SORT_SEQ ASC
+
+    </select>
+
+
+</mapper>
